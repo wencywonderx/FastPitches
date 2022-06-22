@@ -107,6 +107,8 @@ def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
 
     pitch_mel = pitch_mel.float()
 
+    print("this is pitch_mel tensor:", pitch_mel, pitch_mel.shape())
+
     if normalize_mean is not None:
         assert normalize_std is not None
         pitch_mel = normalize_pitch(pitch_mel, normalize_mean, normalize_std)
