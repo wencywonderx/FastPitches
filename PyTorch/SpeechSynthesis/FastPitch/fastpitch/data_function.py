@@ -36,7 +36,6 @@ import torch
 import torch.nn.functional as F
 from scipy import ndimage
 from scipy.stats import betabinom
-from PyTorch.SpeechSynthesis.FastPitch.fastpitch.interpolate_f0 import interpolate
 
 import common.layers as layers
 from common.text.text_processing import TextProcessing
