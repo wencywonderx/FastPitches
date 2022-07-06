@@ -41,6 +41,7 @@ import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
 
+import fastpitch.interpolate_f0
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -79,7 +80,7 @@ def beta_binomial_prior_distribution(phoneme_count, mel_count, scaling=1.0):
 
 
 def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
-                   normalize_std=None, n_formants=1):
+                   normalize_std=None, n_formants=1, interpolate = False):
 
     if type(normalize_mean) is float or type(normalize_mean) is list:
         normalize_mean = torch.tensor(normalize_mean)
@@ -91,11 +92,14 @@ def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
 
         snd, sr = librosa.load(wav)
         pitch_mel, voiced_flag, voiced_probs = librosa.pyin(
-            snd, fmin=librosa.note_to_hz('C2'),
-            fmax=librosa.note_to_hz('C7'), frame_length=1024)
+	    snd, fmin=40, fmax=600, frame_length=1024)
+           # snd, fmin=librosa.note_to_hz('C2'),
+           # fmax=librosa.note_to_hz('C7'), frame_length=1024)
         assert np.abs(mel_len - pitch_mel.shape[0]) <= 1.0
-
+     #   print("this is pitch_mel array:", pitch_mel, pitch_mel.size)
         pitch_mel = np.where(np.isnan(pitch_mel), 0.0, pitch_mel)
+        if interpolate:
+            pitch_mel = interpolate_f0.interpolate(pitch_mel)
         pitch_mel = torch.from_numpy(pitch_mel).unsqueeze(0)
         pitch_mel = F.pad(pitch_mel, (0, mel_len - pitch_mel.size(1)))
 
@@ -107,7 +111,7 @@ def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
 
     pitch_mel = pitch_mel.float()
 
-    print("this is pitch_mel tensor:", pitch_mel, pitch_mel.shape())
+    # print("this is pitch_mel tensor:", pitch_mel, pitch_mel.size())
 
     if normalize_mean is not None:
         assert normalize_std is not None
@@ -216,11 +220,15 @@ class TTSDataset(torch.utils.data.Dataset):
             speaker = None
 
         mel = self.get_mel(audiopath)
+ #       print("mel shape:", mel.shape)      
         text = self.get_text(text)
+#        print("text shape:", text.shape)
         pitch = self.get_pitch(index, mel.size(-1))
+#        print("pitch shape:", pitch.shape)
         energy = torch.norm(mel.float(), dim=0, p=2)
+#        print("energy shape:", energy.shape)
         attn_prior = self.get_prior(index, mel.shape[1], text.shape[0])
-
+#        print("duration shape:", attn_prior.shape)
         assert pitch.size(-1) == mel.size(-1)
 
         # No higher formants?
