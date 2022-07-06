@@ -40,8 +40,7 @@ from scipy.stats import betabinom
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-
-import interpolate_f0
+from fastpitch.interpolate_f0 import interpolate
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -223,7 +222,7 @@ class TTSDataset(torch.utils.data.Dataset):
  #       print("mel shape:", mel.shape)      
         text = self.get_text(text)
 #        print("text shape:", text.shape)
-        pitch = self.get_pitch(index, mel.size(-1), interpolate = interpolate)
+        pitch = self.get_pitch(index, mel.size(-1), self.interpolate)
 #        print("pitch shape:", pitch.shape)
         energy = torch.norm(mel.float(), dim=0, p=2)
 #        print("energy shape:", energy.shape)
@@ -311,7 +310,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)
             if interpolate:
-                pitch = interpolate_f0.interpolate(pitch)
+                pitch = interpolate(pitch)
             return pitch
 
         if self.pitch_tmp_dir is not None:
