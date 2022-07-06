@@ -36,12 +36,13 @@ import torch
 import torch.nn.functional as F
 from scipy import ndimage
 from scipy.stats import betabinom
+from PyTorch.SpeechSynthesis.FastPitch.fastpitch.interpolate_f0 import interpolate
 
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
 
-import fastpitch.interpolate_f0
+import interpolate_f0
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -80,7 +81,7 @@ def beta_binomial_prior_distribution(phoneme_count, mel_count, scaling=1.0):
 
 
 def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
-                   normalize_std=None, n_formants=1, interpolate = False):
+                   normalize_std=None, n_formants=1):
 
     if type(normalize_mean) is float or type(normalize_mean) is list:
         normalize_mean = torch.tensor(normalize_mean)
@@ -92,14 +93,12 @@ def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
 
         snd, sr = librosa.load(wav)
         pitch_mel, voiced_flag, voiced_probs = librosa.pyin(
-	    snd, fmin=40, fmax=600, frame_length=1024)
-           # snd, fmin=librosa.note_to_hz('C2'),
-           # fmax=librosa.note_to_hz('C7'), frame_length=1024)
+	        snd, fmin=40, fmax=600, frame_length=1024)
+            # snd, fmin=librosa.note_to_hz('C2'),
+            # fmax=librosa.note_to_hz('C7'), frame_length=1024)
         assert np.abs(mel_len - pitch_mel.shape[0]) <= 1.0
      #   print("this is pitch_mel array:", pitch_mel, pitch_mel.size)
         pitch_mel = np.where(np.isnan(pitch_mel), 0.0, pitch_mel)
-        if interpolate:
-            pitch_mel = interpolate_f0.interpolate(pitch_mel)
         pitch_mel = torch.from_numpy(pitch_mel).unsqueeze(0)
         pitch_mel = F.pad(pitch_mel, (0, mel_len - pitch_mel.size(1)))
 
@@ -159,6 +158,7 @@ class TTSDataset(torch.utils.data.Dataset):
                  betabinomial_online_dir=None,
                  use_betabinomial_interpolator=True,
                  pitch_online_method='pyin',
+                 interpolate = False,
                  **ignored):
 
         # Expect a list of filenames
@@ -191,6 +191,7 @@ class TTSDataset(torch.utils.data.Dataset):
         self.f0_method = pitch_online_method
         self.betabinomial_tmp_dir = betabinomial_online_dir
         self.use_betabinomial_interpolator = use_betabinomial_interpolator
+        self.interpolate = interpolate
 
         if use_betabinomial_interpolator:
             self.betabinomial_interpolator = BetaBinomialInterpolator()
@@ -223,7 +224,7 @@ class TTSDataset(torch.utils.data.Dataset):
  #       print("mel shape:", mel.shape)      
         text = self.get_text(text)
 #        print("text shape:", text.shape)
-        pitch = self.get_pitch(index, mel.size(-1))
+        pitch = self.get_pitch(index, mel.size(-1), interpolate = interpolate)
 #        print("pitch shape:", pitch.shape)
         energy = torch.norm(mel.float(), dim=0, p=2)
 #        print("energy shape:", energy.shape)
@@ -296,7 +297,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return attn_prior
 
-    def get_pitch(self, index, mel_len=None):
+    def get_pitch(self, index, mel_len=None, interpolate = False):
         audiopath, *fields = self.audiopaths_and_text[index]
 
         if self.n_speakers > 1:
@@ -310,6 +311,8 @@ class TTSDataset(torch.utils.data.Dataset):
             if self.pitch_mean is not None:
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)
+            if interpolate:
+                pitch = interpolate_f0.interpolate(pitch)
             return pitch
 
         if self.pitch_tmp_dir is not None:

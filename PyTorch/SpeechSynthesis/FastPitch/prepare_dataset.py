@@ -77,7 +77,11 @@ def parse_args(parser):
     # Performance
     parser.add_argument('-b', '--batch-size', default=1, type=int)
     parser.add_argument('--n-workers', type=int, default=16)
+
+    # added by me
     parser.add_argument('--interpolate', action='store_true', help='interpolate f0')
+    parser.add_argument('--load_pitch_from_disk', action='store_true', help='load extracted pitch pytorch file')
+   
     return parser
 
 
@@ -115,7 +119,7 @@ def main():
             p_arpabet=0.0,
             n_speakers=args.n_speakers,
             load_mel_from_disk=False,
-            load_pitch_from_disk=False,
+            load_pitch_from_disk=args.load_pitch_from_disk,
             pitch_mean=None,
             pitch_std=None,
             max_wav_value=args.max_wav_value,

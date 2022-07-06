@@ -30,9 +30,9 @@ SCRATCH=/exports/eddie/scratch/s2258422
 DATA_DIR="$SCRATCH/LJSpeech-1.1"
 
 cd $FP
-for FILELIST in ljs_audio_text_train_v3.txt \
-                ljs_audio_text_val.txt \
-                ljs_audio_text_test.txt \
+for FILELIST in ljs_audio_pitch_text_train_v3.txt \
+                ljs_audio_pitch_text_val.txt \
+                ljs_audio_pitch_text_test.txt \
 ; do
     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
     # to work around weird qsub memory consumption
@@ -41,7 +41,8 @@ for FILELIST in ljs_audio_text_train_v3.txt \
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \
-        --extract-pitch \
+        #--extract-pitch \
+        --load_pitch_from_disk \
         --interpolate
     # NB: this has to use `--batch-size 1` otherwise archives get saved with
     # padding and everything ends up the wrong shape!
