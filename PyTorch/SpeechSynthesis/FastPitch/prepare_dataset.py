@@ -77,6 +77,7 @@ def parse_args(parser):
     # Performance
     parser.add_argument('-b', '--batch-size', default=1, type=int)
     parser.add_argument('--n-workers', type=int, default=16)
+    parser.add_argument('--interpolate', action='store_true', help='interpolate f0')
     return parser
 
 
@@ -126,7 +127,8 @@ def main():
             mel_fmax=args.mel_fmax,
             betabinomial_online_dir=None,
             pitch_online_dir=None,
-            pitch_online_method=args.f0_method)
+            pitch_online_method=args.f0_method,
+            interpolate=args.interpolate)
 
         data_loader = DataLoader(
             dataset,
