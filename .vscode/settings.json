@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./PyTorch/SpeechSynthesis/FastPitch",
+        "./PyTorch/SpeechSynthesis/FastPitch/fastpitch"
+    ]
+}
