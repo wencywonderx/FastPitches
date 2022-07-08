@@ -79,9 +79,10 @@ def parse_args(parser):
     parser.add_argument('--n-workers', type=int, default=16)
 
     # added by me
-    parser.add_argument('--interpolate', action='store_true', help='interpolate f0')
-    parser.add_argument('--load_pitch_from_disk', action='store_true', help='load extracted pitch pytorch file')
-   
+    parser.add_argument('--load-pitch-from-disk', action='store_true', help='load extracted pitch pytorch file')
+    parser.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
+    parser.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
+
     return parser
 
 
@@ -106,6 +107,12 @@ def main():
 
     if args.save_alignment_priors:
         Path(args.dataset_path, 'alignment_priors').mkdir(parents=False, exist_ok=True)
+    
+    # if args.interpolate_f0:
+    #     Path(args.dataset_path, 'interpolated_f0').mkdir(parents=False, exist_ok=True)
+
+    # if args.mean_and_delta_f0:
+    #     Path(args.dataset_path, 'mean_and_delta_f0').mkdir(parents=False, exist_ok=True) 
 
     for filelist in args.wav_text_filelists:
 
@@ -132,7 +139,8 @@ def main():
             betabinomial_online_dir=None,
             pitch_online_dir=None,
             pitch_online_method=args.f0_method,
-            interpolate=args.interpolate)
+            interpolate=args.interpolate_f0,
+            mean_delta=args.mean_and_delta_f0)
 
         data_loader = DataLoader(
             dataset,
@@ -148,7 +156,10 @@ def main():
         for i, batch in enumerate(tqdm.tqdm(data_loader)):
             tik = time.time()
 
-            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths = batch
+            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths = batch  
+            # (text_padded, input_lengths, mel_padded, output_lengths, len_x,
+            #     pitch_padded, energy_padded, speaker, attn_prior_padded,
+            #     audiopaths)
 
             # Ensure filenames are unique
             for p in fpaths:
@@ -175,6 +186,23 @@ def main():
                     fpath = Path(args.dataset_path, 'alignment_priors', fname)
                     torch.save(prior[:mel_lens[j], :input_lens[j]], fpath)
 
+            # if args.load_pitch_from_disk: # to be changed
+            #     for j, pitch in enumerate(pitch):
+            #         fname = Path(fpaths[j]).with_suffix('.pt').name
+            #         fpath = Path(args.dataset_path, 'pitch', fname)
+            #         torch.save(p[:mel_lens[j]], fpath)
+                        
+            # if args.interpolate_f0: # to be changed
+            #     for j, pitch in enumerate(pitch):
+            #         fname = Path(fpaths[j]).with_suffix('.pt').name
+            #         fpath = Path(args.dataset_path, 'pitch', fname)
+            #         torch.save(p[:mel_lens[j]], fpath)
+
+            # if args.mean_and_delta_f0: # to be changed
+            #     for j, pitch in enumerate(pitch):
+            #         fname = Path(fpaths[j]).with_suffix('.pt').name
+            #         fpath = Path(args.dataset_path, 'pitch', fname)
+            #         torch.save(p[:mel_lens[j]], fpath)
 
 if __name__ == '__main__':
     main()

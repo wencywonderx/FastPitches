@@ -1,0 +1,8 @@
+wavs/LJ049-0022.wav|pitch/LJ049-0022.pt|The Secret Service believed that it was very doubtful that any President would ride regularly in a vehicle with a fixed top, even though transparent.
+wavs/LJ033-0042.wav|pitch/LJ033-0042.pt|Between the hours of eight and nine p.m. they were occupied with the children in the bedrooms located at the extreme east end of the house.
+wavs/LJ016-0117.wav|pitch/LJ016-0117.pt|The prisoner had nothing to deal with but wooden panels, and by dint of cutting and chopping he got both the lower panels out.
+wavs/LJ025-0157.wav|pitch/LJ025-0157.pt|Under these circumstances, unnatural as they are, with proper management, the bean will thrust forth its radicle and its plumule;
+wavs/LJ042-0219.wav|pitch/LJ042-0219.pt|Oswald demonstrated his thinking in connection with his return to the United States by preparing two sets of identical questions of the type which he might have thought
+wavs/LJ032-0164.wav|pitch/LJ032-0164.pt|it is not possible to state with scientific certainty that a particular small group of fibers come from a certain piece of clothing
+wavs/LJ046-0092.wav|pitch/LJ046-0092.pt|has confidence in the dedicated Secret Service men who are ready to lay down their lives for him
+wavs/LJ050-0118.wav|pitch/LJ050-0118.pt|Since these agencies are already obliged constantly to evaluate the activities of such groups,

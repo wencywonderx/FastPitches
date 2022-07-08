@@ -41,9 +41,10 @@ for FILELIST in ljs_audio_pitch_text_train_v3.txt \
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \
-        #--extract-pitch \
-        --load_pitch_from_disk \
-        --interpolate
+        --extract-pitch \
+        --load-pitch-from-disk \
+        --interpolate-f0 \
+        --mean-and-delta-f0
     # NB: this has to use `--batch-size 1` otherwise archives get saved with
     # padding and everything ends up the wrong shape!
 done

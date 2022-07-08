@@ -26,21 +26,18 @@
 # *****************************************************************************
 
 import functools
-import json
 import re
 from pathlib import Path
 
-import librosa
 import numpy as np
 import torch
-import torch.nn.functional as F
 from scipy import ndimage
 from scipy.stats import betabinom
 
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-from fastpitch.interpolate_f0 import interpolate
+from fastpitch.pitch_things import interpolate_f0, estimate_pitch, normalize_pitch
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -64,7 +61,6 @@ class BetaBinomialInterpolator:
         assert ret.shape[1] == h, ret.shape
         return ret
 
-
 def beta_binomial_prior_distribution(phoneme_count, mel_count, scaling=1.0):
     P = phoneme_count
     M = mel_count
@@ -76,53 +72,6 @@ def beta_binomial_prior_distribution(phoneme_count, mel_count, scaling=1.0):
         mel_i_prob = rv.pmf(x)
         mel_text_probs.append(mel_i_prob)
     return torch.tensor(np.array(mel_text_probs))
-
-
-def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
-                   normalize_std=None, n_formants=1):
-
-    if type(normalize_mean) is float or type(normalize_mean) is list:
-        normalize_mean = torch.tensor(normalize_mean)
-
-    if type(normalize_std) is float or type(normalize_std) is list:
-        normalize_std = torch.tensor(normalize_std)
-
-    if method == 'pyin':
-
-        snd, sr = librosa.load(wav)
-        pitch_mel, voiced_flag, voiced_probs = librosa.pyin(
-	        snd, fmin=40, fmax=600, frame_length=1024)
-            # snd, fmin=librosa.note_to_hz('C2'),
-            # fmax=librosa.note_to_hz('C7'), frame_length=1024)
-        assert np.abs(mel_len - pitch_mel.shape[0]) <= 1.0
-     #   print("this is pitch_mel array:", pitch_mel, pitch_mel.size)
-        pitch_mel = np.where(np.isnan(pitch_mel), 0.0, pitch_mel)
-        pitch_mel = torch.from_numpy(pitch_mel).unsqueeze(0)
-        pitch_mel = F.pad(pitch_mel, (0, mel_len - pitch_mel.size(1)))
-
-        if n_formants > 1:
-            raise NotImplementedError
-
-    else:
-        raise ValueError
-
-    pitch_mel = pitch_mel.float()
-
-    # print("this is pitch_mel tensor:", pitch_mel, pitch_mel.size())
-
-    if normalize_mean is not None:
-        assert normalize_std is not None
-        pitch_mel = normalize_pitch(pitch_mel, normalize_mean, normalize_std)
-
-    return pitch_mel
-
-
-def normalize_pitch(pitch, mean, std):
-    zeros = (pitch == 0.0)
-    pitch -= mean[:, None]
-    pitch /= std[:, None]
-    pitch[zeros] = 0.0
-    return pitch
 
 
 class TTSDataset(torch.utils.data.Dataset):
@@ -157,6 +106,7 @@ class TTSDataset(torch.utils.data.Dataset):
                  use_betabinomial_interpolator=True,
                  pitch_online_method='pyin',
                  interpolate = False,
+                 mean_delta = False,
                  **ignored):
 
         # Expect a list of filenames
@@ -190,6 +140,7 @@ class TTSDataset(torch.utils.data.Dataset):
         self.betabinomial_tmp_dir = betabinomial_online_dir
         self.use_betabinomial_interpolator = use_betabinomial_interpolator
         self.interpolate = interpolate
+        self.mean_delta = mean_delta
 
         if use_betabinomial_interpolator:
             self.betabinomial_interpolator = BetaBinomialInterpolator()
@@ -222,8 +173,14 @@ class TTSDataset(torch.utils.data.Dataset):
  #       print("mel shape:", mel.shape)      
         text = self.get_text(text)
 #        print("text shape:", text.shape)
-        pitch = self.get_pitch(index, mel.size(-1), self.interpolate)
+        if self.mean_delta:
+            pitch, mean_f0, delta_f0 = self.get_pitch(index, mel.size(-1), self.interpolate, self.mean_delta)
+        else:
+            pitch = self.get_pitch(index, mel.size(-1), self.interpolate, self.mean_delta)
+            mean_f0 = None
+            delta_f0 = None
 #        print("pitch shape:", pitch.shape)
+        # mean_f0, delta_f0 = self.get_mean_and_f0(pitch) 
         energy = torch.norm(mel.float(), dim=0, p=2)
 #        print("energy shape:", energy.shape)
         attn_prior = self.get_prior(index, mel.shape[1], text.shape[0])
@@ -235,7 +192,7 @@ class TTSDataset(torch.utils.data.Dataset):
             pitch = pitch[None, :]
 
         return (text, mel, len(text), pitch, energy, speaker, attn_prior,
-                audiopath)
+                audiopath, mean_f0, delta_f0)
 
     def __len__(self):
         return len(self.audiopaths_and_text)
@@ -295,7 +252,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return attn_prior
 
-    def get_pitch(self, index, mel_len=None, interpolate = False):
+    def get_pitch(self, index, mel_len=None, interpolate = False, mean_delta = False):
         audiopath, *fields = self.audiopaths_and_text[index]
 
         if self.n_speakers > 1:
@@ -306,11 +263,14 @@ class TTSDataset(torch.utils.data.Dataset):
         if self.load_pitch_from_disk:
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
+            if interpolate:
+                pitch = interpolate_f0(pitch)
             if self.pitch_mean is not None:
                 assert self.pitch_std is not None
-                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)
-            if interpolate:
-                pitch = interpolate(pitch)
+                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
+            if mean_delta:
+                mean_f0, delta_f0 = mean_delta(pitch)
+                return pitch, mean_f0, delta_f0 
             return pitch
 
         if self.pitch_tmp_dir is not None:
@@ -334,6 +294,10 @@ class TTSDataset(torch.utils.data.Dataset):
             torch.save(pitch_mel, cached_fpath)
 
         return pitch_mel
+    
+    # def get_mean_and_delta(pitch):
+        
+    #     return mean_f0, delta_f0
 
 
 class TTSCollate:
@@ -350,7 +314,8 @@ class TTSCollate:
         text_padded = torch.LongTensor(len(batch), max_input_len)
         text_padded.zero_()
         for i in range(len(ids_sorted_decreasing)):
-            text = batch[ids_sorted_decreasing[i]][0]
+            text = batch[ids_sorted_decreasing[i]][0]  # first one in TTSDataset
+            # (text, mel, len(text), pitch, mean_f0, delta_f0, energy, speaker, attn_prior, audiopath)
             text_padded[i, :text.size(0)] = text
 
         # Right zero-pad mel-spec
@@ -362,7 +327,7 @@ class TTSCollate:
         mel_padded.zero_()
         output_lengths = torch.LongTensor(len(batch))
         for i in range(len(ids_sorted_decreasing)):
-            mel = batch[ids_sorted_decreasing[i]][1]
+            mel = batch[ids_sorted_decreasing[i]][1] # the second one
             mel_padded[i, :, :mel.size(1)] = mel
             output_lengths[i] = mel.size(1)
 
@@ -373,7 +338,7 @@ class TTSCollate:
 
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
-            energy = batch[ids_sorted_decreasing[i]][4]
+            energy = batch[ids_sorted_decreasing[i]][4] # 
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
 
@@ -399,7 +364,7 @@ class TTSCollate:
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths)
+                audiopaths) # to change in prepare_data.py and model.py(245)
 
 
 def batch_to_gpu(batch):
