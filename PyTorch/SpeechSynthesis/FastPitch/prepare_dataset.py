@@ -119,8 +119,8 @@ def main():
         print(f'Processing {filelist}...')
 
         dataset = TTSDataset(
-            args.dataset_path,
-            filelist,
+            "U:\home\wencywonder\FastPitches\PyTorch\SpeechSynthesis\FastPitch\fastpitch\test_folder",
+            'U:\home\wencywonder\FastPitches\PyTorch\SpeechSynthesis\FastPitch\filelists\test_folder\test_file.txt',
             text_cleaners=['english_cleaners_v2'],
             n_mel_channels=args.n_mel_channels,
             p_arpabet=0.0,

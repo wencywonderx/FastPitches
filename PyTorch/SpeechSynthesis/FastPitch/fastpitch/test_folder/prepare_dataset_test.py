@@ -35,7 +35,7 @@ import dllogger as DLLogger
 from dllogger import StdOutBackend, JSONStreamBackend, Verbosity
 from torch.utils.data import DataLoader
 
-from test_folder.data_function_test import TTSCollate, TTSDataset
+from data_function_test import TTSCollate, TTSDataset
 
 
 def parse_args(parser):
