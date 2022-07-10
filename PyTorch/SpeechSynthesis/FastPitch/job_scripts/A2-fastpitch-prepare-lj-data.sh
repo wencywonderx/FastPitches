@@ -37,7 +37,7 @@ for FILELIST in ljs_audio_pitch_text_train_v3.txt \
     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
     # to work around weird qsub memory consumption
     python prepare_dataset.py \
-        --dataset-path $DATA_DIR \
+        --dataset-path $TEST_DIR \
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \

@@ -298,10 +298,6 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return pitch_mel
     
-    # def get_mean_and_delta(pitch):
-        
-    #     return mean_f0, delta_f0
-
 
 class TTSCollate:
     """Zero-pads model inputs and targets based on number of frames per step"""

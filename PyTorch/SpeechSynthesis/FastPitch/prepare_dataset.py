@@ -119,8 +119,8 @@ def main():
         print(f'Processing {filelist}...')
 
         dataset = TTSDataset(
-            "U:\home\wencywonder\FastPitches\PyTorch\SpeechSynthesis\FastPitch\fastpitch\test_folder",
-            'U:\home\wencywonder\FastPitches\PyTorch\SpeechSynthesis\FastPitch\filelists\test_folder\test_file.txt',
+            args.dataset_path,
+            filelist,
             text_cleaners=['english_cleaners_v2'],
             n_mel_channels=args.n_mel_channels,
             p_arpabet=0.0,
@@ -151,6 +151,8 @@ def main():
             collate_fn=TTSCollate(),
             pin_memory=False,
             drop_last=False)
+        print("This is DataLoader return, batch:", data_loader)
+
 
         all_filenames = set()
         for i, batch in enumerate(tqdm.tqdm(data_loader)):
