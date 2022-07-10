@@ -320,7 +320,7 @@ class TTSCollate:
         num_mels = batch[0][1].size(0)
         max_target_len = max([x[1].size(1) for x in batch])
 
-        # Include mel padded and gate padded
+        # Include mel padded and gate padded ---------------------------------------------------------Q
         mel_padded = torch.FloatTensor(len(batch), num_mels, max_target_len)
         mel_padded.zero_()
         output_lengths = torch.LongTensor(len(batch))
@@ -365,13 +365,12 @@ class TTSCollate:
         for i in range(len(ids_sorted_decreasing)):
             mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
 
-        # 
         padded_delta_f0 = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
 
         for i in range(len(ids_sorted_decreasing)):
             delta_f0 = batch[ids_sorted_decreasing[i]][9]
-            padded_delta_f0[] = delta_f0
+            padded_delta_f0[i, :, :pitch.shape[1]] = delta_f0
         
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
