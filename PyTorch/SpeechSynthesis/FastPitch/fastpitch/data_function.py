@@ -263,8 +263,10 @@ class TTSDataset(torch.utils.data.Dataset):
         if self.load_pitch_from_disk:
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
-            pitch = pitch.numpy()
+            print(pitch)
             pitch = pitch.numpy()[0]
+            print(pitch)
+            print("\n -------------------pitch loaded from disk \n")
             if interpolate:
                 pitch = interpolate_f0(pitch)
                 print("\n --------------------interpolated pitch array \n")
