@@ -332,7 +332,7 @@ class TTSCollate:
         n_formants = batch[0][3].shape[0]
         pitch_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
-        energy_padded = torch.zeros_like(pitch_padded[:, 0, :]) #--------------------------------------Q
+        energy_padded = torch.zeros_like(pitch_padded[:, 0, :])
 
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
