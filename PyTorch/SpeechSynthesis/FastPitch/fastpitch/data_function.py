@@ -366,7 +366,7 @@ class TTSCollate:
             attn_prior_padded[i, :prior.size(0), :prior.size(1)] = prior
         print("----------------------this is attn_prior_padded:", attn_prior_padded.size, attn_prior_padded)
 
-        # Count number of items - characters in text --------------------------------------Q
+        # Count number of items - characters in text ------------------------------------------------------------Q
         len_x = [x[2] for x in batch]
         len_x = torch.Tensor(len_x)
         print("----------------------this is len_x:", len_x)
@@ -388,10 +388,12 @@ class TTSCollate:
         print("----------------------this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
 
 
+        # return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
+        #         pitch_padded, energy_padded, speaker, attn_prior_padded,
+        #         audiopaths, mean_f0, delta_f0_padded) # to change in prepare_data.py and model.py(245)
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-                pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths, mean_f0, delta_f0_padded) # to change in prepare_data.py and model.py(245)
-
+                 delta_f0_padded, energy_padded, speaker, attn_prior_padded,
+                 audiopaths)
 
 def batch_to_gpu(batch):
     (text_padded, input_lengths, mel_padded, output_lengths, len_x,
