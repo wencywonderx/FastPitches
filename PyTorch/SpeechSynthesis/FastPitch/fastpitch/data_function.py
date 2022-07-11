@@ -313,12 +313,14 @@ class TTSCollate:
             torch.LongTensor([len(x[0]) for x in batch]),
             dim=0, descending=True)
         max_input_len = input_lengths[0]
+        print("----------------------this is input_lengths:", input_lengths)
 
         text_padded = torch.LongTensor(len(batch), max_input_len)
         text_padded.zero_()
         for i in range(len(ids_sorted_decreasing)):
             text = batch[ids_sorted_decreasing[i]][0]  # first one in TTSDataset
             text_padded[i, :text.size(0)] = text
+        print("----------------------this is text_padded:", text_padded)
 
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
@@ -332,6 +334,8 @@ class TTSCollate:
             mel = batch[ids_sorted_decreasing[i]][1] # the second one
             mel_padded[i, :, :mel.size(1)] = mel
             output_lengths[i] = mel.size(1)
+        print("----------------------this is output_lengths:", output_lengths)
+        print("----------------------this is mel_padded:", mel_padded)
 
         n_formants = batch[0][3].shape[0]
         pitch_padded = torch.zeros(mel_padded.size(0), n_formants,
@@ -343,6 +347,8 @@ class TTSCollate:
             energy = batch[ids_sorted_decreasing[i]][4] 
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
+        print("----------------------this is pitch_padded:", pitch_padded)
+        print("----------------------this is energy_padded:", energy_padded)
 
         if batch[0][5] is not None:
             speaker = torch.zeros_like(input_lengths)
@@ -350,6 +356,7 @@ class TTSCollate:
                 speaker[i] = batch[ids_sorted_decreasing[i]][5]
         else:
             speaker = None
+        print("----------------------this is speaker:", speaker)
 
         attn_prior_padded = torch.zeros(len(batch), max_target_len,
                                         max_input_len)
@@ -357,29 +364,33 @@ class TTSCollate:
         for i in range(len(ids_sorted_decreasing)):
             prior = batch[ids_sorted_decreasing[i]][6]
             attn_prior_padded[i, :prior.size(0), :prior.size(1)] = prior
+        print("----------------------this is attn_prior_padded:", attn_prior_padded)
 
         # Count number of items - characters in text --------------------------------------Q
         len_x = [x[2] for x in batch]
         len_x = torch.Tensor(len_x)
+        print("----------------------this is len_x:", len_x)
 
         audiopaths = [batch[i][7] for i in ids_sorted_decreasing]
         # (text, mel, len(text), pitch, energy, speaker, attn_prior, audiopath, mean_f0, delta_f0)
+        print("----------------------this is audiopaths:", audiopaths)
         
         mean_f0 = torch.zeros_like(input_lengths)
         for i in range(len(ids_sorted_decreasing)):
             mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
 
-        padded_delta_f0 = torch.zeros(mel_padded.size(0), n_formants,
+        delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
-
+        print("----------------------this is mean_f0:", mean_f0)
         for i in range(len(ids_sorted_decreasing)):
             delta_f0 = batch[ids_sorted_decreasing[i]][9]
-            padded_delta_f0[i, :, :pitch.shape[1]] = delta_f0
-        
+            delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
+        print("----------------------this is delta_f0_padded:", delta_f0_padded)
+
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths, mean_f0, padded_delta_f0) # to change in prepare_data.py and model.py(245)
+                audiopaths, mean_f0, delta_f0_padded) # to change in prepare_data.py and model.py(245)
 
 
 def batch_to_gpu(batch):

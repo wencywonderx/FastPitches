@@ -141,7 +141,6 @@ def main():
             pitch_online_method=args.f0_method,
             interpolate=args.interpolate_f0,
             mean_delta=args.mean_and_delta_f0)
-        print("This is TTSDataset return, dataset:", dataset)
 
 
         data_loader = DataLoader(
@@ -153,7 +152,6 @@ def main():
             collate_fn=TTSCollate(),
             pin_memory=False,
             drop_last=False)
-        print("This is DataLoader return, batch:", data_loader)
 
 
         all_filenames = set()
