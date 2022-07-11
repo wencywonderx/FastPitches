@@ -320,7 +320,7 @@ class TTSCollate:
         for i in range(len(ids_sorted_decreasing)):
             text = batch[ids_sorted_decreasing[i]][0]  # first one in TTSDataset
             text_padded[i, :text.size(0)] = text
-        print("----------------------this is text_padded:", text_padded)
+        print("----------------------this is text_padded:", text_padded.size, text_padded)
 
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
@@ -335,7 +335,7 @@ class TTSCollate:
             mel_padded[i, :, :mel.size(1)] = mel
             output_lengths[i] = mel.size(1)
         print("----------------------this is output_lengths:", output_lengths)
-        print("----------------------this is mel_padded:", mel_padded)
+        print("----------------------this is mel_padded:", mel_padded.size, mel_padded)
 
         n_formants = batch[0][3].shape[0]
         pitch_padded = torch.zeros(mel_padded.size(0), n_formants,
@@ -347,8 +347,8 @@ class TTSCollate:
             energy = batch[ids_sorted_decreasing[i]][4] 
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
-        print("----------------------this is pitch_padded:", pitch_padded)
-        print("----------------------this is energy_padded:", energy_padded)
+        print("----------------------this is pitch_padded:", pitch_padded.size, pitch_padded)
+        print("----------------------this is energy_padded:", energy_padded.size, energy_padded)
 
         if batch[0][5] is not None:
             speaker = torch.zeros_like(input_lengths)
@@ -364,7 +364,7 @@ class TTSCollate:
         for i in range(len(ids_sorted_decreasing)):
             prior = batch[ids_sorted_decreasing[i]][6]
             attn_prior_padded[i, :prior.size(0), :prior.size(1)] = prior
-        print("----------------------this is attn_prior_padded:", attn_prior_padded)
+        print("----------------------this is attn_prior_padded:", attn_prior_padded.size, attn_prior_padded)
 
         # Count number of items - characters in text --------------------------------------Q
         len_x = [x[2] for x in batch]
@@ -385,7 +385,7 @@ class TTSCollate:
         for i in range(len(ids_sorted_decreasing)):
             delta_f0 = batch[ids_sorted_decreasing[i]][9]
             delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
-        print("----------------------this is delta_f0_padded:", delta_f0_padded)
+        print("----------------------this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
 
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
