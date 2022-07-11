@@ -40,8 +40,7 @@ for FILELIST in test_file.txt \
     # to work around weird qsub memory consumption
     python prepare_dataset.py \
         --dataset-path $TEST_DIR \
-        # --wav-text-filelist filelists/$FILELIST \
-        --wav-text-filelist filelists/test_file.txt \
+        --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \
         --extract-pitch \
