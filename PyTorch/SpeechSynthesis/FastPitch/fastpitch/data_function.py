@@ -37,7 +37,7 @@ from scipy.stats import betabinom
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-from fastpitch.pitch_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta
+from fastpitch.pitch_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -275,7 +275,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
             if mean_delta:
-                mean_f0, delta_f0 = mean_delta(pitch)
+                mean_f0, delta_f0 = mean_delta_f0(pitch)
                 print("\n --------------------mean and delta calculated \n", mean_f0, delta_f0)
                 return pitch, mean_f0, delta_f0 
             return pitch

@@ -45,7 +45,7 @@ def normalize_pitch(pitch, mean, std):
     pitch[zeros] = 0.0
     return pitch
 
-def mean_delta(pitch):
+def mean_delta_f0(pitch):
     # print(pitch)
     # mean = torch.mean(pitch)
     # print(mean)
