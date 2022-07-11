@@ -306,7 +306,7 @@ def plot_mels(pred_tgt_lists):
         ax1.plot(pitch, color="tomato")
         ax1.set_xlim(0, mel.shape[1])
         ax1.set_ylim(0, pitch_max)
-        ax1.set_ylabel("F0", color="tomato")
+        ax1.set_ylabel("delta_F0", color="tomato")
         ax1.tick_params(labelsize="x-small",
                         colors="tomato",
                         bottom=False,
