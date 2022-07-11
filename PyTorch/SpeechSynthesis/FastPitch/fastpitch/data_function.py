@@ -263,13 +263,16 @@ class TTSDataset(torch.utils.data.Dataset):
         if self.load_pitch_from_disk:
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
+            print("\n -------------------pitch loaded from disk \n")
             if interpolate:
                 pitch = interpolate_f0(pitch)
+                print("\n --------------------interpolated \n")
             if self.pitch_mean is not None:
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
             if mean_delta:
                 mean_f0, delta_f0 = mean_delta(pitch)
+                print("\n --------------------mean and delta calculated \n")
                 return pitch, mean_f0, delta_f0 
             return pitch
 
@@ -295,10 +298,6 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return pitch_mel
     
-    # def get_mean_and_delta(pitch):
-        
-    #     return mean_f0, delta_f0
-
 
 class TTSCollate:
     """Zero-pads model inputs and targets based on number of frames per step"""
@@ -315,14 +314,13 @@ class TTSCollate:
         text_padded.zero_()
         for i in range(len(ids_sorted_decreasing)):
             text = batch[ids_sorted_decreasing[i]][0]  # first one in TTSDataset
-            # (text, mel, len(text), pitch, mean_f0, delta_f0, energy, speaker, attn_prior, audiopath)
             text_padded[i, :text.size(0)] = text
 
         # Right zero-pad mel-spec
         num_mels = batch[0][1].size(0)
         max_target_len = max([x[1].size(1) for x in batch])
 
-        # Include mel padded and gate padded
+        # Include mel padded and gate padded ---------------------------------------------------------Q
         mel_padded = torch.FloatTensor(len(batch), num_mels, max_target_len)
         mel_padded.zero_()
         output_lengths = torch.LongTensor(len(batch))
@@ -334,11 +332,11 @@ class TTSCollate:
         n_formants = batch[0][3].shape[0]
         pitch_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
-        energy_padded = torch.zeros_like(pitch_padded[:, 0, :])
+        energy_padded = torch.zeros_like(pitch_padded[:, 0, :]) #--------------------------------------Q
 
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
-            energy = batch[ids_sorted_decreasing[i]][4] # 
+            energy = batch[ids_sorted_decreasing[i]][4] 
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
 
@@ -356,15 +354,28 @@ class TTSCollate:
             prior = batch[ids_sorted_decreasing[i]][6]
             attn_prior_padded[i, :prior.size(0), :prior.size(1)] = prior
 
-        # Count number of items - characters in text
+        # Count number of items - characters in text --------------------------------------Q
         len_x = [x[2] for x in batch]
         len_x = torch.Tensor(len_x)
 
         audiopaths = [batch[i][7] for i in ids_sorted_decreasing]
+        # (text, mel, len(text), pitch, energy, speaker, attn_prior, audiopath, mean_f0, delta_f0)
+        
+        mean_f0 = torch.zeros_like(input_lengths)
+        for i in range(len(ids_sorted_decreasing)):
+            mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
+
+        padded_delta_f0 = torch.zeros(mel_padded.size(0), n_formants,
+                                   mel_padded.size(2), dtype=batch[0][3].dtype)
+
+        for i in range(len(ids_sorted_decreasing)):
+            delta_f0 = batch[ids_sorted_decreasing[i]][9]
+            padded_delta_f0[i, :, :pitch.shape[1]] = delta_f0
+        
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths) # to change in prepare_data.py and model.py(245)
+                audiopaths, mean_f0, padded_delta_f0) # to change in prepare_data.py and model.py(245)
 
 
 def batch_to_gpu(batch):

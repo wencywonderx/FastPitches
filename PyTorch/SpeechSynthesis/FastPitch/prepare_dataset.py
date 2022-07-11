@@ -141,6 +141,8 @@ def main():
             pitch_online_method=args.f0_method,
             interpolate=args.interpolate_f0,
             mean_delta=args.mean_and_delta_f0)
+        print("This is TTSDataset return, dataset:", dataset)
+
 
         data_loader = DataLoader(
             dataset,
@@ -151,12 +153,15 @@ def main():
             collate_fn=TTSCollate(),
             pin_memory=False,
             drop_last=False)
+        print("This is DataLoader return, batch:", data_loader)
+
 
         all_filenames = set()
         for i, batch in enumerate(tqdm.tqdm(data_loader)):
             tik = time.time()
 
-            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths = batch  
+            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _ = batch  
+
             # (text_padded, input_lengths, mel_padded, output_lengths, len_x,
             #     pitch_padded, energy_padded, speaker, attn_prior_padded,
             #     audiopaths)
