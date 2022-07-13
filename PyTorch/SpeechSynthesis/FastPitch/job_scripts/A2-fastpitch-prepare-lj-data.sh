@@ -44,7 +44,7 @@ for FILELIST in ljs_audio_pitch_text_train_v3.txt \
         --n-workers 1 \
         --batch-size 1 \
         --extract-pitch \
-        --load-pitch-from-disk \
+        # --load-pitch-from-disk \
         --interpolate-f0 \
         --mean-and-delta-f0
     # NB: this has to use `--batch-size 1` otherwise archives get saved with
