@@ -27,8 +27,8 @@ DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAM
 FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 
 SCRATCH=/exports/eddie/scratch/s2258422
-DATA_DIR="$SCRATCH/LJSpeech-1.1"
-TEST_DIR="$FP/test_folder"
+# DATA_DIR="$SCRATCH/LJSpeech-1.1"
+DATA_DIR="$FP/test_folder"
 
 cd $FP
 # for FILELIST in test_file.txt \
@@ -39,7 +39,7 @@ for FILELIST in ljs_audio_pitch_text_train_v3.txt \
     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
     # to work around weird qsub memory consumption
     python prepare_dataset.py \
-        --dataset-path $TEST_DIR \
+        --dataset-path $DATA_DIR \
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \

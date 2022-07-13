@@ -34,19 +34,21 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
 export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID}
-export DATASET_PATH=$SCRATCH/LJSpeech-1.1
+# export DATASET_PATH=$SCRATCH/LJSpeech-1.1 ------------------------------------------C
+export DATASET_PATH=$FP/test_folder
+
 # if running after A2-fastpitch-prepare-lj-data.sh and with
 # LOAD_PITCH_FROM_DISK=true below, use ljs_audio_pitch_text_*.txt files
 # which point to saved pitch contours. If extracting pitches from audio
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
-# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt
+# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt --------------------------------C
 export TRAIN_FILELIST=$FP/filelists/test_file.txt
 export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 
 # metadata for wandb logging
-export PROJECT=fastpitches_eddie_interpolation
-export EXPERIMENT_DESC="FastPitches after interpolation"
+export PROJECT=fastpitches_eddie_delta_f0 #-------------------------------------------C
+export EXPERIMENT_DESC="FastPitch predicting deltaf0" #------------------------------------C
 
 # convert input texts to phones using cmudict
 # (download to default path: $FP/cmudict/cmudict-0.7b beforehand!)
@@ -69,8 +71,8 @@ export GRAD_ACCUMULATION=1
 # set random seed for ~reproducible runs
 export SEED=
 
-export EPOCHS=3
-export EPOCHS_PER_CHECKPOINT=1
+export EPOCHS=3 #---------------------------------------------------------------------C
+export EPOCHS_PER_CHECKPOINT=1 #-------------------------------------------------------------------C
 export WARMUP_STEPS=1000
 export KL_LOSS_WARMUP=100
 
