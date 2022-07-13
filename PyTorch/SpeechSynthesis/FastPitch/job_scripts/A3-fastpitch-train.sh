@@ -86,6 +86,10 @@ export PITCH_ONLINE_DIR=
 # other jobs on the same compute node)
 export DISTRIBUTED=' '
 
+#-------------------------------------------added be me----------------------------------
+export INTERPOLATE=true
+export MEAN_DELTA=true
+#----------------------------------------------------------------------------------------
 
 cd $FP
 scripts/train.sh

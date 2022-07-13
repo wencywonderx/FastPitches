@@ -27,11 +27,11 @@ DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAM
 FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 
 SCRATCH=/exports/eddie/scratch/s2258422
-# DATA_DIR="$SCRATCH/LJSpeech-1.1"
-DATA_DIR="$FP/test_folder"
+DATA_DIR="$SCRATCH/LJSpeech-1.1"
+# DATA_DIR="$FP/test_folder" #-------------------------------------------------------------------------C
 
 cd $FP
-# for FILELIST in test_file.txt \
+# for FILELIST in test_file.txt \ #-------------------------------------------------------C
 for FILELIST in ljs_audio_pitch_text_train_v3.txt \
                 ljs_audio_pitch_text_val.txt \
                 ljs_audio_pitch_text_test.txt \
@@ -43,10 +43,11 @@ for FILELIST in ljs_audio_pitch_text_train_v3.txt \
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \
-        --extract-pitch \
-        # --load-pitch-from-disk \
-        --interpolate-f0 \
-        --mean-and-delta-f0
+        --extract-pitch 
+        # --extract-mel \ #---------------------------------------------------C
+        # --load-pitch-from-disk \ #-------------------------------------------C
+        # --interpolate-f0 \ #----------------------------------------------------C
+        # --mean-and-delta-f0 #----------------------------------------------------C
     # NB: this has to use `--batch-size 1` otherwise archives get saved with
     # padding and everything ends up the wrong shape!
 done

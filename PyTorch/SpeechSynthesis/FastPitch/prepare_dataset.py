@@ -78,7 +78,7 @@ def parse_args(parser):
     parser.add_argument('-b', '--batch-size', default=1, type=int)
     parser.add_argument('--n-workers', type=int, default=16)
 
-    # added by me
+    # --------------------------------added by me----------------------------------------
     parser.add_argument('--load-pitch-from-disk', action='store_true', help='load extracted pitch pytorch file')
     parser.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
     parser.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
@@ -126,7 +126,7 @@ def main():
             p_arpabet=0.0,
             n_speakers=args.n_speakers,
             load_mel_from_disk=False,
-            load_pitch_from_disk=args.load_pitch_from_disk,
+            load_pitch_from_disk=args.load_pitch_from_disk, #--------------------------C
             pitch_mean=None,
             pitch_std=None,
             max_wav_value=args.max_wav_value,
@@ -139,8 +139,8 @@ def main():
             betabinomial_online_dir=None,
             pitch_online_dir=None,
             pitch_online_method=args.f0_method,
-            interpolate=args.interpolate_f0,
-            mean_delta=args.mean_and_delta_f0)
+            interpolate=args.interpolate_f0, #--------------------------C
+            mean_delta=args.mean_and_delta_f0) #------------------------------C
 
 
         data_loader = DataLoader(

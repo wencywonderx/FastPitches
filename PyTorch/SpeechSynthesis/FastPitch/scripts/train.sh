@@ -35,6 +35,11 @@ export OMP_NUM_THREADS=1
 : ${NSPEAKERS:=1}
 : ${SAMPLING_RATE:=22050}
 
+#-------------------------------added by me-------------------------------
+: ${INTERPOLATE:=true}
+: ${MEAN_DELTA:=true}
+#--------------------------------------------------------------------------
+
 # Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.
 GBS=$(($NUM_GPUS * $BATCH_SIZE * $GRAD_ACCUMULATION))
 [ $GBS -ne 256 ] && echo -e "\nWARNING: Global batch size changed from 256 to ${GBS}."
@@ -78,6 +83,10 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$PITCH_ONLINE_METHOD" != "" ]   && ARGS+=" --pitch-online-method $PITCH_ONLINE_METHOD"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --prepend-space-to-text"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --append-space-to-text"
+#----------------------------------added by me---------------------------------
+[ "$INTERPOLATE" = true]            && ARGS+=" --interpolate-f0"
+[ "$MEAN_DELTA" = true]            && ARGS+=" --mean-and-delta-f0"
+#------------------------------------------------------------------------------
 
 if [ "$SAMPLING_RATE" == "44100" ]; then
   ARGS+=" --sampling-rate 44100"
