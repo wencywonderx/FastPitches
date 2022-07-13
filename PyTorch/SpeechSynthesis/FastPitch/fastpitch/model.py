@@ -194,7 +194,7 @@ class FastPitch(nn.Module):
         self.delta_f0_predictor = TemporalPredictor(
             in_fft_output_size,
             filter_size=delta_f0_predictor_filter_size,
-            kernal_size=delta_f0_predictor_kernel_size,
+            kernel_size=delta_f0_predictor_kernel_size,
             dropout=p_delta_f0_predictor_dropout, 
             n_layers=delta_f0_predictor_n_layers,
             n_predictions=1
@@ -202,7 +202,7 @@ class FastPitch(nn.Module):
         self.delta_f0_emb = nn.Conv1d(
             1,
             symbols_embedding_dim,
-            kernal_size=delta_f0_embedding_kernel_size,
+            kernel_size=delta_f0_embedding_kernel_size,
             padding=int((delta_f0_embedding_kernel_size - 1) / 2)
         )
 #---------------------------------------------------------------------------------------------------
