@@ -149,7 +149,7 @@ class FastPitch(nn.Module):
             self.speaker_emb = None
         self.speaker_emb_weight = speaker_emb_weight
 
-        self.duration_predictor = TemporalPredictor(
+        self.duration_predictor = TemporalPredictor(#----------------------------------------------------duration
             in_fft_output_size,
             filter_size=dur_predictor_filter_size,
             kernel_size=dur_predictor_kernel_size,
@@ -169,7 +169,7 @@ class FastPitch(nn.Module):
             d_embed=symbols_embedding_dim
         )
 
-        self.pitch_predictor = TemporalPredictor(
+        self.pitch_predictor = TemporalPredictor(#-----------------------------------------------pitch
             in_fft_output_size,
             filter_size=pitch_predictor_filter_size,
             kernel_size=pitch_predictor_kernel_size,
