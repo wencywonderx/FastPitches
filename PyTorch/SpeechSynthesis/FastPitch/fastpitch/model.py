@@ -128,7 +128,7 @@ class FastPitch(nn.Module):
                  energy_embedding_kernel_size,
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
-                 delta_f0_embedding_kernal_size, #-----added
+                 delta_f0_embedding_kernel_size, #-----added
                  n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
                  ):
         super(FastPitch, self).__init__()
@@ -202,8 +202,8 @@ class FastPitch(nn.Module):
         self.delta_f0_emb = nn.Conv1d(
             1,
             symbols_embedding_dim,
-            kernal_size=delta_f0_embedding_kernal_size,
-            padding=int((delta_f0_embedding_kernal_size - 1) / 2)
+            kernal_size=delta_f0_embedding_kernel_size,
+            padding=int((delta_f0_embedding_kernel_size - 1) / 2)
         )
 #---------------------------------------------------------------------------------------------------
 

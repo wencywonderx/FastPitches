@@ -138,7 +138,7 @@ def parse_fastpitch_args(parent, add_help=False):
                       help='Pitch embedding conv-1D kernel size')
     cond.add_argument('--speaker-emb-weight', type=float, default=1.0,
                       help='Scale speaker embedding')
- 
+    
     #------------------------------added by me-----------------------------------------------------------Q
     cond.add_argument('--delta-f0-embedding-kernel-size', default=3, type=int,
                       help='delta f0 embedding conv-1D kernel size')
