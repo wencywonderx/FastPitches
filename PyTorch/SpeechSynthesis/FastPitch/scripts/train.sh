@@ -71,6 +71,7 @@ ARGS+=" --kl-loss-warmup-epochs $KL_LOSS_WARMUP"
 ARGS+=" --text-cleaners $TEXT_CLEANERS"
 ARGS+=" --n-speakers $NSPEAKERS"
 
+
 [ "$PROJECT" != "" ]               && ARGS+=" --project \"${PROJECT}\""
 [ "$EXPERIMENT_DESC" != "" ]       && ARGS+=" --experiment-desc \"${EXPERIMENT_DESC}\""
 [ "$AMP" = "true" ]                && ARGS+=" --amp"
@@ -84,7 +85,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --prepend-space-to-text"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --append-space-to-text"
 #----------------------------------added by me---------------------------------
-[ "$INTERPOLATE" = true]            && ARGS+=" --interpolate-f0"
+[ "$INTERPOLATE" = true]           && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true]            && ARGS+=" --mean-and-delta-f0"
 #------------------------------------------------------------------------------
 

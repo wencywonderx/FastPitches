@@ -33,7 +33,9 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # some values are set by the queuing software, e.g. $JOB_ID
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
-export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID}
+# export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #---------------------------------------------C
+export OUTPUT_DIR=$SCRATCH/test_train
+
 # export DATASET_PATH=$SCRATCH/LJSpeech-1.1 ------------------------------------------C
 export DATASET_PATH=$FP/test_folder
 
