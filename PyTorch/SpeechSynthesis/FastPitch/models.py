@@ -139,7 +139,7 @@ def get_model_config(model_name, args):
             delta_f0_predictor_kernel_size=args.delta_f0_predictor_kernel_size,
             delta_f0_predictor_filter_size=args.delta_f0_predictor_filter_size,
             p_delta_f0_predictor_dropout=args.p_delta_f0_predictor_dropout,
-            delta_f0_predictor_n_layers=args.pdelta_f0_predictor_n_layers,
+            delta_f0_predictor_n_layers=args.delta_f0_predictor_n_layers,
             # delta f0 conditioning
             delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,    
             #------------------------------------------------------------------------------
