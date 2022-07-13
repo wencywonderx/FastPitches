@@ -105,8 +105,8 @@ class TTSDataset(torch.utils.data.Dataset):
                  betabinomial_online_dir=None,
                  use_betabinomial_interpolator=True,
                  pitch_online_method='pyin',
-                 interpolate = True,
-                 mean_delta = True,
+                 interpolate_f0 = True,
+                 mean_and_delta_f0 = True,
                  **ignored):
 
         # Expect a list of filenames
@@ -139,8 +139,8 @@ class TTSDataset(torch.utils.data.Dataset):
         self.f0_method = pitch_online_method
         self.betabinomial_tmp_dir = betabinomial_online_dir
         self.use_betabinomial_interpolator = use_betabinomial_interpolator
-        self.interpolate = interpolate
-        self.mean_delta = mean_delta
+        self.interpolate_f0 = interpolate_f0
+        self.mean_and_delta_f0 = mean_and_delta_f0
 
         if use_betabinomial_interpolator:
             self.betabinomial_interpolator = BetaBinomialInterpolator()
@@ -174,9 +174,9 @@ class TTSDataset(torch.utils.data.Dataset):
         text = self.get_text(text)
 #        print("text shape:", text.shape)
         if self.mean_delta:
-            pitch, mean_f0, delta_f0 = self.get_pitch(index, mel.size(-1), self.interpolate, self.mean_delta)
+            pitch, mean_f0, delta_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0)
         else:
-            pitch = self.get_pitch(index, mel.size(-1), self.interpolate, self.mean_delta)
+            pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0)
             mean_f0 = None
             delta_f0 = None
 #        print("pitch shape:", pitch.shape)

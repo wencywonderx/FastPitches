@@ -118,6 +118,10 @@ def parse_args(parser):
                      default=1.0, help='Rescale pitch predictor loss')
     opt.add_argument('--attn-loss-scale', type=float,
                      default=1.0, help='Rescale alignment loss')
+#---------------------------------added by me-----------------------------------
+    opt.add_argument('--delta-f0-predictor-loss-scale', type=float,
+                     default=1.0, help='Rescale delta f0 loss')                     
+#-------------------------------------------------------------------------------
 
     data = parser.add_argument_group('dataset parameters')
     data.add_argument('--training-files', type=str, nargs='*', required=True,
@@ -160,7 +164,7 @@ def parse_args(parser):
                       help='Use mel-spectrograms cached on the disk')  
     #-------------------------------------added by me--------------------------------------
     cond.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
-    cond.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each phoneme')
+    cond.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
     #--------------------------------------------------------------------------------------
 
     audio = parser.add_argument_group('audio parameters')
@@ -515,7 +519,7 @@ def main():
         tb_subsets.append('val_ema')
 
     parser = models.parse_model_args('FastPitch', parser)
-    args, unk_args = parser.parse_known_args(fixed_args_list)
+    args, unk_args = parser.parse_known_args(fixed_args_list) #--------------------------------Q
     if len(unk_args) > 0:
         raise ValueError(f'Invalid options {unk_args}')
 
@@ -589,14 +593,15 @@ def main():
     criterion = FastPitchLoss(
         dur_predictor_loss_scale=args.dur_predictor_loss_scale,
         pitch_predictor_loss_scale=args.pitch_predictor_loss_scale,
-        attn_loss_scale=args.attn_loss_scale)
+        attn_loss_scale=args.attn_loss_scale,
+        delta_f0_predictor_loss=args.delta_f0_predictor_loss)  #---------------------------------Q:why without energy?
 
     collate_fn = TTSCollate()
 
     if args.local_rank == 0:
         prepare_tmp(args.pitch_online_dir)
 
-    trainset = TTSDataset(audiopaths_and_text=args.training_files, **vars(args))
+    trainset = TTSDataset(audiopaths_and_text=args.training_files, **vars(args)) #--------------------------------Q:need the same name?
     valset = TTSDataset(audiopaths_and_text=args.validation_files, **vars(args))
 
     if distributed_run:

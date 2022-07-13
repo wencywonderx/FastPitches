@@ -133,7 +133,7 @@ class FastPitch(nn.Module):
                  ):
         super(FastPitch, self).__init__()
 
-        self.encoder = FFTransformer(#------------------------------------------------------------encoder
+        self.encoder = FFTransformer(
             n_layer=in_fft_n_layers, n_head=in_fft_n_heads,
             d_model=symbols_embedding_dim,
             d_head=in_fft_d_head,
@@ -147,20 +147,20 @@ class FastPitch(nn.Module):
             n_embed=n_symbols,
             padding_idx=padding_idx)
 
-        if n_speakers > 1:#--------------------------------------------------------------------speaker embedding
+        if n_speakers > 1:
             self.speaker_emb = nn.Embedding(n_speakers, symbols_embedding_dim)
         else:
             self.speaker_emb = None
         self.speaker_emb_weight = speaker_emb_weight
 
-        self.duration_predictor = TemporalPredictor(#----------------------------------------------------duration
+        self.duration_predictor = TemporalPredictor(
             in_fft_output_size,
             filter_size=dur_predictor_filter_size,
             kernel_size=dur_predictor_kernel_size,
             dropout=p_dur_predictor_dropout, n_layers=dur_predictor_n_layers
         )
 
-        self.decoder = FFTransformer(#----------------------------------------------------------decoder
+        self.decoder = FFTransformer(#
             n_layer=out_fft_n_layers, n_head=out_fft_n_heads,
             d_model=symbols_embedding_dim,
             d_head=out_fft_d_head,
@@ -173,7 +173,7 @@ class FastPitch(nn.Module):
             d_embed=symbols_embedding_dim
         )
 
-        self.pitch_predictor = TemporalPredictor(#-----------------------------------------------pitch
+        self.pitch_predictor = TemporalPredictor(
             in_fft_output_size,
             filter_size=pitch_predictor_filter_size,
             kernel_size=pitch_predictor_kernel_size,
@@ -181,7 +181,7 @@ class FastPitch(nn.Module):
             n_predictions=pitch_conditioning_formants #--------------------------------------------------Q
         )
 
-        self.pitch_emb = nn.Conv1d(#---------------------------------------------------------------pitch embedding
+        self.pitch_emb = nn.Conv1d(
             pitch_conditioning_formants, symbols_embedding_dim,
             kernel_size=pitch_embedding_kernel_size,
             padding=int((pitch_embedding_kernel_size - 1) / 2))
@@ -207,7 +207,7 @@ class FastPitch(nn.Module):
         )
 #---------------------------------------------------------------------------------------------------
 
-        self.energy_conditioning = energy_conditioning#----------------------------------------------energy
+        self.energy_conditioning = energy_conditioning
         if energy_conditioning:
             self.energy_predictor = TemporalPredictor(
                 in_fft_output_size,
@@ -218,14 +218,14 @@ class FastPitch(nn.Module):
                 n_predictions=1
             )
 
-            self.energy_emb = nn.Conv1d(#-----------------------------------------------------------energy embedding
+            self.energy_emb = nn.Conv1d(
                 1, symbols_embedding_dim,
                 kernel_size=energy_embedding_kernel_size,
                 padding=int((energy_embedding_kernel_size - 1) / 2))
 
-        self.proj = nn.Linear(out_fft_output_size, n_mel_channels, bias=True)
+        self.proj = nn.Linear(out_fft_output_size, n_mel_channels, bias=True) #---------------------Q
 
-        self.attention = ConvAttention(
+        self.attention = ConvAttention( #-------------------------------------------Q
             n_mel_channels, 0, symbols_embedding_dim,
             use_query_proj=True, align_query_enc_type='3xconv')
 
@@ -341,7 +341,7 @@ class FastPitch(nn.Module):
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob)
 
-    def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
+    def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,
               speaker=0):
 

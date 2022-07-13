@@ -35,10 +35,10 @@ export OMP_NUM_THREADS=1
 : ${NSPEAKERS:=1}
 : ${SAMPLING_RATE:=22050}
 
-#-------------------------------added by me-------------------------------
+#---------added by me----------
 : ${INTERPOLATE:=true}
 : ${MEAN_DELTA:=true}
-#--------------------------------------------------------------------------
+#------------------------------
 
 # Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.
 GBS=$(($NUM_GPUS * $BATCH_SIZE * $GRAD_ACCUMULATION))
@@ -64,6 +64,9 @@ ARGS+=" --weight-decay 1e-6"
 ARGS+=" --grad-clip-thresh 1000.0"
 ARGS+=" --dur-predictor-loss-scale 0.1"
 ARGS+=" --pitch-predictor-loss-scale 0.1"
+#-----------------added by me----------------------
+ARGS+=" --delta-f0-predictor-loss-scale 0.1"
+#--------------------------------------------------
 
 # Autoalign & new features
 ARGS+=" --kl-loss-start-epoch 0"

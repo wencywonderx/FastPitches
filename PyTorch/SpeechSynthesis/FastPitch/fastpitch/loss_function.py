@@ -36,11 +36,14 @@ from fastpitch.attn_loss_function import AttentionCTCLoss
 class FastPitchLoss(nn.Module):
     def __init__(self, dur_predictor_loss_scale=1.0,
                  pitch_predictor_loss_scale=1.0, attn_loss_scale=1.0,
-                 energy_predictor_loss_scale=0.1):
+                 energy_predictor_loss_scale=0.1, delta_f0_predictor_loss_scale=1.0):
         super(FastPitchLoss, self).__init__()
         self.dur_predictor_loss_scale = dur_predictor_loss_scale
         self.pitch_predictor_loss_scale = pitch_predictor_loss_scale
         self.energy_predictor_loss_scale = energy_predictor_loss_scale
+        #---------------added by me-------------
+        self.delta_f0_predictor_loss_scale = delta_f0_predictor_loss_scale
+        #---------------------------------------
         self.attn_loss_scale = attn_loss_scale
         self.attn_ctc_loss = AttentionCTCLoss()
 
