@@ -190,7 +190,7 @@ class FastPitch(nn.Module):
         self.register_buffer('pitch_mean', torch.zeros(1))
         self.register_buffer('pitch_std', torch.zeros(1))
 
-#-----------------------------added by me(mean and delta)-----------------------------------------
+#-----------------------------added by me(mean and delta)-------------------------------------------
         self.delta_f0_predictor = TemporalPredictor(
             in_fft_output_size,
             filter_size=delta_f0_predictor_filter_size,
