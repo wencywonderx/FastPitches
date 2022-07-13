@@ -186,7 +186,7 @@ def load_and_setup_model(model_name, parser, checkpoint, amp, device,
 
 def load_fields(fpath):
     lines = [l.strip() for l in open(fpath, encoding='utf-8')]
-    if fpath.endswith('.tsv'):
+    if fpath.endswith('.tsv'): # contaning the sentences you want to stnthesise
         columns = lines[0].split('\t')
         fields = list(zip(*[t.split('\t') for t in lines[1:]]))
     else:
@@ -195,7 +195,7 @@ def load_fields(fpath):
     return {c:f for c, f in zip(columns, fields)}
 
 
-def prepare_input_sequence(fields, device, symbol_set, text_cleaners,
+def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode the text, start the model
                            batch_size=128, dataset=None, load_mels=False,
                            load_pitch=False, p_arpabet=0.0):
     tp = TextProcessing(symbol_set, text_cleaners, p_arpabet=p_arpabet)

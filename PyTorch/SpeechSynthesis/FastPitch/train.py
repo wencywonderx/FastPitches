@@ -306,7 +306,7 @@ def plot_mels(pred_tgt_lists):
         ax1.plot(pitch, color="tomato")
         ax1.set_xlim(0, mel.shape[1])
         ax1.set_ylim(0, pitch_max)
-        ax1.set_ylabel("delta_F0", color="tomato")
+        ax1.set_ylabel("delta_F0", color="tomato")  # changed
         ax1.tick_params(labelsize="x-small",
                         colors="tomato",
                         bottom=False,
@@ -368,7 +368,7 @@ def plot_batch_mels(pred_tgt_lists, rank):
 def log_validation_batch(x, y_pred, rank):
     x_fields = ['text_padded', 'input_lengths', 'mel_padded',
                 'output_lengths', 'pitch_padded', 'energy_padded',
-                'speaker', 'attn_prior', 'audiopaths']
+                'speaker', 'attn_prior', 'audiopaths', 'mean_f0', 'delta_f0']
     y_pred_fields = ['mel_out', 'dec_mask', 'dur_pred', 'log_dur_pred',
                      'pitch_pred', 'pitch_tgt', 'energy_pred',
                      'energy_tgt', 'attn_soft', 'attn_hard',
@@ -650,7 +650,7 @@ def main():
 
                 model.zero_grad(set_to_none=True)
 
-            x, y, num_frames = batch_to_gpu(batch)
+            x, y, num_frames = batch_to_gpu(batch)  # loaded batch
 
             with torch.cuda.amp.autocast(enabled=args.amp):
                 y_pred = model(x)
@@ -679,7 +679,7 @@ def main():
                     for k, v in meta.items()}
 
             if args.amp:
-                scaler.scale(loss).backward()
+                scaler.scale(loss).backward()   # scaling
             else:
                 loss.backward()
 

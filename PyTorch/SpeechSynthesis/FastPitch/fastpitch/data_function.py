@@ -367,7 +367,7 @@ class TTSCollate:
         print("----------------------this is attn_prior_padded:", attn_prior_padded.size, attn_prior_padded)
 
         # Count number of items - characters in text ------------------------------------------------------------Q
-        len_x = [x[2] for x in batch]
+        len_x = [x[2] for x in batch] #-------------------------------------------------------------------------------------1
         len_x = torch.Tensor(len_x)
         print("----------------------this is len_x:", len_x)
 
@@ -387,17 +387,14 @@ class TTSCollate:
             delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
         print("----------------------this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
 
-
-        # return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-        #         pitch_padded, energy_padded, speaker, attn_prior_padded,
-        #         audiopaths, mean_f0, delta_f0_padded) # to change in prepare_data.py and model.py(245)
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-                 delta_f0_padded, energy_padded, speaker, attn_prior_padded,
-                 audiopaths)
+                pitch_padded, energy_padded, speaker, attn_prior_padded,
+                audiopaths, mean_f0, delta_f0_padded) # to change in prepare_data.py and model.py(245)
+
 
 def batch_to_gpu(batch):
     (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-     pitch_padded, energy_padded, speaker, attn_prior, audiopaths) = batch
+     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded) = batch
 
     text_padded = to_gpu(text_padded).long()
     input_lengths = to_gpu(input_lengths).long()
@@ -408,10 +405,12 @@ def batch_to_gpu(batch):
     attn_prior = to_gpu(attn_prior).float()
     if speaker is not None:
         speaker = to_gpu(speaker).long()
+    mean = to_gpu(mean_f0).long()
+    delta_f0 = to_gpu(delta_f0_padded).float()
 
-    # Alignments act as both inputs and targets - pass shallow copies
+    # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
     x = [text_padded, input_lengths, mel_padded, output_lengths,
-         pitch_padded, energy_padded, speaker, attn_prior, audiopaths]
+         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0]
     y = [mel_padded, input_lengths, output_lengths]
-    len_x = torch.sum(output_lengths)
+    len_x = torch.sum(output_lengths) #---------------------------------------------------------------------------------2
     return (x, y, len_x)

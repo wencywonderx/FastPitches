@@ -97,12 +97,12 @@ class TemporalPredictor(nn.Module):
             for i in range(n_layers)]
         )
         self.n_predictions = n_predictions
-        self.fc = nn.Linear(filter_size, self.n_predictions, bias=True)
+        self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #------------------------------------------
 
     def forward(self, enc_out, enc_out_mask):
         out = enc_out * enc_out_mask
         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-        out = self.fc(out) * enc_out_mask
+        out = self.fc(out) * enc_out_mask #-------------------------------------------------
         return out
 
 
@@ -126,10 +126,14 @@ class FastPitch(nn.Module):
                  energy_predictor_kernel_size, energy_predictor_filter_size,
                  p_energy_predictor_dropout, energy_predictor_n_layers,
                  energy_embedding_kernel_size,
-                 n_speakers, speaker_emb_weight, pitch_conditioning_formants=1):
+                 delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
+                 p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
+                 delta_f0_embedding_kernal_size, #-----added
+                 n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
+                 ):
         super(FastPitch, self).__init__()
 
-        self.encoder = FFTransformer(
+        self.encoder = FFTransformer(#------------------------------------------------------------encoder
             n_layer=in_fft_n_layers, n_head=in_fft_n_heads,
             d_model=symbols_embedding_dim,
             d_head=in_fft_d_head,
@@ -143,7 +147,7 @@ class FastPitch(nn.Module):
             n_embed=n_symbols,
             padding_idx=padding_idx)
 
-        if n_speakers > 1:
+        if n_speakers > 1:#--------------------------------------------------------------------speaker embedding
             self.speaker_emb = nn.Embedding(n_speakers, symbols_embedding_dim)
         else:
             self.speaker_emb = None
@@ -156,7 +160,7 @@ class FastPitch(nn.Module):
             dropout=p_dur_predictor_dropout, n_layers=dur_predictor_n_layers
         )
 
-        self.decoder = FFTransformer(
+        self.decoder = FFTransformer(#----------------------------------------------------------decoder
             n_layer=out_fft_n_layers, n_head=out_fft_n_heads,
             d_model=symbols_embedding_dim,
             d_head=out_fft_d_head,
@@ -174,10 +178,10 @@ class FastPitch(nn.Module):
             filter_size=pitch_predictor_filter_size,
             kernel_size=pitch_predictor_kernel_size,
             dropout=p_pitch_predictor_dropout, n_layers=pitch_predictor_n_layers,
-            n_predictions=pitch_conditioning_formants
+            n_predictions=pitch_conditioning_formants #--------------------------------------------------Q
         )
 
-        self.pitch_emb = nn.Conv1d(
+        self.pitch_emb = nn.Conv1d(#---------------------------------------------------------------pitch embedding
             pitch_conditioning_formants, symbols_embedding_dim,
             kernel_size=pitch_embedding_kernel_size,
             padding=int((pitch_embedding_kernel_size - 1) / 2))
@@ -186,7 +190,24 @@ class FastPitch(nn.Module):
         self.register_buffer('pitch_mean', torch.zeros(1))
         self.register_buffer('pitch_std', torch.zeros(1))
 
-        self.energy_conditioning = energy_conditioning
+#-----------------------------added by me(mean and delta)-----------------------------------------
+        self.delta_f0_predictor = TemporalPredictor(
+            in_fft_output_size,
+            filter_size=delta_f0_predictor_filter_size,
+            kernal_size=delta_f0_predictor_kernel_size,
+            dropout=p_delta_f0_predictor_dropout, 
+            n_layers=delta_f0_predictor_n_layers,
+            n_predictions=1
+        )
+        self.delta_f0_emb = nn.Conv1d(
+            1,
+            symbols_embedding_dim,
+            kernal_size=delta_f0_embedding_kernal_size,
+            padding=int((delta_f0_embedding_kernal_size - 1) / 2)
+        )
+#---------------------------------------------------------------------------------------------------
+
+        self.energy_conditioning = energy_conditioning#----------------------------------------------energy
         if energy_conditioning:
             self.energy_predictor = TemporalPredictor(
                 in_fft_output_size,
@@ -197,7 +218,7 @@ class FastPitch(nn.Module):
                 n_predictions=1
             )
 
-            self.energy_emb = nn.Conv1d(
+            self.energy_emb = nn.Conv1d(#-----------------------------------------------------------energy embedding
                 1, symbols_embedding_dim,
                 kernel_size=energy_embedding_kernel_size,
                 padding=int((energy_embedding_kernel_size - 1) / 2))
