@@ -662,7 +662,7 @@ def main():
             x, y, num_frames = batch_to_gpu(batch)  # loaded batch
 
             with torch.cuda.amp.autocast(enabled=args.amp):
-                y_pred = model(x)
+                y_pred = model(x) # forward pass starts (calling the model)
                 loss, meta = criterion(y_pred, y)
 
                 if (args.kl_loss_start_epoch is not None

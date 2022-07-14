@@ -340,6 +340,7 @@ class FastPitch(nn.Module):
         #------------------------------added by me---------------------------------
         # Predict delta f0
         delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+        print("-----------------------------delta f0 predicted")
         # Average delta f0 over charachtors
         delta_f0_tgt = average_pitch(delta_f0_pred, dur_tgt) # to predict for each input phone one value but not couple of frame values
 
