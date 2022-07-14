@@ -262,11 +262,11 @@ class FastPitch(nn.Module):
 
     def forward(self, inputs, use_gt_pitch=True, pace=1.0, max_duration=75):
 
-        # (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-        #  speaker, attn_prior, audiopaths, mean_f0, delta_f0) = inputs # comes from data_function.py, the TTSCollate Class
-
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths) = inputs # comes from data_function.py, the TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt) = inputs # comes from data_function.py, the TTSCollate Class
+        # x = [text_padded, input_lengths, mel_padded, output_lengths,
+        #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0]
+        # y = [mel_padded, input_lengths, output_lengths]
 
         mel_max_len = mel_tgt.size(2)
 
@@ -316,6 +316,19 @@ class FastPitch(nn.Module):
             pitch_emb = self.pitch_emb(pitch_pred)
         enc_out = enc_out + pitch_emb.transpose(1, 2)
 
+        #------------------------------added by me---------------------------------
+        # Predict delta f0
+        delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+        # Average delta f0 over charachtors
+        delta_f0 = average_pitch(delta_f0_tgt, dur_tgt)
+
+        if use_gt_pitch and delta_f0_tgt is not None:
+            delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+        else:
+            delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+        enc_out = enc_out + delta_f0_emb.transpose(1, 2)
+        #-------------------------------------------------------------------------
+
         # Predict energy
         if self.energy_conditioning:
             energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
@@ -338,7 +351,7 @@ class FastPitch(nn.Module):
         dec_out, dec_mask = self.decoder(len_regulated, dec_lens)
         mel_out = self.proj(dec_out)
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
-                pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
+                pitch_tgt, delta_f0_pred, delta_f0_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob)
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0

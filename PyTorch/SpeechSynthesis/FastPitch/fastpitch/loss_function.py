@@ -48,9 +48,9 @@ class FastPitchLoss(nn.Module):
         self.attn_ctc_loss = AttentionCTCLoss()
 
     def forward(self, model_out, targets, is_training=True, meta_agg='mean'):
-        (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred, pitch_tgt,
-         energy_pred, energy_tgt, attn_soft, attn_hard, attn_dur,
-         attn_logprob) = model_out
+        (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred, pitch_tgt, 
+        delta_f0_pred, delta_f0_tgt, energy_pred, energy_tgt, 
+        attn_soft, attn_hard, attn_dur, attn_logprob) = model_out
 
         (mel_tgt, in_lens, out_lens) = targets
 
@@ -79,6 +79,14 @@ class FastPitchLoss(nn.Module):
         pitch_loss = F.mse_loss(pitch_tgt, pitch_pred, reduction='none')
         pitch_loss = (pitch_loss * dur_mask.unsqueeze(1)).sum() / dur_mask.sum()
 
+        #--------------------------------added by me-----------------------------------
+        ldiff = delta_f0_tgt.size(2) - delta_f0_pred.size(2)
+        delta_f0_pred = F.pad(delta_f0_pred, (0, ldiff, 0, 0, 0, 0), value=0.0)
+        delta_f0_loss = F.mse_loss(delta_f0_tgt, delta_f0_pred, reduction='none')
+        delta_f0_loss = (delta_f0_loss * dur_mask.unsqueeze(1)).sum() / dur_mask.sum()
+        print("------------------------calculated delta f0 loss")
+        #------------------------------------------------------------------------------
+
         if energy_pred is not None:
             energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0)
             energy_loss = F.mse_loss(energy_tgt, energy_pred, reduction='none')
@@ -92,6 +100,9 @@ class FastPitchLoss(nn.Module):
         loss = (mel_loss
                 + dur_pred_loss * self.dur_predictor_loss_scale
                 + pitch_loss * self.pitch_predictor_loss_scale
+                # --------------------added by me--------------------
+                + delta_f0_loss * self.delta_f0_predictor_loss_scale 
+                #----------------------------------------------------
                 + energy_loss * self.energy_predictor_loss_scale
                 + attn_loss * self.attn_loss_scale)
 
@@ -100,6 +111,9 @@ class FastPitchLoss(nn.Module):
             'mel_loss': mel_loss.clone().detach(),
             'duration_predictor_loss': dur_pred_loss.clone().detach(),
             'pitch_loss': pitch_loss.clone().detach(),
+            #------------------------added by me------------------
+            'delta_f0_loss': delta_f0_loss.clone().detach(), 
+            #-----------------------------------------------------
             'attn_loss': attn_loss.clone().detach(),
             'dur_error': (torch.abs(dur_pred - dur_tgt).sum()
                           / dur_mask.sum()).detach(),
