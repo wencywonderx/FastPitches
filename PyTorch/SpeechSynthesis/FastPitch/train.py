@@ -594,7 +594,7 @@ def main():
         dur_predictor_loss_scale=args.dur_predictor_loss_scale,
         pitch_predictor_loss_scale=args.pitch_predictor_loss_scale,
         attn_loss_scale=args.attn_loss_scale,
-        delta_f0_predictor_loss_scale=args.delta_f0_predictor_loss_sacle) 
+        delta_f0_predictor_loss_scale=args.delta_f0_predictor_loss_scale) 
 
     collate_fn = TTSCollate()
 
