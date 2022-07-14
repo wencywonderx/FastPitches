@@ -126,7 +126,6 @@ class TemporalPredictor(nn.Module):
 #         out = self.fc(out) * enc_out_mask #-------------------------------------------------change here, keep the last one and mask others
 #         return out
 
-
 class FastPitch(nn.Module):
     def __init__(self, n_mel_channels, n_symbols, padding_idx,
                  symbols_embedding_dim, in_fft_n_layers, in_fft_n_heads,
