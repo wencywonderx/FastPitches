@@ -349,7 +349,7 @@ class FastPitch(nn.Module):
         else:
             delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
         enc_out = enc_out + delta_f0_emb.transpose(1, 2)
-
+        print("------------------------------delta f0 embedded")
         # TODO: if statemete for predicting
 
         #-------------------------------------------------------------------------
