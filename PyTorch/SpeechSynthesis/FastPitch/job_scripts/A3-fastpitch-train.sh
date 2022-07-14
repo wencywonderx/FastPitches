@@ -36,8 +36,8 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #---------------------------------------------C
 export OUTPUT_DIR=$SCRATCH/test_train
 
-# export DATASET_PATH=$SCRATCH/LJSpeech-1.1 ------------------------------------------C
-export DATASET_PATH=$FP/test_folder
+export DATASET_PATH=$SCRATCH/LJSpeech-1.1
+# export DATASET_PATH=$FP/test_folder
 
 # if running after A2-fastpitch-prepare-lj-data.sh and with
 # LOAD_PITCH_FROM_DISK=true below, use ljs_audio_pitch_text_*.txt files
