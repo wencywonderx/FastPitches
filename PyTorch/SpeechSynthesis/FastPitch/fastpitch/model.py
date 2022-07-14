@@ -105,26 +105,26 @@ class TemporalPredictor(nn.Module):
         out = self.fc(out) * enc_out_mask
         return out
 
-class MeanPredictor(nn.Module):
-    """Predicts a single float per sample"""
+# class MeanPredictor(nn.Module):
+#     """Predicts a single float per sample"""
 
-    def __init__(self, input_size, filter_size, kernel_size, dropout,
-                 n_layers=2, n_predictions=1):
-        super(TemporalPredictor, self).__init__()
+#     def __init__(self, input_size, filter_size, kernel_size, dropout,
+#                  n_layers=2, n_predictions=1):
+#         super(TemporalPredictor, self).__init__()
 
-        self.layers = nn.Sequential(*[ # represent the input, dealing with input and learn different extractions
-            ConvReLUNorm(input_size if i == 0 else filter_size, filter_size,
-                         kernel_size=kernel_size, dropout=dropout)
-            for i in range(n_layers)]
-        )
-        self.n_predictions = n_predictions
-        self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #------------------------------------------change to LSTM
+#         self.layers = nn.Sequential(*[ # represent the input, dealing with input and learn different extractions
+#             ConvReLUNorm(input_size if i == 0 else filter_size, filter_size,
+#                          kernel_size=kernel_size, dropout=dropout)
+#             for i in range(n_layers)]
+#         )
+#         self.n_predictions = n_predictions
+#         self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #------------------------------------------change to LSTM
 
-    def forward(self, enc_out, enc_out_mask):
-        out = enc_out * enc_out_mask
-        out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-        out = self.fc(out) * enc_out_mask #-------------------------------------------------change here, keep the last one and mask others
-        return out
+#     def forward(self, enc_out, enc_out_mask):
+#         out = enc_out * enc_out_mask
+#         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
+#         out = self.fc(out) * enc_out_mask #-------------------------------------------------change here, keep the last one and mask others
+#         return out
 
 
 class FastPitch(nn.Module):
