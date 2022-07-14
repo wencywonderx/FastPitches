@@ -342,13 +342,23 @@ class TTSCollate:
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
         energy_padded = torch.zeros_like(pitch_padded[:, 0, :])
 
+        # ----------------------------added by me------------------------------
+        delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
+                                   mel_padded.size(2), dtype=batch[0][3].dtype)
+        # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
             energy = batch[ids_sorted_decreasing[i]][4] 
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
+
+            #--------------added by me------------------------
+            delta_f0 = batch[ids_sorted_decreasing[i]][9]
+            delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
+            #-------------------------------------------------
         # print("----------------------this is pitch_padded:", pitch_padded.size, pitch_padded)
         # print("----------------------this is energy_padded:", energy_padded.size, energy_padded)
+        # print("----------------------this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
 
         if batch[0][5] is not None:
             speaker = torch.zeros_like(input_lengths)
@@ -375,17 +385,12 @@ class TTSCollate:
         # (text, mel, len(text), pitch, energy, speaker, attn_prior, audiopath, mean_f0, delta_f0)
         # print("----------------------this is audiopaths:", audiopaths)
         
+        #-----------------------added by me----------------------------
         mean_f0 = torch.zeros_like(input_lengths)
         for i in range(len(ids_sorted_decreasing)):
             mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
-
-        delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
-                                   mel_padded.size(2), dtype=batch[0][3].dtype)
         # print("----------------------this is mean_f0:", mean_f0)
-        for i in range(len(ids_sorted_decreasing)):
-            delta_f0 = batch[ids_sorted_decreasing[i]][9]
-            delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
-        # print("----------------------this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
+        #--------------------------------------------------------------
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
