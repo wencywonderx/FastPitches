@@ -173,7 +173,7 @@ class TTSDataset(torch.utils.data.Dataset):
  #       print("mel shape:", mel.shape)      
         text = self.get_text(text)
 #        print("text shape:", text.shape)
-        if self.mean_delta:
+        if self.mean_and_delta_f0:
             pitch, mean_f0, delta_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0)
         else:
             pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0)
@@ -268,7 +268,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = pitch.numpy()[0]
                 # print("\n --------------------converted to pitch array \n", pitch)
                 pitch = interpolate_f0(pitch)
-                # print("\n --------------------interpolated pitch array \n", pitch)
+                print("\n --------------------interpolated pitch array \n", pitch)
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
                 # print("\n --------------------convert to pitch tensor\n", pitch)
             if self.pitch_mean is not None:
@@ -276,7 +276,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
             if mean_delta:
                 mean_f0, delta_f0 = mean_delta_f0(pitch)
-                # print("\n --------------------mean and delta calculated \n", mean_f0, delta_f0)
+                print("\n --------------------mean and delta calculated \n", mean_f0, delta_f0)
                 return pitch, mean_f0, delta_f0 
             return pitch
 
@@ -326,14 +326,14 @@ class TTSCollate:
         num_mels = batch[0][1].size(0)
         max_target_len = max([x[1].size(1) for x in batch])
 
-        # Include mel padded and gate padded ---------------------------------------------------------Q
+        # Include mel padded and gate padded
         mel_padded = torch.FloatTensor(len(batch), num_mels, max_target_len)
         mel_padded.zero_()
-        output_lengths = torch.LongTensor(len(batch))
+        output_lengths = torch.LongTensor(len(batch)) #----------------------------------------Q
         for i in range(len(ids_sorted_decreasing)):
             mel = batch[ids_sorted_decreasing[i]][1] # the second one
             mel_padded[i, :, :mel.size(1)] = mel
-            output_lengths[i] = mel.size(1)
+            output_lengths[i] = mel.size(1) #-----------------------------------------------------Q
         # print("----------------------this is output_lengths:", output_lengths)
         # print("----------------------this is mel_padded:", mel_padded.size, mel_padded)
 
@@ -366,7 +366,7 @@ class TTSCollate:
             attn_prior_padded[i, :prior.size(0), :prior.size(1)] = prior
         # print("----------------------this is attn_prior_padded:", attn_prior_padded.size, attn_prior_padded)
 
-        # Count number of items - characters in text ------------------------------------------------------------Q
+        # Count number of items - characters in text 
         len_x = [x[2] for x in batch] #-------------------------------------------------------------------------------------1
         len_x = torch.Tensor(len_x)
         # print("----------------------this is len_x:", len_x)
@@ -412,5 +412,5 @@ def batch_to_gpu(batch):
     x = [text_padded, input_lengths, mel_padded, output_lengths,
          pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0]
     y = [mel_padded, input_lengths, output_lengths]
-    len_x = torch.sum(output_lengths) #---------------------------------------------------------------------------------2
+    len_x = torch.sum(output_lengths) # still input length
     return (x, y, len_x)

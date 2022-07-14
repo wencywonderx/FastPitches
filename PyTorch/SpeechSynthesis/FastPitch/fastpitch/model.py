@@ -97,12 +97,33 @@ class TemporalPredictor(nn.Module):
             for i in range(n_layers)]
         )
         self.n_predictions = n_predictions
-        self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #------------------------------------------
+        self.fc = nn.Linear(filter_size, self.n_predictions, bias=True)
 
     def forward(self, enc_out, enc_out_mask):
         out = enc_out * enc_out_mask
         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-        out = self.fc(out) * enc_out_mask #-------------------------------------------------
+        out = self.fc(out) * enc_out_mask
+        return out
+
+class MeanPredictor(nn.Module):
+    """Predicts a single float per sample"""
+
+    def __init__(self, input_size, filter_size, kernel_size, dropout,
+                 n_layers=2, n_predictions=1):
+        super(TemporalPredictor, self).__init__()
+
+        self.layers = nn.Sequential(*[ # represent the input, dealing with input and learn different extractions
+            ConvReLUNorm(input_size if i == 0 else filter_size, filter_size,
+                         kernel_size=kernel_size, dropout=dropout)
+            for i in range(n_layers)]
+        )
+        self.n_predictions = n_predictions
+        self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #------------------------------------------change to LSTM
+
+    def forward(self, enc_out, enc_out_mask):
+        out = enc_out * enc_out_mask
+        out = self.layers(out.transpose(1, 2)).transpose(1, 2)
+        out = self.fc(out) * enc_out_mask #-------------------------------------------------change here, keep the last one and mask others
         return out
 
 
@@ -190,7 +211,7 @@ class FastPitch(nn.Module):
         self.register_buffer('pitch_mean', torch.zeros(1))
         self.register_buffer('pitch_std', torch.zeros(1))
 
-#-----------------------------added by me(mean and delta)-------------------------------------------
+#-----------------------------added by me-----------------------------
         self.delta_f0_predictor = TemporalPredictor(
             in_fft_output_size,
             filter_size=delta_f0_predictor_filter_size,
@@ -205,7 +226,7 @@ class FastPitch(nn.Module):
             kernel_size=delta_f0_embedding_kernel_size,
             padding=int((delta_f0_embedding_kernel_size - 1) / 2)
         )
-#---------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------
 
         self.energy_conditioning = energy_conditioning
         if energy_conditioning:
@@ -284,7 +305,7 @@ class FastPitch(nn.Module):
         text_emb = self.encoder.word_emb(inputs)
 
         # make sure to do the alignments before folding
-        attn_mask = mask_from_lens(input_lens)[..., None] == 0
+        attn_mask = mask_from_lens(input_lens)[..., None] == 0 # alignment, how many phones need to be aligned
         # attn_mask should be 1 for unused timesteps in the text_enc_w_spkvec tensor
 
         attn_soft, attn_logprob = self.attention(
@@ -298,14 +319,14 @@ class FastPitch(nn.Module):
         attn_hard_dur = attn_hard.sum(2)[:, 0, :]
         dur_tgt = attn_hard_dur
 
-        assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens))
+        assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration is equal to input length
 
         # Predict durations
-        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)
-        dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration)
+        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1) #-------------------------------Q: log dur?
+        dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) #----------------------------------Q: align
 
         # Predict pitch
-        pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)
+        pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  #------------------------------Q:permute to?
 
         # Average pitch over characters
         pitch_tgt = average_pitch(pitch_dense, dur_tgt)
@@ -320,13 +341,16 @@ class FastPitch(nn.Module):
         # Predict delta f0
         delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
         # Average delta f0 over charachtors
-        delta_f0 = average_pitch(delta_f0_tgt, dur_tgt)
+        delta_f0_tgt = average_pitch(delta_f0_pred, dur_tgt) # to predict for each input phone one value but not couple of frame values
 
         if use_gt_pitch and delta_f0_tgt is not None:
             delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
         else:
             delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
         enc_out = enc_out + delta_f0_emb.transpose(1, 2)
+
+        # TODO: if statemete for predicting
+
         #-------------------------------------------------------------------------
 
         # Predict energy
