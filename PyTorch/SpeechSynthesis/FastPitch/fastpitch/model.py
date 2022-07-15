@@ -118,12 +118,12 @@ class TemporalPredictor(nn.Module):
 #             for i in range(n_layers)]
 #         )
 #         self.n_predictions = n_predictions
-#         self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #------------------------------------------change to LSTM
+#         self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #----------------------------------------change to LSTM
 
 #     def forward(self, enc_out, enc_out_mask):
 #         out = enc_out * enc_out_mask
 #         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-#         out = self.fc(out) * enc_out_mask #-------------------------------------------------change here, keep the last one and mask others
+#         out = self.fc(out) * enc_out_mask #-------------------------------------change here, keep the last one and mask others
 #         return out
 
 class FastPitch(nn.Module):
@@ -146,6 +146,7 @@ class FastPitch(nn.Module):
                  energy_predictor_kernel_size, energy_predictor_filter_size,
                  p_energy_predictor_dropout, energy_predictor_n_layers,
                  energy_embedding_kernel_size,
+                 delta_f0_conditioning, #----added
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
@@ -211,20 +212,22 @@ class FastPitch(nn.Module):
         self.register_buffer('pitch_std', torch.zeros(1))
 
 #-----------------------------added by me-----------------------------
-        self.delta_f0_predictor = TemporalPredictor(
-            in_fft_output_size,
-            filter_size=delta_f0_predictor_filter_size,
-            kernel_size=delta_f0_predictor_kernel_size,
-            dropout=p_delta_f0_predictor_dropout, 
-            n_layers=delta_f0_predictor_n_layers,
-            n_predictions=1
-        )
-        self.delta_f0_emb = nn.Conv1d(
-            1,
-            symbols_embedding_dim,
-            kernel_size=delta_f0_embedding_kernel_size,
-            padding=int((delta_f0_embedding_kernel_size - 1) / 2)
-        )
+        self.delta_f0_conditioning = delta_f0_conditioning
+        if self.delta_f0_conditioning:
+            self.delta_f0_predictor = TemporalPredictor(
+                in_fft_output_size,
+                filter_size=delta_f0_predictor_filter_size,
+                kernel_size=delta_f0_predictor_kernel_size,
+                dropout=p_delta_f0_predictor_dropout, 
+                n_layers=delta_f0_predictor_n_layers,
+                n_predictions=1
+            )
+            self.delta_f0_emb = nn.Conv1d(
+                1,
+                symbols_embedding_dim,
+                kernel_size=delta_f0_embedding_kernel_size,
+                padding=int((delta_f0_embedding_kernel_size - 1) / 2)
+            )
 #---------------------------------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -243,9 +246,9 @@ class FastPitch(nn.Module):
                 kernel_size=energy_embedding_kernel_size,
                 padding=int((energy_embedding_kernel_size - 1) / 2))
 
-        self.proj = nn.Linear(out_fft_output_size, n_mel_channels, bias=True) #---------------------Q
+        self.proj = nn.Linear(out_fft_output_size, n_mel_channels, bias=True) # final FC layer
 
-        self.attention = ConvAttention( #-------------------------------------------Q
+        self.attention = ConvAttention( # for alignment
             n_mel_channels, 0, symbols_embedding_dim,
             use_query_proj=True, align_query_enc_type='3xconv')
 
@@ -280,15 +283,15 @@ class FastPitch(nn.Module):
                              out_lens.cpu().numpy(), width=1)
         return torch.from_numpy(attn_out).to(attn.get_device())
 
-    def forward(self, inputs, use_gt_pitch=True, pace=1.0, max_duration=75):
+    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, pace=1.0, max_duration=75): #- ------------ Q: where is use_gt from
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, f0_slope) = inputs # comes from data_function.py, the TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, f0_slope_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
-        #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0]
+        #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
 
-        mel_max_len = mel_tgt.size(2)
+        mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
 
         # Calculate speaker embedding
         if self.speaker_emb is None:
@@ -298,7 +301,7 @@ class FastPitch(nn.Module):
             spk_emb.mul_(self.speaker_emb_weight)
 
         # Input FFT
-        enc_out, enc_mask = self.encoder(inputs, conditioning=spk_emb)
+        enc_out, enc_mask = self.encoder(inputs, conditioning=spk_emb) # ---------------------Q: enc_mask? conditionining?
 
         # Alignment
         text_emb = self.encoder.word_emb(inputs)
@@ -307,7 +310,7 @@ class FastPitch(nn.Module):
         attn_mask = mask_from_lens(input_lens)[..., None] == 0 # alignment, how many phones need to be aligned
         # attn_mask should be 1 for unused timesteps in the text_enc_w_spkvec tensor
 
-        attn_soft, attn_logprob = self.attention(
+        attn_soft, attn_logprob = self.attention( #-------------------------------------Q: log probability?
             mel_tgt, text_emb.permute(0, 2, 1), mel_lens, attn_mask,
             key_lens=input_lens, keys_encoded=enc_out, attn_prior=attn_prior)
 
@@ -318,38 +321,42 @@ class FastPitch(nn.Module):
         attn_hard_dur = attn_hard.sum(2)[:, 0, :]
         dur_tgt = attn_hard_dur
 
-        assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration is equal to input length
+        assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
         # Predict durations
-        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1) #-------------------------------Q: log dur?
-        dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) #----------------------------------Q: align
+        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #-------------------------------- Q: why log?
+        dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
 
         # Predict pitch
-        pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  #------------------------------Q:permute to?
+        pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  #-----------Q: to put mel_length to 1? why need to permute?
+        print("pitch_pred: ", pitch_pred.size, pitch_pred)
 
         # Average pitch over characters
         pitch_tgt = average_pitch(pitch_dense, dur_tgt)
 
-        if use_gt_pitch and pitch_tgt is not None: #-------------------------------------------?
+        if use_gt_pitch and pitch_tgt is not None: #-------------Q: why use ground truth? how to know if should use it? see the loss pic?
             pitch_emb = self.pitch_emb(pitch_tgt)
         else:
             pitch_emb = self.pitch_emb(pitch_pred)
-        enc_out = enc_out + pitch_emb.transpose(1, 2)
+        print('pitch embedding: ', pitch_emb.size, pitch_emb)
+        enc_out = enc_out + pitch_emb.transpose(1, 2)  #-------------------Q: here, again, transpose the ouptup of embedding
+        print('embedding adding after pitch predicted: ', enc_out.size)  
 
         #------------------------------added by me---------------------------------
         # Predict delta f0
-        delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
-        print("-----------------------------delta f0 predicted")
-        # Average delta f0 over charachtors
-        delta_f0_tgt = average_pitch(delta_f0_pred, dur_tgt) # to predict for each input phone one value but not couple of frame values
-        if use_gt_pitch and delta_f0_tgt is not None:
-            delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+        if self.delta_f0_conditioning:
+            delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+            print("delta f0 predicted: ", delta_f0_pred.size, delta_f0_pred)
+            # Average delta f0 over charachtors
+            delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # to predict for each input phone one value but not couple of frame values
+            if use_gt_delta_f0 and delta_f0_tgt is not None:
+                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+            else:
+                delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+            enc_out = enc_out + delta_f0_emb.transpose(1, 2)
+            print("embedding adding after delta f0 predicted: ", enc_out.size)
         else:
-            delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
-        enc_out = enc_out + delta_f0_emb.transpose(1, 2)
-        print("------------------------------delta f0 embedded")
-        # TODO: if statemete for predicting
-
+            delta_f0_pred = None
         #-------------------------------------------------------------------------
 
         # Predict energy

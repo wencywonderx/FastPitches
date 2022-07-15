@@ -91,6 +91,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 #----------------------------------added by me---------------------------------
 [ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
+[ "$MEAN_DELTA" = true ]           && ARGS+=" --delta-f0-conditioning"
 # [ "$NARMAL" = true ]               && ARGS+=" --normal-f0"
 #------------------------------------------------------------------------------
 

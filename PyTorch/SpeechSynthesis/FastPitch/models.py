@@ -132,8 +132,7 @@ def get_model_config(model_name, args):
             p_pitch_predictor_dropout=args.p_pitch_predictor_dropout,
             pitch_predictor_n_layers=args.pitch_predictor_n_layers,
             # pitch conditioning
-            pitch_embedding_kernel_size=args.pitch_embedding_kernel_size,
-           
+            pitch_embedding_kernel_size=args.pitch_embedding_kernel_size,          
             #-----------------------------------added by me-------------------------------
             # delta f0 predictor
             delta_f0_predictor_kernel_size=args.delta_f0_predictor_kernel_size,
@@ -141,9 +140,9 @@ def get_model_config(model_name, args):
             p_delta_f0_predictor_dropout=args.p_delta_f0_predictor_dropout,
             delta_f0_predictor_n_layers=args.delta_f0_predictor_n_layers,
             # delta f0 conditioning
+            delta_f0_conditioning=args.delta_f0_conditioning,
             delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,    
-            #------------------------------------------------------------------------------
-                   
+            #------------------------------------------------------------------------------                  
             # speakers parameters
             n_speakers=args.n_speakers,
             speaker_emb_weight=args.speaker_emb_weight,
