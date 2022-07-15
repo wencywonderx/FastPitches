@@ -283,7 +283,7 @@ class FastPitch(nn.Module):
     def forward(self, inputs, use_gt_pitch=True, pace=1.0, max_duration=75):
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt) = inputs # comes from data_function.py, the TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, f0_slope) = inputs # comes from data_function.py, the TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0]
         # y = [mel_padded, input_lengths, output_lengths]
@@ -330,7 +330,7 @@ class FastPitch(nn.Module):
         # Average pitch over characters
         pitch_tgt = average_pitch(pitch_dense, dur_tgt)
 
-        if use_gt_pitch and pitch_tgt is not None:
+        if use_gt_pitch and pitch_tgt is not None: #-------------------------------------------?
             pitch_emb = self.pitch_emb(pitch_tgt)
         else:
             pitch_emb = self.pitch_emb(pitch_pred)
@@ -342,7 +342,6 @@ class FastPitch(nn.Module):
         print("-----------------------------delta f0 predicted")
         # Average delta f0 over charachtors
         delta_f0_tgt = average_pitch(delta_f0_pred, dur_tgt) # to predict for each input phone one value but not couple of frame values
-
         if use_gt_pitch and delta_f0_tgt is not None:
             delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
         else:

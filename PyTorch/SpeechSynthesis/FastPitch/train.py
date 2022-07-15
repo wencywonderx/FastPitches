@@ -165,6 +165,7 @@ def parse_args(parser):
     #-------------------------------------added by me--------------------------------------
     cond.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
     cond.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
+    cond.add_argument('--normal-f0', action='store_true', help='use the raw extracted pitch without interpolation and calculating mean and delta')
     #--------------------------------------------------------------------------------------
 
     audio = parser.add_argument_group('audio parameters')
