@@ -346,15 +346,16 @@ class FastPitch(nn.Module):
         # Predict delta f0
         if self.delta_f0_conditioning:
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
-            print("delta f0 predicted: ", delta_f0_pred.size, delta_f0_pred)
-            # Average delta f0 over charachtors
-            delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # to predict for each input phone one value but not couple of frame values
+            print("delta f0 predicted: ", delta_f0_pred.size)
+            # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
+            delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
+            # if use ground truth
             if use_gt_delta_f0 and delta_f0_tgt is not None:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
             else:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
             enc_out = enc_out + delta_f0_emb.transpose(1, 2)
-            print("embedding adding after delta f0 predicted: ", enc_out.size)
+            print("added predicted delta f0 to the embedding : ", enc_out.size)
         else:
             delta_f0_pred = None
         #-------------------------------------------------------------------------

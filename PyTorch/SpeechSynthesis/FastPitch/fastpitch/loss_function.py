@@ -50,7 +50,7 @@ class FastPitchLoss(nn.Module):
     def forward(self, model_out, targets, is_training=True, meta_agg='mean'):
         (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred, pitch_tgt, 
         delta_f0_pred, delta_f0_tgt, energy_pred, energy_tgt, 
-        attn_soft, attn_hard, attn_dur, attn_logprob) = model_out    # --------------------------- TODO :find it
+        attn_soft, attn_hard, attn_dur, attn_logprob) = model_out 
 
         (mel_tgt, in_lens, out_lens) = targets
 
@@ -79,15 +79,15 @@ class FastPitchLoss(nn.Module):
         pitch_loss = F.mse_loss(pitch_tgt, pitch_pred, reduction='none')
         pitch_loss = (pitch_loss * dur_mask.unsqueeze(1)).sum() / dur_mask.sum()
 
+
+        # if statements to control conditioning, instead if we don't want to calculate this part it will be broken 
         if energy_pred is not None:
-            energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0)
+            energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # -----------------------------------Q: why use pitch diff?
             energy_loss = F.mse_loss(energy_tgt, energy_pred, reduction='none')
             energy_loss = (energy_loss * dur_mask).sum() / dur_mask.sum()
         else:
             energy_loss = 0
-
         #--------------------------------added by me-----------------------------------
-        # TODO: a if statement to control conditioning, if we don't want to calculate this part it will be broken 
         if delta_f0_pred is not None:
             print("calculating delta f0 loss")
             ldiff = delta_f0_tgt.size(2) - delta_f0_pred.size(2)
@@ -120,12 +120,13 @@ class FastPitchLoss(nn.Module):
                           / dur_mask.sum()).detach(),
         }
 
+        # if statements when adding all the losses, depending on which information you want the model to use        
         if energy_pred is not None:
             meta['energy_loss'] = energy_loss.clone().detach()
-        #------------------------added by me------------------Q
+        #------------------------added by me------------------------
         if delta_f0_pred is not None:
             meta['delta_f0_loss'] = delta_f0_loss.clone().detach(), 
-        #-----------------------------------------------------
+        #-----------------------------------------------------------
 
         assert meta_agg in ('sum', 'mean')
         if meta_agg == 'sum':
