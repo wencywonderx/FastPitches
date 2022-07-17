@@ -602,7 +602,6 @@ def main():
 
     trainset = TTSDataset(audiopaths_and_text=args.training_files, **vars(args)) #--------------------------------Q:need the same name?
     valset = TTSDataset(audiopaths_and_text=args.validation_files, **vars(args))
-    print("data sloaded")
 
     if distributed_run:
         train_sampler, shuffle = DistributedSampler(trainset), False
@@ -614,6 +613,7 @@ def main():
                               sampler=train_sampler, batch_size=args.batch_size,
                               pin_memory=True, persistent_workers=True,
                               drop_last=True, collate_fn=collate_fn)
+    print("\n trainset data loaded")
 
     if args.ema_decay:
         mt_ema_params = init_multi_tensor_ema(model, ema_model)
@@ -664,8 +664,9 @@ def main():
             with torch.cuda.amp.autocast(enabled=args.amp):
                 print("\n start predicting")
                 y_pred = model(x) # forward pass starts (calling the model)
+                print("\n start calcalating loss")
                 loss, meta = criterion(y_pred, y)
-
+                print("\n loss calculated")
                 if (args.kl_loss_start_epoch is not None
                         and epoch >= args.kl_loss_start_epoch):
 

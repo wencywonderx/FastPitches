@@ -290,6 +290,10 @@ class FastPitch(nn.Module):
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
+        print("energy_dense: ", energy_dense)
+        print("mel_tgt: ", mel_tgt)
+        print("pitch_dense: ", pitch_dense)
+        print("delta_f0_tgt: ", delta_f0_tgt)
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
 
@@ -331,7 +335,7 @@ class FastPitch(nn.Module):
         # Predict pitch
         # TODO: if conditioning
         pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
-        print("pitch_pred: ", pitch_pred.size, pitch_pred)
+        print("\n predicted pitch: ", pitch_pred.size)
 
         # Average pitch over characters
         pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
@@ -340,15 +344,15 @@ class FastPitch(nn.Module):
             pitch_emb = self.pitch_emb(pitch_tgt)
         else:
             pitch_emb = self.pitch_emb(pitch_pred)
-        print('pitch embedding: ', pitch_emb.size, pitch_emb)
+        print('\n embedded pitch: ', pitch_emb.size)
         enc_out = enc_out + pitch_emb.transpose(1, 2)  # for FFT encoder output, make sure they are in right dimension then can be add to the following
-        print('embedding adding after pitch predicted: ', enc_out.size)  
+        print('\n added predicted pitch to the embedding: ', enc_out.shape)  
 
         #------------------------------added by me---------------------------------
         # Predict delta f0
         if self.mean_and_delta_f0:
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
-            print("delta f0 predicted: ", delta_f0_pred.size)
+            print("\n delta f0 predicted: ", delta_f0_pred.size)
             # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
             # if use ground truth
@@ -357,7 +361,7 @@ class FastPitch(nn.Module):
             else:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
             enc_out = enc_out + delta_f0_emb.transpose(1, 2)
-            print("added predicted delta f0 to the embedding : ", enc_out.size)
+            print("\n added predicted delta f0 to the embedding : ", enc_out.shape)
         else:
             delta_f0_pred = None
         #-------------------------------------------------------------------------
@@ -365,7 +369,7 @@ class FastPitch(nn.Module):
         # Predict energy
         if self.energy_conditioning:
             energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
-
+            print("\n energy predicted: ", energy_pred.size)
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
             energy_tgt = torch.log(1.0 + energy_tgt)
@@ -386,6 +390,7 @@ class FastPitch(nn.Module):
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt)
+        print("---------------------model.py ended")
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,
