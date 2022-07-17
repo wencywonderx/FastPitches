@@ -340,6 +340,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
 
         # print("\n this is output_lengths:", output_lengths)
         # print("\n this is mel_padded:", mel_padded.size, mel_padded)
+        # print("n\ this is mean_f0:", mean_f0)
 
         n_formants = batch[0][3].shape[0]
         
@@ -350,6 +351,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         # ----------------------------added by me------------------------------
         delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
+        mean_f0 = torch.zeros_like(input_lengths)
         # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
@@ -358,8 +360,14 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
             energy_padded[i, :energy.shape[0]] = energy
 
             #--------------added by me------------------------
-            delta_f0 = batch[ids_sorted_decreasing[i]][9]
-            delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
+            if self.mean_and_delta_f0:
+                delta_f0 = batch[ids_sorted_decreasing[i]][9]
+                delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
+                mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
+            else:
+                delta_f0 = None,
+                delta_f0_padded = None,
+                mean_f0 = None
             #-------------------------------------------------
 
         # print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
@@ -390,13 +398,6 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         audiopaths = [batch[i][7] for i in ids_sorted_decreasing]
         # (text, mel, len(text), pitch, energy, speaker, attn_prior, audiopath, mean_f0, delta_f0)
         # print("n\ this is audiopaths:", audiopaths)
-        
-        #-----------------------added by me----------------
-        mean_f0 = torch.zeros_like(input_lengths)
-        for i in range(len(ids_sorted_decreasing)):
-            mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
-        # print("n\ this is mean_f0:", mean_f0)
-        #--------------------------------------------------
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
