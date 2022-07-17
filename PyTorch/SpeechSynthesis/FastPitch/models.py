@@ -134,7 +134,7 @@ def get_model_config(model_name, args):
             pitch_predictor_n_layers=args.pitch_predictor_n_layers,
             # pitch conditioning
             #--------added by me--------
-            raw_pitch = args.raw_f0,
+            raw_f0 = args.raw_f0,
             #---------------------------
             pitch_embedding_kernel_size=args.pitch_embedding_kernel_size,          
             
