@@ -110,7 +110,7 @@ def get_model_config(model_name, args):
             in_fft_output_size=args.in_fft_output_size,
             p_in_fft_dropout=args.p_in_fft_dropout,
             p_in_fft_dropatt=args.p_in_fft_dropatt,
-            p_in_fft_dropemb=args.p_in_fft_dropemb,
+            p_in_fft_dropemb=args.p_in_fft_dropemb,           
             # output FFT
             out_fft_n_layers=args.out_fft_n_layers,
             out_fft_n_heads=args.out_fft_n_heads,
@@ -120,33 +120,39 @@ def get_model_config(model_name, args):
             out_fft_output_size=args.out_fft_output_size,
             p_out_fft_dropout=args.p_out_fft_dropout,
             p_out_fft_dropatt=args.p_out_fft_dropatt,
-            p_out_fft_dropemb=args.p_out_fft_dropemb,
+            p_out_fft_dropemb=args.p_out_fft_dropemb,            
             # duration predictor
             dur_predictor_kernel_size=args.dur_predictor_kernel_size,
             dur_predictor_filter_size=args.dur_predictor_filter_size,
             p_dur_predictor_dropout=args.p_dur_predictor_dropout,
             dur_predictor_n_layers=args.dur_predictor_n_layers,
+           
             # pitch predictor
             pitch_predictor_kernel_size=args.pitch_predictor_kernel_size,
             pitch_predictor_filter_size=args.pitch_predictor_filter_size,
             p_pitch_predictor_dropout=args.p_pitch_predictor_dropout,
             pitch_predictor_n_layers=args.pitch_predictor_n_layers,
             # pitch conditioning
+            #--------added by me--------
+            raw_pitch = args.raw_pitch,
+            #---------------------------
             pitch_embedding_kernel_size=args.pitch_embedding_kernel_size,          
-            #-----------------------------------added by me-------------------------------
+            
+            #-------------------------added by me-------------------------------
             # delta f0 predictor
             delta_f0_predictor_kernel_size=args.delta_f0_predictor_kernel_size,
             delta_f0_predictor_filter_size=args.delta_f0_predictor_filter_size,
             p_delta_f0_predictor_dropout=args.p_delta_f0_predictor_dropout,
             delta_f0_predictor_n_layers=args.delta_f0_predictor_n_layers,
             # delta f0 conditioning
-            # delta_f0_conditioning=args.delta_f0_conditioning,
             mean_and_delta_f0 = args.mean_and_delta_f0,
             delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,    
-            #------------------------------------------------------------------------------                  
+            #-------------------------------------------------------------------         
+           
             # speakers parameters
             n_speakers=args.n_speakers,
             speaker_emb_weight=args.speaker_emb_weight,
+            
             # energy predictor
             energy_predictor_kernel_size=args.energy_predictor_kernel_size,
             energy_predictor_filter_size=args.energy_predictor_filter_size,
