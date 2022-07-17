@@ -74,16 +74,23 @@ class FastPitchLoss(nn.Module):
         mel_loss = loss_fn(mel_out, mel_tgt, reduction='none')
         mel_loss = (mel_loss * mel_mask).sum() / mel_mask.sum()
 
-        ldiff = pitch_tgt.size(2) - pitch_pred.size(2)
-        pitch_pred = F.pad(pitch_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) 
-        pitch_loss = F.mse_loss(pitch_tgt, pitch_pred, reduction='none')
-        pitch_loss = (pitch_loss * dur_mask.unsqueeze(1)).sum() / dur_mask.sum()
-
+        #-----------------------------modified by me----------------------------
+        if pitch_pred is not None:
+            ldiff = pitch_tgt.size(2) - pitch_pred.size(2)
+            pitch_pred = F.pad(pitch_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) 
+            pitch_loss = F.mse_loss(pitch_tgt, pitch_pred, reduction='none')
+            pitch_loss = (pitch_loss * dur_mask.unsqueeze(1)).sum() / dur_mask.sum()
+        else:
+            pitch_loss = 0
+        #----------------------------------------------------------------------
 
         # if statements to control conditioning, instead if we don't want to calculate this part it will be broken 
         if energy_pred is not None:
             print("\n calculating energy loss")
-            energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # -----------------------------------Q: why use pitch ldiff?
+            #----------------added by me(not sure)----------
+            ldiff = energy_tgt.size(2) - energy_pred.size(2)
+            #-----------------------------------------------
+            energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # ------------------Q: why use pitch ldiff?
             energy_loss = F.mse_loss(energy_tgt, energy_pred, reduction='none')
             energy_loss = (energy_loss * dur_mask).sum() / dur_mask.sum()
         else:
@@ -115,7 +122,6 @@ class FastPitchLoss(nn.Module):
             'loss': loss.clone().detach(),
             'mel_loss': mel_loss.clone().detach(),
             'duration_predictor_loss': dur_pred_loss.clone().detach(),
-            'pitch_loss': pitch_loss.clone().detach(),
             'attn_loss': attn_loss.clone().detach(),
             'dur_error': (torch.abs(dur_pred - dur_tgt).sum()
                           / dur_mask.sum()).detach()
@@ -125,6 +131,8 @@ class FastPitchLoss(nn.Module):
         if energy_pred is not None:
             meta['energy_loss'] = energy_loss.clone().detach()
         #------------------------added by me------------------------
+        if pitch_pred is not None:
+            meta['pitch_loss']: pitch_loss.clone().detach()
         if delta_f0_pred is not None:
             meta['delta_f0_loss'] = delta_f0_loss.clone().detach()
         #-----------------------------------------------------------

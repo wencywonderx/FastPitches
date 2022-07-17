@@ -783,14 +783,16 @@ def main():
             'pitch-loss/epoch_pitch_loss': epoch_pitch_loss,
             'energy-loss/epoch_energy_loss': epoch_energy_loss,
             'dur-loss/epoch_dur_loss': epoch_dur_loss,
-            # --------------------added by me---------------------
+            # --------------------added by me----------------------
             'delta_f0_loss/epoch_delta_f0_loss': epoch_delta_f0_loss,
+            # -----------------------------------------------------
             'epoch_frames per s': epoch_num_frames / epoch_time,
             'epoch_took': epoch_time,
         }, args.local_rank)
         bmark_stats.update(epoch_num_frames, epoch_loss, epoch_mel_loss,
                            epoch_time)
 
+        print("----------------------------------------------------------------------------training validation")
         validate(model, criterion, valset, args.batch_size, collate_fn,
                  distributed_run, batch_to_gpu, args.local_rank)
 
@@ -805,6 +807,7 @@ def main():
     if len(bmark_stats) > 0:
         log(bmark_stats.get(args.benchmark_epochs_num), args.local_rank)
 
+    print("-------------------------------------------------------------------------------whole validation")
     validate(model, criterion, valset, args.batch_size, collate_fn,
              distributed_run, batch_to_gpu, args.local_rank)
 

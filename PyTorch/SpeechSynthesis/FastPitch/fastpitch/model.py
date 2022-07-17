@@ -147,6 +147,7 @@ class FastPitch(nn.Module):
                  p_energy_predictor_dropout, energy_predictor_n_layers,
                  energy_embedding_kernel_size,
                  mean_and_delta_f0, #----added
+                 raw_pitch, #---added
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
@@ -194,18 +195,22 @@ class FastPitch(nn.Module):
             d_embed=symbols_embedding_dim
         )
 
-        self.pitch_predictor = TemporalPredictor(
-            in_fft_output_size,
-            filter_size=pitch_predictor_filter_size,
-            kernel_size=pitch_predictor_kernel_size,
-            dropout=p_pitch_predictor_dropout, n_layers=pitch_predictor_n_layers,
-            n_predictions=pitch_conditioning_formants #--------------------------------------------------Q
-        )
+        #---------------------------------------modified by me------------------------------------------------
+        self.raw_pitch = raw_pitch
+        if self.raw_pitch:
+            self.pitch_predictor = TemporalPredictor(
+                in_fft_output_size,
+                filter_size=pitch_predictor_filter_size,
+                kernel_size=pitch_predictor_kernel_size,
+                dropout=p_pitch_predictor_dropout, n_layers=pitch_predictor_n_layers,
+                n_predictions=pitch_conditioning_formants # a mistake, may take f0 as formant, but still need this channel
+            )
 
-        self.pitch_emb = nn.Conv1d(
-            pitch_conditioning_formants, symbols_embedding_dim,
-            kernel_size=pitch_embedding_kernel_size,
-            padding=int((pitch_embedding_kernel_size - 1) / 2)) # need the channel for embedding Cov
+            self.pitch_emb = nn.Conv1d(
+                pitch_conditioning_formants, symbols_embedding_dim,
+                kernel_size=pitch_embedding_kernel_size,
+                padding=int((pitch_embedding_kernel_size - 1) / 2)) # need the channel for embedding Cov
+        #----------------------------------------------------------------------------------------------------
 
         # Store values precomputed for training data within the model
         self.register_buffer('pitch_mean', torch.zeros(1))
@@ -340,21 +345,26 @@ class FastPitch(nn.Module):
         log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #------------------ Q: why log?
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
 
+        #--------------------------------------modified by me----------------------------------------------
         # Predict pitch
-        # TODO: if conditioning
-        pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
-        print("\n predicted pitch: ", pitch_pred.shape)
-        # Average pitch over characters
-        pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
-        print("\n pitch target after averaging: ", pitch_tgt.shape)
-        if use_gt_pitch and pitch_tgt is not None: # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
-            pitch_emb = self.pitch_emb(pitch_tgt)
+        if self.raw_pitch:
+            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
+            print("\n predicted pitch: ", pitch_pred.shape)
+            # Average pitch over characters
+            pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
+            print("\n pitch target after averaging: ", pitch_tgt.shape)
+            if use_gt_pitch and pitch_tgt is not None: # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
+                pitch_emb = self.pitch_emb(pitch_tgt)
+            else:
+                pitch_emb = self.pitch_emb(pitch_pred)
+            print('\n embedded pitch: ', pitch_emb.shape)
+            enc_out = enc_out + pitch_emb.transpose(1, 2)  # for FFT encoder output, make sure they are in right dimension then can be add to the following
+            print('\n added predicted pitch to the embedding: ', enc_out.shape)  
         else:
-            pitch_emb = self.pitch_emb(pitch_pred)
-        print('\n embedded pitch: ', pitch_emb.shape)
-        enc_out = enc_out + pitch_emb.transpose(1, 2)  # for FFT encoder output, make sure they are in right dimension then can be add to the following
-        print('\n added predicted pitch to the embedding: ', enc_out.shape)  
-
+            pitch_pred = None
+            pitch_tgt = None
+        #--------------------------------------------------------------------------------------------------
+        
         #------------------------------added by me---------------------------------
         # Predict delta f0
         if self.mean_and_delta_f0:
