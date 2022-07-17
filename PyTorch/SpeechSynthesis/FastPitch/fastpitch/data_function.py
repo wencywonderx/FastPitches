@@ -424,7 +424,7 @@ def batch_to_gpu(batch):
     attn_prior = to_gpu(attn_prior).float()
     if speaker is not None:
         speaker = to_gpu(speaker).long()
-    if delta_f0 is not None and mean is not None:
+    if delta_f0_padded is not None and mean is not None:
         mean = to_gpu(mean_f0).long()
         delta_f0 = to_gpu(delta_f0_padded).float()
 
