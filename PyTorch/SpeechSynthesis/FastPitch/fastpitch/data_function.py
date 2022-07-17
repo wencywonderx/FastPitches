@@ -358,7 +358,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
             #--------------added by me------------------------
-            if delta_f0 is not None and mean_f0 is not None:
+            if delta_f0_padded is not None and mean_f0 is not None:
                 delta_f0 = batch[ids_sorted_decreasing[i]][9]
                 delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
                 mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
