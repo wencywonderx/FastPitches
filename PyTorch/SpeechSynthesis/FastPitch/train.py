@@ -618,7 +618,7 @@ def main():
         mt_ema_params = init_multi_tensor_ema(model, ema_model)
 
     model.train()
-
+    
     bmark_stats = BenchmarkStats()
 
     torch.cuda.synchronize()
@@ -661,6 +661,7 @@ def main():
             x, y, num_frames = batch_to_gpu(batch)  # loaded batch
 
             with torch.cuda.amp.autocast(enabled=args.amp):
+                print("start predicting")
                 y_pred = model(x) # forward pass starts (calling the model)
                 loss, meta = criterion(y_pred, y)
 
