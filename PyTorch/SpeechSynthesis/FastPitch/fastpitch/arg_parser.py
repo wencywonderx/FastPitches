@@ -121,7 +121,8 @@ def parse_fastpitch_args(parent, add_help=False):
 
     #------------------------------added by me-----------------------------------------------------------Q
     delta_f0_pred = parser.add_argument_group('delta f0 predictor parameters')
-    delta_f0_pred.add_argument('--delta_f0-conditioning', action='store_true')    
+    # delta_f0_pred.add_argument('--delta-f0-conditioning', action='store_true')    
+    delta_f0_pred.add_argument('--mean-and-delta-f0', action='store_true')    
     delta_f0_pred.add_argument('--delta-f0-predictor-kernel-size', default=3, type=int,
                             help='Delta f0 predictor conv-1D kernel size')
     delta_f0_pred.add_argument('--delta-f0-predictor-filter-size', default=256, type=int,

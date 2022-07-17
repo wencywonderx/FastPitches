@@ -140,7 +140,8 @@ def get_model_config(model_name, args):
             p_delta_f0_predictor_dropout=args.p_delta_f0_predictor_dropout,
             delta_f0_predictor_n_layers=args.delta_f0_predictor_n_layers,
             # delta f0 conditioning
-            delta_f0_conditioning=args.delta_f0_conditioning,
+            # delta_f0_conditioning=args.delta_f0_conditioning,
+            mean_and_delta_f0 = args.mean_and_delta_f0,
             delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,    
             #------------------------------------------------------------------------------                  
             # speakers parameters

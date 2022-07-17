@@ -164,7 +164,6 @@ def parse_args(parser):
                       help='Use mel-spectrograms cached on the disk')  
     #-------------------------------------added by me--------------------------------------
     cond.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
-    cond.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
     #--------------------------------------------------------------------------------------
 
     audio = parser.add_argument_group('audio parameters')
