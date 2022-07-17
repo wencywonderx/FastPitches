@@ -602,6 +602,7 @@ def main():
 
     trainset = TTSDataset(audiopaths_and_text=args.training_files, **vars(args)) #--------------------------------Q:need the same name?
     valset = TTSDataset(audiopaths_and_text=args.validation_files, **vars(args))
+    print("data sloaded")
 
     if distributed_run:
         train_sampler, shuffle = DistributedSampler(trainset), False
