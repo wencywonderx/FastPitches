@@ -424,13 +424,13 @@ def batch_to_gpu(batch):
     attn_prior = to_gpu(attn_prior).float()
     if speaker is not None:
         speaker = to_gpu(speaker).long()
-    if delta_f0_padded is not None and mean is not None:
-        mean = to_gpu(mean_f0).long()
-        delta_f0 = to_gpu(delta_f0_padded).float()
+    if delta_f0_padded is not None and mean_f0 is not None:
+        mean_f0 = to_gpu(mean_f0).long()
+        delta_f0_padded = to_gpu(delta_f0_padded).float()
 
     # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
     x = [text_padded, input_lengths, mel_padded, output_lengths,
-         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0]
+         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded]
     y = [mel_padded, input_lengths, output_lengths]
     len_x = torch.sum(output_lengths) # still input length ------------------------------------------------2
     return (x, y, len_x)
