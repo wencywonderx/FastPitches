@@ -147,7 +147,7 @@ class FastPitch(nn.Module):
                  p_energy_predictor_dropout, energy_predictor_n_layers,
                  energy_embedding_kernel_size,
                  mean_and_delta_f0, #----added
-                 raw_pitch, #---added
+                 raw_f0, #---added
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
@@ -196,8 +196,8 @@ class FastPitch(nn.Module):
         )
 
         #---------------------------------------modified by me------------------------------------------------
-        self.raw_pitch = raw_pitch
-        if self.raw_pitch:
+        self.raw_f0 = raw_f0
+        if self.raw_f0:
             self.pitch_predictor = TemporalPredictor(
                 in_fft_output_size,
                 filter_size=pitch_predictor_filter_size,
@@ -347,7 +347,7 @@ class FastPitch(nn.Module):
 
         #--------------------------------------modified by me----------------------------------------------
         # Predict pitch
-        if self.raw_pitch:
+        if self.raw_f0:
             pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
             print("\n predicted pitch: ", pitch_pred.shape)
             # Average pitch over characters
@@ -364,7 +364,7 @@ class FastPitch(nn.Module):
             pitch_pred = None
             pitch_tgt = None
         #--------------------------------------------------------------------------------------------------
-        
+
         #------------------------------added by me---------------------------------
         # Predict delta f0
         if self.mean_and_delta_f0:

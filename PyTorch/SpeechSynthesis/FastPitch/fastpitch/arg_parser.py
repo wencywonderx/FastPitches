@@ -100,7 +100,7 @@ def parse_fastpitch_args(parent, add_help=False):
 
     pitch_pred = parser.add_argument_group('pitch predictor parameters')
     #----------------------added by me-------------------------
-    pitch_pred.add_argument('--raw-pitch', action='store_true')
+    pitch_pred.add_argument('--raw-f0', action='store_true')
     #----------------------------------------------------------
     pitch_pred.add_argument('--pitch-predictor-kernel-size', default=3, type=int,
                             help='Pitch predictor conv-1D kernel size')
