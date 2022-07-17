@@ -378,9 +378,9 @@ class FastPitch(nn.Module):
             print("\n energy predicted: ", energy_pred.shape)
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
-            print("\n energy target after average: ", energy_tgt)
+            print("\n energy target after average: ", energy_tgt.shape)
             energy_tgt = torch.log(1.0 + energy_tgt) #-------------------------------------------Q: log?
-            print("\n energy target after log: ", energy_tgt)
+            print("\n energy target after log: ", energy_tgt.shape)
             energy_emb = self.energy_emb(energy_tgt)
             print("\n energy embedded: ", energy_emb.shape)
             energy_tgt = energy_tgt.squeeze(1)
@@ -395,11 +395,14 @@ class FastPitch(nn.Module):
         len_regulated, dec_lens = regulate_len( 
             dur_tgt, enc_out, pace, mel_max_len)
         print("\n upsampled")
+        print("\n len_regulated: ", len_regulated)
+        print("\n dec_lens: ", dec_lens)
 
         # Output FFT
         dec_out, dec_mask = self.decoder(len_regulated, dec_lens)
         mel_out = self.proj(dec_out)
-        print("\n decoder out")
+        print("\n dec out", dec_out.shape, mel_out)
+        print("\n mel out", mel_out.shape, mel_out)
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt)

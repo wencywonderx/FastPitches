@@ -661,25 +661,23 @@ def main():
 
             x, y, num_frames = batch_to_gpu(batch)  # loaded batch
             print("\n batch to gpu")
-            
+
             with torch.cuda.amp.autocast(enabled=args.amp):
                 print("\n start predicting")
                 y_pred = model(x) # forward pass starts (calling the model)
                 print("\n start calcalating loss")
                 loss, meta = criterion(y_pred, y)
                 print("\n loss calculated")
+                
                 if (args.kl_loss_start_epoch is not None
                         and epoch >= args.kl_loss_start_epoch):
-
                     if args.kl_loss_start_epoch == epoch and epoch_iter == 1:
                         print('Begin hard_attn loss')
-
                     _, _, _, _, _, _, _, _, attn_soft, attn_hard, _, _, _, _ = y_pred
                     binarization_loss = attention_kl_loss(attn_hard, attn_soft)
                     kl_weight = min((epoch - args.kl_loss_start_epoch) / args.kl_loss_warmup_epochs, 1.0) * args.kl_loss_weight
                     meta['kl_loss'] = binarization_loss.clone().detach() * kl_weight
                     loss += kl_weight * binarization_loss
-
                 else:
                     meta['kl_loss'] = torch.zeros_like(loss)
                     kl_weight = 0

@@ -118,7 +118,7 @@ class FastPitchLoss(nn.Module):
             'pitch_loss': pitch_loss.clone().detach(),
             'attn_loss': attn_loss.clone().detach(),
             'dur_error': (torch.abs(dur_pred - dur_tgt).sum()
-                          / dur_mask.sum()).detach(),
+                          / dur_mask.sum()).detach()
         }
 
         # if statements when adding all the losses, depending on which information you want the model to use        
@@ -126,7 +126,7 @@ class FastPitchLoss(nn.Module):
             meta['energy_loss'] = energy_loss.clone().detach()
         #------------------------added by me------------------------
         if delta_f0_pred is not None:
-            meta['delta_f0_loss'] = delta_f0_loss.clone().detach(), 
+            meta['delta_f0_loss'] = delta_f0_loss.clone().detach()
         #-----------------------------------------------------------
 
         assert meta_agg in ('sum', 'mean')
