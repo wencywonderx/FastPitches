@@ -660,7 +660,8 @@ def main():
                 model.zero_grad(set_to_none=True)
 
             x, y, num_frames = batch_to_gpu(batch)  # loaded batch
-
+            print("\n batch to gpu")
+            
             with torch.cuda.amp.autocast(enabled=args.amp):
                 print("\n start predicting")
                 y_pred = model(x) # forward pass starts (calling the model)

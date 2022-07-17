@@ -290,14 +290,15 @@ class FastPitch(nn.Module):
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
-        print("energy_dense: ", energy_dense.size)
-        print("mel_tgt: ", mel_tgt.size)
-        print("pitch_dense: ", pitch_dense.size)
-        print("delta_f0_tgt: ", delta_f0_tgt.size)
+        print("\n energy_dense: ", energy_dense.shape)
+        print("\n mel_tgt: ", mel_tgt.shape)
+        print("\n pitch_dense: ", pitch_dense.shape)
+        print("\n delta_f0_tgt: ", delta_f0_tgt.shape)
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
-
+        print("\n mel_max_len: ", mel_max_len.shape)
         # Calculate speaker embedding
+        
         if self.speaker_emb is None:
             spk_emb = 0 # add nothing to the embedding, it is trained(the speaker embedding)
         else:
@@ -307,7 +308,10 @@ class FastPitch(nn.Module):
         # Input FFT
         enc_out, enc_mask = self.encoder(inputs, conditioning=spk_emb) 
         # enc_mask? speaker conditioning can also add this to later
+        print("\n encoder out: ", enc_out.shape)
+        print("\n encoder mask: ", enc_mask.shape)
 
+        
         # Alignment
         text_emb = self.encoder.word_emb(inputs)
 
@@ -336,10 +340,9 @@ class FastPitch(nn.Module):
         # TODO: if conditioning
         pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
         print("\n predicted pitch: ", pitch_pred.shape)
-
         # Average pitch over characters
         pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
-
+        print("\n pitch target after averaging: ", pitch_tgt.shape)
         if use_gt_pitch and pitch_tgt is not None: # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
             pitch_emb = self.pitch_emb(pitch_tgt)
         else:
@@ -355,14 +358,17 @@ class FastPitch(nn.Module):
             print("\n delta f0 predicted: ", delta_f0_pred.shape)
             # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
+            print("\n delta f0 target after average: ", delta_f0_tgt)
             # if use ground truth
             if use_gt_delta_f0 and delta_f0_tgt is not None:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
             else:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+            print('\n embedded delta f0: ', delta_f0_emb.shape)
             enc_out = enc_out + delta_f0_emb.transpose(1, 2)
             print("\n added predicted delta f0 to the embedding : ", enc_out.shape)
         else:
+            delta_f0_pred = None
             delta_f0_pred = None
         #-------------------------------------------------------------------------
 
@@ -372,23 +378,28 @@ class FastPitch(nn.Module):
             print("\n energy predicted: ", energy_pred.shape)
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
-            energy_tgt = torch.log(1.0 + energy_tgt)
-
+            print("\n energy target after average: ", energy_tgt)
+            energy_tgt = torch.log(1.0 + energy_tgt) #-------------------------------------------Q: log?
+            print("\n energy target after log: ", energy_tgt)
             energy_emb = self.energy_emb(energy_tgt)
+            print("\n energy embedded: ", energy_emb.shape)
             energy_tgt = energy_tgt.squeeze(1)
+            print("\n energy target after squeeze: ", energy_emb.shape)
             enc_out = enc_out + energy_emb.transpose(1, 2)
             print("\n added predicted energy to the embedding : ", enc_out.shape)
-
         else:
             energy_pred = None
             energy_tgt = None
 
-        len_regulated, dec_lens = regulate_len(
-            dur_tgt, enc_out, pace, mel_max_len) # become the audio lengths
+        # upsampling, become the audio lengths
+        len_regulated, dec_lens = regulate_len( 
+            dur_tgt, enc_out, pace, mel_max_len)
+        print("\n upsampled")
 
         # Output FFT
         dec_out, dec_mask = self.decoder(len_regulated, dec_lens)
         mel_out = self.proj(dec_out)
+        print("\n decoder out")
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt)
