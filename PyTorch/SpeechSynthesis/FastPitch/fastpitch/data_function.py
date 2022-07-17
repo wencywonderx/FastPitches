@@ -343,7 +343,6 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
 
         n_formants = batch[0][3].shape[0]
         
-        if 
         pitch_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype) # (batch_size, n_formants, mel_length)
         energy_padded = torch.zeros_like(pitch_padded[:, 0, :]) # take the energy of f0
