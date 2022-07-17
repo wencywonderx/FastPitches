@@ -290,6 +290,10 @@ class FastPitch(nn.Module):
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
+        print("\n --------------------------------------------------------------new batch")
+        print("\n inputs: ", inputs.shape)
+        print("\n input_lens: ", input_lens)
+        print("\n mel_lens: ", mel_lens)
         print("\n energy_dense: ", energy_dense.shape)
         print("\n mel_tgt: ", mel_tgt.shape)
         print("\n pitch_dense: ", pitch_dense.shape)
@@ -358,7 +362,7 @@ class FastPitch(nn.Module):
             print("\n delta f0 predicted: ", delta_f0_pred.shape)
             # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
-            print("\n delta f0 target after average: ", delta_f0_tgt)
+            print("\n delta f0 target after average: ", delta_f0_tgt.shape)
             # if use ground truth
             if use_gt_delta_f0 and delta_f0_tgt is not None:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
@@ -395,7 +399,7 @@ class FastPitch(nn.Module):
         len_regulated, dec_lens = regulate_len( 
             dur_tgt, enc_out, pace, mel_max_len)
         print("\n upsampled")
-        print("\n len_regulated: ", len_regulated)
+        print("\n len_regulated: ", len_regulated.shape)
         print("\n dec_lens: ", dec_lens)
 
         # Output FFT
@@ -406,7 +410,6 @@ class FastPitch(nn.Module):
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt)
-        print("---------------------model.py ended")
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,

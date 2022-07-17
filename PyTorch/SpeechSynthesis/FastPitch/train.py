@@ -668,7 +668,7 @@ def main():
                 print("\n start calcalating loss")
                 loss, meta = criterion(y_pred, y)
                 print("\n loss calculated")
-                
+
                 if (args.kl_loss_start_epoch is not None
                         and epoch >= args.kl_loss_start_epoch):
                     if args.kl_loss_start_epoch == epoch and epoch_iter == 1:
@@ -729,6 +729,9 @@ def main():
                 iter_pitch_loss = iter_meta['pitch_loss'].item()
                 iter_energy_loss = iter_meta['energy_loss'].item()
                 iter_dur_loss = iter_meta['duration_predictor_loss'].item()
+                #------------------------added by me-----------------------
+                iter_delta_f0_loss = iter_meta['delta_f0_loss'].item()
+                #----------------------------------------------------------
                 iter_time = time.perf_counter() - iter_start_time
                 epoch_frames_per_sec += iter_num_frames / iter_time
                 epoch_loss += iter_loss
@@ -737,6 +740,9 @@ def main():
                 epoch_pitch_loss += iter_pitch_loss
                 epoch_energy_loss += iter_energy_loss
                 epoch_dur_loss += iter_dur_loss
+                #-------------added by me----------------
+                epoch_delta_f0_loss += iter_delta_f0_loss
+                #----------------------------------------
 
                 if epoch_iter % 5 == 0:
                     log({
@@ -751,6 +757,9 @@ def main():
                         'pitch-loss/pitch_loss': iter_pitch_loss,
                         'energy-loss/energy_loss': iter_energy_loss,
                         'dur-loss/dur_loss': iter_dur_loss,
+                        #------------------added by me--------------------
+                        'delta_f0_loss/delta_f0_loss': iter_delta_f0_loss,
+                        #-------------------------------------------------
                         'frames per s': iter_num_frames / iter_time,
                         'took': iter_time,
                         'lrate': optimizer.param_groups[0]['lr'],
@@ -774,6 +783,8 @@ def main():
             'pitch-loss/epoch_pitch_loss': epoch_pitch_loss,
             'energy-loss/epoch_energy_loss': epoch_energy_loss,
             'dur-loss/epoch_dur_loss': epoch_dur_loss,
+            # --------------------added by me---------------------
+            'delta_f0_loss/epoch_delta_f0_loss': epoch_delta_f0_loss,
             'epoch_frames per s': epoch_num_frames / epoch_time,
             'epoch_took': epoch_time,
         }, args.local_rank)
