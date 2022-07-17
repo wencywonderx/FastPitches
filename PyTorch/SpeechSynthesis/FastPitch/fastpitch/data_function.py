@@ -257,7 +257,7 @@ class TTSDataset(torch.utils.data.Dataset):
             spk = 0
 
         if self.load_pitch_from_disk:
-            print("\n pitch loaded from disk")
+            # print("\n pitch loaded from disk")
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
