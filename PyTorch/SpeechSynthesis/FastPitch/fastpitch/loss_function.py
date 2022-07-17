@@ -87,9 +87,6 @@ class FastPitchLoss(nn.Module):
         # if statements to control conditioning, instead if we don't want to calculate this part it will be broken 
         if energy_pred is not None:
             print("\n calculating energy loss")
-            #----------------added by me(not sure)----------
-            ldiff = energy_tgt.size(2) - energy_pred.size(2)
-            #-----------------------------------------------
             energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # ------------------Q: why use pitch ldiff?
             energy_loss = F.mse_loss(energy_tgt, energy_pred, reduction='none')
             energy_loss = (energy_loss * dur_mask).sum() / dur_mask.sum()
