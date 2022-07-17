@@ -296,7 +296,7 @@ class FastPitch(nn.Module):
         print("\n delta_f0_tgt: ", delta_f0_tgt.shape)
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
-        print("\n mel_max_len: ", mel_max_len.shape)
+        print("\n mel_max_len: ", mel_max_len)
         # Calculate speaker embedding
         
         if self.speaker_emb is None:
