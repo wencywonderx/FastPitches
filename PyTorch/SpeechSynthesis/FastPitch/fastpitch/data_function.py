@@ -347,7 +347,6 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         pitch_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype) # (batch_size, n_formants, mel_length)
         energy_padded = torch.zeros_like(pitch_padded[:, 0, :]) # take the energy of f0
-
         # ----------------------------added by me------------------------------
         delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
@@ -358,9 +357,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
             energy = batch[ids_sorted_decreasing[i]][4] 
             pitch_padded[i, :, :pitch.shape[1]] = pitch
             energy_padded[i, :energy.shape[0]] = energy
-
             #--------------added by me------------------------
-            if self.mean_and_delta_f0:
+            if delta_f0 is not None and mean_f0 is not None:
                 delta_f0 = batch[ids_sorted_decreasing[i]][9]
                 delta_f0_padded[i, :, :pitch.shape[1]] = delta_f0
                 mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
