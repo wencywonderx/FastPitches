@@ -105,9 +105,9 @@ class TTSDataset(torch.utils.data.Dataset):
                  betabinomial_online_dir=None,
                  use_betabinomial_interpolator=True,
                  pitch_online_method='pyin',
-                 interpolate_f0 = True, #-------------------------C
-                 mean_and_delta_f0 = True, #----------------------C
-                 f0_slope = True, #--------------------------C
+                 interpolate_f0 = False, #-------------------------C
+                 mean_and_delta_f0 = False, #----------------------C
+                 f0_slope = False, #--------------------------C
                  **ignored):
 
         # Expect a list of filenames
