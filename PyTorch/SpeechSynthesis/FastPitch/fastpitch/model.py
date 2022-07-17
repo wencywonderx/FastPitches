@@ -384,8 +384,8 @@ class FastPitch(nn.Module):
         dec_out, dec_mask = self.decoder(len_regulated, dec_lens)
         mel_out = self.proj(dec_out)
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
-                pitch_tgt, delta_f0_pred, delta_f0_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
-                attn_hard_dur, attn_logprob)
+                pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
+                attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt)
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,
