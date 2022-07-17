@@ -286,7 +286,7 @@ class FastPitch(nn.Module):
     def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, pace=1.0, max_duration=75): #- ------------ Q: where is use_gt from
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, f0_slope_tgt) = inputs # data_function.py, TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
