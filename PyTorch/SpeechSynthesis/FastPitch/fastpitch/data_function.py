@@ -362,7 +362,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 delta_f0 = batch[ids_sorted_decreasing[i]][9]
                 delta_f0_padded[i, :, :delta_f0.shape[1]] = delta_f0
                 mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
-                print("padded mean f0: ", mean_f0)
+                # print("padded mean f0: ", mean_f0) tesor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
             else:
                 delta_f0 = None,
                 delta_f0_padded = None,
