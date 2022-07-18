@@ -262,13 +262,13 @@ class TTSDataset(torch.utils.data.Dataset):
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
             if self.interpolate_f0:
-                # print("\n interpolating f0")
+                print("\n interpolating f0")
                 pitch = pitch.numpy()[0]
                 # print("\n converted to pitch array \n", pitch)
                 pitch = interpolate_f0(pitch)
                 # print("\n interpolated pitch array \n", pitch)
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
-                print("\n convert to pitch tensor\n", pitch)
+                # print("\n convert to pitch tensor\n", pitch)
             if self.pitch_mean is not None:
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
