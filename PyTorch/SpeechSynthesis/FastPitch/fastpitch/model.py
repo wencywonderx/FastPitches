@@ -302,7 +302,7 @@ class FastPitch(nn.Module):
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         print("\n pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
-        # print("\n delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
+        print("\n delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("\n mean_f0_tgt", mean_f0_tgt) # e.g. tensor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length

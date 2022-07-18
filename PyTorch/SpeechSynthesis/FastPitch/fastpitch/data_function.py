@@ -270,7 +270,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
                 # print("\n convert to pitch tensor\n", pitch)
             if self.pitch_mean is not None:
-                print("!!!!!!!!!!!!!!doing normalization")
+                print("\n doing normalization")
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
             if mean_delta:
