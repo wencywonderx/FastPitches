@@ -463,15 +463,16 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
     val_meta['took'] = time.perf_counter() - tik
 
     # log overall statistics of the validate step
-    log({
-        'loss/validation-loss': val_meta['loss'].item(),
-        'mel-loss/validation-mel-loss': val_meta['mel_loss'].item(),
-        'pitch-loss/validation-pitch-loss': val_meta['pitch_loss'].item(),
-        'energy-loss/validation-energy-loss': val_meta['energy_loss'].item(),
-        'dur-loss/validation-dur-error': val_meta['duration_predictor_loss'].item(),
-        'validation-frames per s': num_frames.item() / val_meta['took'],
-        'validation-took': val_meta['took'],
-    }, rank)
+
+    # log({
+    #     'loss/validation-loss': val_meta['loss'].item(),
+    #     'mel-loss/validation-mel-loss': val_meta['mel_loss'].item(),
+    #     'pitch-loss/validation-pitch-loss': val_meta['pitch_loss'].item(),
+    #     'energy-loss/validation-energy-loss': val_meta['energy_loss'].item(),
+    #     'dur-loss/validation-dur-error': val_meta['duration_predictor_loss'].item(),
+    #     'validation-frames per s': num_frames.item() / val_meta['took'],
+    #     'validation-took': val_meta['took'],
+    # }, rank)
 
     if was_training:
         model.train()
