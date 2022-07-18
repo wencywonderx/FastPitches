@@ -36,9 +36,9 @@ export OMP_NUM_THREADS=1
 : ${SAMPLING_RATE:=22050}
 
 #---------added by me----------
-: ${INTERPOLATE:=true}
-: ${MEAN_DELTA:=true}
-: ${NORMAL:=true}
+: ${INTERPOLATE:=false}
+: ${MEAN_DELTA:=false}
+: ${NORMAL:=false}
 #------------------------------
 
 # Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.
