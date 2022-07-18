@@ -96,6 +96,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 if [ "$NORMALISE" = true ]; then
   ARGS+=" --pitch-mean 214.72203" 
   AGSS+=" --pitch-std 65.72038"
+fi
 #------------------------------------------------------------------------------
 
 if [ "$SAMPLING_RATE" == "44100" ]; then
