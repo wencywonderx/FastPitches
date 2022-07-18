@@ -472,11 +472,11 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
         'validation-took': val_meta['took']
     }
     if y_pred[4] is not None:
-        'pitch-loss/validation-pitch-loss': val_meta['pitch_loss'].item()
+        loss_log['pitch-loss/validation-pitch-loss'] = val_meta['pitch_loss'].item()
     if y_pred[6] is not None:
-        'energy-loss/validation-energy-loss': val_meta['energy_loss'].item()
+        loss_log['energy-loss/validation-energy-loss'] = val_meta['energy_loss'].item()
     if y_pred[12] is not None:
-        'delta-f0-loss/validation-delta-f0-loss': val_meta['delta_f0_loss'].item()
+        loss_log['delta-f0-loss/validation-delta-f0-loss'] = val_meta['delta_f0_loss'].item()
 #----------------------------------------------------------------------------------
     log(loss_log, rank)
     
