@@ -649,7 +649,7 @@ def main():
                               sampler=train_sampler, batch_size=args.batch_size,
                               pin_memory=True, persistent_workers=True,
                               drop_last=True, collate_fn=collate_fn)
-    print("\n trainset data loaded")
+    # print("\n trainset data loaded")
 
     if args.ema_decay:
         mt_ema_params = init_multi_tensor_ema(model, ema_model)

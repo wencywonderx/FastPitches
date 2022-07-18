@@ -297,13 +297,13 @@ class FastPitch(nn.Module):
         # y = [mel_padded, input_lengths, output_lengths]
         print("\n --------------------------new batch--------------------------")
         # print("\n inputs: ", inputs.shape) # (batch_size, max_input_length) e.g.[16, 148]
-        # print("\n input_lens: ", input_lens) # (batch_size) e.g. tensor([148, 684...])
+        # print("\n input_lens: ", input_lens) # (batch_size) e.g. tensor([148, 139...])
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         print("\n pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         print("\n delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        # print("\n mean_f0_tgt", mean_f0_tgt) # e.g. tensor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+        print("\n mean_f0_tgt", mean_f0_tgt) # e.g. [16]
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
         # print("\n mel_max_len: ", mel_max_len) # e.g. 787, integer
@@ -350,7 +350,7 @@ class FastPitch(nn.Module):
         # Predict pitch
         if self.raw_f0:
             pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
-            print("\n predicted pitch: ", pitch_pred.shape)
+            print("\n -------predicting pitch")
             # Average pitch over characters
             pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
             # print("\n pitch target after averaging: ", pitch_tgt.shape)
@@ -370,7 +370,7 @@ class FastPitch(nn.Module):
         # Predict delta f0
         if self.mean_and_delta_f0:
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
-            print("\n delta f0 predicted: ", delta_f0_pred.shape) # e.g. [16, 1, 148]
+            print("\n -------predicting delta f0") # e.g. [16, 1, 148]
             # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
             # print("\n delta f0 target after average: ", delta_f0_tgt.shape) # e.g. [16, 1, 148]
@@ -390,7 +390,7 @@ class FastPitch(nn.Module):
         # Predict energy
         if self.energy_conditioning:
             energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
-            print("\n energy predicted: ", energy_pred.shape)
+            print("\n predicting energy: ", energy_pred.shape)
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
             # print("\n energy target after average: ", energy_tgt.shape)

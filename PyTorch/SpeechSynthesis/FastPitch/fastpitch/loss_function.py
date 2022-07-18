@@ -76,6 +76,7 @@ class FastPitchLoss(nn.Module):
 
         #-----------------------------modified by me----------------------------
         if pitch_pred is not None:
+            print("\n ------calculating pitch loss")            
             ldiff = pitch_tgt.size(2) - pitch_pred.size(2)
             pitch_pred = F.pad(pitch_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) 
             pitch_loss = F.mse_loss(pitch_tgt, pitch_pred, reduction='none')
@@ -86,7 +87,7 @@ class FastPitchLoss(nn.Module):
 
         # if statements to control conditioning, instead if we don't want to calculate this part it will be broken 
         if energy_pred is not None:
-            print("\n calculating energy loss")
+            print("\n ------calculating energy loss")
             energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # ------------------Q: why use pitch ldiff?
             energy_loss = F.mse_loss(energy_tgt, energy_pred, reduction='none')
             energy_loss = (energy_loss * dur_mask).sum() / dur_mask.sum()
@@ -94,7 +95,7 @@ class FastPitchLoss(nn.Module):
             energy_loss = 0
         #--------------------------------added by me-----------------------------------
         if delta_f0_pred is not None:
-            print("\n calculating delta f0 loss")
+            print("\n -------calculating delta f0 loss")
             ldiff = delta_f0_tgt.size(2) - delta_f0_pred.size(2)
             delta_f0_pred = F.pad(delta_f0_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) # -------------------------Q: the dimention
             delta_f0_loss = F.mse_loss(delta_f0_tgt, delta_f0_pred, reduction='none')

@@ -58,7 +58,7 @@ export EXPERIMENT_DESC="FastPitch predicting deltaf0" #-----------------------ch
 export PHONE=true
 export TEXT_CLEANERS=english_cleaners_v2
 # enable energy conditioning (errors in loss logging if false)
-export ENERGY=false
+export ENERGY=true
 export NSPEAKERS=1
 export SAMPLING_RATE=22050
 export APPEND_SPACES=false
