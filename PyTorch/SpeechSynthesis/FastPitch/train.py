@@ -393,6 +393,30 @@ def log_validation_batch(x, y_pred, rank):
     log(validation_dict, rank)  # something in here returns a warning
     pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
     tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
+    if y_pred[4] is None and y_pred[12] is None:
+        pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur']
+        if y_pred[6] is None:
+            pred_specs_keys = ['mel_out', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'attn_hard_dur']
+    elif y_pred[4] is None and y_pred[12] is not None:
+        pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
+        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
+        if y_pred[6] is None:
+            pred_specs_keys = ['mel_out', 'attn_hard_dur', 'delta_f0_pred']
+            tgt_specs_keys = ['mel_padded', 'attn_hard_dur', 'delta_f0_tgt']  
+    elif y_pred[12] is None and y_pred[4] is not None:
+        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
+        if y_pred[6] is None:
+            pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur']  
+    else:
+        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
+        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
+        if y_pred[6] is None:
+            pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur', 'delta_f0_pred']
+            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur', 'delta_f0_tgt']
     plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
                      [validation_dict[key] for key in tgt_specs_keys]], rank)
 
