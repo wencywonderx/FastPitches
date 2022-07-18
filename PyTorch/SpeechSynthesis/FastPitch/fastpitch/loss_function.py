@@ -129,7 +129,7 @@ class FastPitchLoss(nn.Module):
             meta['energy_loss'] = energy_loss.clone().detach()
         #------------------------added by me------------------------
         if pitch_pred is not None:
-            meta['pitch_loss']: pitch_loss.clone().detach()
+            meta['pitch_loss'] =  pitch_loss.clone().detach()
         if delta_f0_pred is not None:
             meta['delta_f0_loss'] = delta_f0_loss.clone().detach()
         #-----------------------------------------------------------
