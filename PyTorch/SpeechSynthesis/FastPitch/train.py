@@ -375,20 +375,26 @@ def plot_batch_mels(pred_tgt_lists, rank):
 def log_validation_batch(x, y_pred, rank):
     x_fields = ['text_padded', 'input_lengths', 'mel_padded',
                 'output_lengths', 'pitch_padded', 'energy_padded',
-                'speaker', 'attn_prior', 'audiopaths', 'mean_f0', 'delta_f0']
+                'speaker', 'attn_prior', 'audiopaths', 'mean_f0', 'delta_f0_padded']
     y_pred_fields = ['mel_out', 'dec_mask', 'dur_pred', 'log_dur_pred',
                      'pitch_pred', 'pitch_tgt', 'energy_pred',
                      'energy_tgt', 'attn_soft', 'attn_hard',
-                     'attn_hard_dur', 'attn_logprob']
+                     'attn_hard_dur', 'attn_logprob', 'delta_f0_pred', 'delta_f0_tgt']
 
     validation_dict = dict(zip(x_fields + y_pred_fields,
                                list(x) + list(y_pred)))
     # dec mask contains booleans, which to be logged need to be converted to integers
     validation_dict.pop('dec_mask', None)
     log(validation_dict, rank)  # something in here returns a warning
-
-    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
-    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
+    if y_pred[4] is None:
+        pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur']
+    if y_pred[6] is None:
+        pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur']
+    else:
+        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
     plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
                      [validation_dict[key] for key in tgt_specs_keys]], rank)
 
@@ -634,9 +640,9 @@ def main():
         epoch_dur_loss = 0.0
         epoch_num_frames = 0
         epoch_frames_per_sec = 0.0
-        #-----added by me----
-        epoch_delta_f0_loss
-        #--------------------
+        #-------added by me------
+        epoch_delta_f0_loss = 0.0
+        #------------------------
 
         if distributed_run:
             train_loader.sampler.set_epoch(epoch)
