@@ -92,6 +92,7 @@ export DISTRIBUTED=' '
 export INTERPOLATE=true
 export MEAN_DELTA=false
 export NORMAL=true
+export NORMALISE=false
 #-----------------------
 
 cd $FP
