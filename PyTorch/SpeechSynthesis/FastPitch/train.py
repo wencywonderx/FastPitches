@@ -729,23 +729,29 @@ def main():
                 #-------------modified by me------------------------
                 if pitch_pred is not None:
                     iter_pitch_loss = iter_meta['pitch_loss'].item()
+                else:
+                    iter_pitch_loss = 0.0
                 #---------------------------------------------------
                 iter_energy_loss = iter_meta['energy_loss'].item()
                 iter_dur_loss = iter_meta['duration_predictor_loss'].item()
                 #------------------------added by me-----------------------
                 if delta_f0_pred is not None:
                     iter_delta_f0_loss = iter_meta['delta_f0_loss'].item()
+                else:
+                    iter_delta_f0_loss = 0.0
                 #----------------------------------------------------------
                 iter_time = time.perf_counter() - iter_start_time
                 epoch_frames_per_sec += iter_num_frames / iter_time
                 epoch_loss += iter_loss
                 epoch_num_frames += iter_num_frames
                 epoch_mel_loss += iter_mel_loss
-                epoch_pitch_loss += iter_pitch_loss
+                if pitch_pred is not None:
+                    epoch_pitch_loss += iter_pitch_loss
                 epoch_energy_loss += iter_energy_loss
                 epoch_dur_loss += iter_dur_loss
                 #-------------added by me----------------
-                epoch_delta_f0_loss += iter_delta_f0_loss
+                if delta_f0_pred is not None:
+                    epoch_delta_f0_loss += iter_delta_f0_loss
                 #----------------------------------------
 
                 if epoch_iter % 5 == 0:
