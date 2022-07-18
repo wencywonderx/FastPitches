@@ -673,7 +673,7 @@ def main():
                         and epoch >= args.kl_loss_start_epoch):
                     if args.kl_loss_start_epoch == epoch and epoch_iter == 1:
                         print('Begin hard_attn loss')
-                    _, _, _, _, _, _, _, _, attn_soft, attn_hard, _, _, _, _ = y_pred
+                    _, _, _, _, pitch_pred, _, _, _, attn_soft, attn_hard, _, _, delta_f0_pred, _ = y_pred
                     binarization_loss = attention_kl_loss(attn_hard, attn_soft)
                     kl_weight = min((epoch - args.kl_loss_start_epoch) / args.kl_loss_warmup_epochs, 1.0) * args.kl_loss_weight
                     meta['kl_loss'] = binarization_loss.clone().detach() * kl_weight
@@ -726,11 +726,15 @@ def main():
 
                 iter_mel_loss = iter_meta['mel_loss'].item()
                 iter_kl_loss = iter_meta['kl_loss'].item()
-                iter_pitch_loss = iter_meta['pitch_loss'].item()
+                #-------------modified by me------------------------
+                if pitch_pred is not None:
+                    iter_pitch_loss = iter_meta['pitch_loss'].item()
+                #---------------------------------------------------
                 iter_energy_loss = iter_meta['energy_loss'].item()
                 iter_dur_loss = iter_meta['duration_predictor_loss'].item()
                 #------------------------added by me-----------------------
-                iter_delta_f0_loss = iter_meta['delta_f0_loss'].item()
+                if delta_f0_pred is not None:
+                    iter_delta_f0_loss = iter_meta['delta_f0_loss'].item()
                 #----------------------------------------------------------
                 iter_time = time.perf_counter() - iter_start_time
                 epoch_frames_per_sec += iter_num_frames / iter_time
