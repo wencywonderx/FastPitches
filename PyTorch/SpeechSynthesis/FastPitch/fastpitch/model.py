@@ -350,7 +350,7 @@ class FastPitch(nn.Module):
         # Predict pitch
         if self.raw_f0:
             pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
-            print("\n predicted pitch: ", pitch_pred.shape, pitch_pred)
+            print("\n predicted pitch: ", pitch_pred.shape)
             # Average pitch over characters
             pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
             # print("\n pitch target after averaging: ", pitch_tgt.shape)
@@ -370,7 +370,7 @@ class FastPitch(nn.Module):
         # Predict delta f0
         if self.mean_and_delta_f0:
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
-            print("\n delta f0 predicted: ", delta_f0_pred.shape, delta_f0_pred) # e.g. [16, 1, 148]
+            print("\n delta f0 predicted: ", delta_f0_pred.shape) # e.g. [16, 1, 148]
             # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
             # print("\n delta f0 target after average: ", delta_f0_tgt.shape) # e.g. [16, 1, 148]
