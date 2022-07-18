@@ -257,7 +257,7 @@ class TTSDataset(torch.utils.data.Dataset):
             spk = 0
 
         if self.load_pitch_from_disk:
-            # print("\n pitch loaded from disk")
+            print("\n pitch loaded from disk")
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
@@ -266,14 +266,14 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = pitch.numpy()[0]
                 # print("\n converted to pitch array \n", pitch)
                 pitch = interpolate_f0(pitch)
-                # print("\n --------------------interpolated pitch array \n", pitch)
+                # print("\n interpolated pitch array \n", pitch)
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
-                # print("\n convert to pitch tensor\n", pitch)
+                print("\n convert to pitch tensor\n", pitch)
             if self.pitch_mean is not None:
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
             if self.mean_and_delta_f0:
-                # print("\n extracting mean and delta f0")
+                print("\n extracting mean and delta f0")
                 mean_f0, delta_f0 = mean_delta_f0(pitch)
                 # print("\n mean and delta calculated \n", mean_f0, delta_f0)
                 return pitch, mean_f0, delta_f0 
@@ -362,16 +362,16 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 delta_f0 = batch[ids_sorted_decreasing[i]][9]
                 delta_f0_padded[i, :, :delta_f0.shape[1]] = delta_f0
                 mean_f0[i] = batch[ids_sorted_decreasing[i]][8]
-                # print("padded mean f0: ", mean_f0) tesor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+                print("padded mean f0: ", mean_f0) # tesor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
             else:
                 delta_f0 = None,
                 delta_f0_padded = None,
                 mean_f0 = None
             #-------------------------------------------------
 
-        # print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
+        print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
         # print("n\ this is energy_padded:", energy_padded.size, energy_padded)
-        # print("n\ this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
+        print("n\ this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
 
         if batch[0][5] is not None:
             speaker = torch.zeros_like(input_lengths)
