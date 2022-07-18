@@ -699,14 +699,14 @@ def main():
                 model.zero_grad(set_to_none=True)
 
             x, y, num_frames = batch_to_gpu(batch)  # loaded batch
-            print("\n batch to gpu")
+            # print("\n batch to gpu")
 
             with torch.cuda.amp.autocast(enabled=args.amp):
-                print("\n start predicting")
+                # print("\n start predicting")
                 y_pred = model(x) # forward pass starts (calling the model)
-                print("\n start calcalating loss")
+                # print("\n start calcalating loss")
                 loss, meta = criterion(y_pred, y)
-                print("\n loss calculated")
+                # print("\n loss calculated")
 
                 if (args.kl_loss_start_epoch is not None
                         and epoch >= args.kl_loss_start_epoch):
@@ -847,7 +847,7 @@ def main():
         bmark_stats.update(epoch_num_frames, epoch_loss, epoch_mel_loss,
                            epoch_time)
 
-        print("-------------------training validation-----------------")
+        print("-------------------validation-----------------")
         validate(model, criterion, valset, args.batch_size, collate_fn,
                  distributed_run, batch_to_gpu, args.local_rank)
 
@@ -862,7 +862,7 @@ def main():
     if len(bmark_stats) > 0:
         log(bmark_stats.get(args.benchmark_epochs_num), args.local_rank)
 
-    print("---------------------whole validation--------------------")
+    print("---------------------validation--------------------")
     validate(model, criterion, valset, args.batch_size, collate_fn,
              distributed_run, batch_to_gpu, args.local_rank)
 

@@ -390,7 +390,7 @@ class FastPitch(nn.Module):
         # Predict energy
         if self.energy_conditioning:
             energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
-            print("\n predicting energy: ", energy_pred.shape)
+            print("\n -------predicting energy")
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
             # print("\n energy target after average: ", energy_tgt.shape)
