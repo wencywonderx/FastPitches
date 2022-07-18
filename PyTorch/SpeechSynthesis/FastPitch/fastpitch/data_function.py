@@ -369,9 +369,9 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 mean_f0 = None
             #-------------------------------------------------
 
-        print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
+        # print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
         # print("n\ this is energy_padded:", energy_padded.size, energy_padded)
-        print("n\ this is delta_f0_padded:", delta_f0_padded.size, delta_f0_padded)
+        # print("n\ this is delta_f0_padded:", delta_f0_padded.size)
 
         if batch[0][5] is not None:
             speaker = torch.zeros_like(input_lengths)
