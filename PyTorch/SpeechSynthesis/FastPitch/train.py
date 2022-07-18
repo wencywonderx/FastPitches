@@ -348,19 +348,17 @@ def plot_batch_mels(pred_tgt_lists, rank):
 
     for mel_pitch_energy in pred_tgt_lists:
         mels = mel_pitch_energy[0]
-        print("this is plotting mels: ", mels.shape)
+        # print("this is plotting mels: ", mels.shape)
         if mels.size(dim=2) == 80:  # tgt and pred mel have diff dimension order
             mels = mels.permute(0, 2, 1)
         mel_lens = mel_pitch_energy[-1]
         # reverse regulation for plotting: for every mel frame get pitch+energy
-        if len(mel_pitch_energy) == 4:
-            new_pitch = regulate_len(mel_lens,
-                                 mel_pitch_energy[1].permute(0, 2, 1))[0]
-            new_energy = regulate_len(mel_lens,
-                                  mel_pitch_energy[2].unsqueeze(dim=-1))[0]
-            regulated_features.append([mels,
-                                   new_pitch.squeeze(axis=2),
-                                   new_energy.squeeze(axis=2)])
+        # if len(mel_pitch_energy) == 4:
+        if len(mel_pitch_energy) == 2:
+            new_pitch = regulate_len(mel_lens, mel_pitch_energy[1].permute(0, 2, 1))[0]
+            new_energy = regulate_len(mel_lens, mel_pitch_energy[2].unsqueeze(dim=-1))[0]
+            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[3].permute(0, 1, 2)[0])
+            regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2)])
 
     batch_sizes = [feature.size(dim=0)
                    for pred_tgt in regulated_features
@@ -370,7 +368,8 @@ def plot_batch_mels(pred_tgt_lists, rank):
     for i in range(batch_sizes[0]):
         fig = plot_mels([
             [array[i] for array in regulated_features[0]],
-            [array[i] for array in regulated_features[1]]
+            [array[i] for array in regulated_features[1]],
+            [array[i] for array in regulated_features[2]]
         ])
         log({'spectrogram': fig}, rank)
         # empty pyplot
@@ -391,8 +390,8 @@ def log_validation_batch(x, y_pred, rank):
     # dec mask contains booleans, which to be logged need to be converted to integers
     validation_dict.pop('dec_mask', None)
     log(validation_dict, rank)  # something in here returns a warning
-    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
-    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
+    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
+    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
     if y_pred[4] is None and y_pred[12] is None:
         pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur']
         tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur']
@@ -400,11 +399,11 @@ def log_validation_batch(x, y_pred, rank):
             pred_specs_keys = ['mel_out', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'attn_hard_dur']
     elif y_pred[4] is None and y_pred[12] is not None:
-        pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
-        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
+        pred_specs_keys = ['mel_out', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
         if y_pred[6] is None:
-            pred_specs_keys = ['mel_out', 'attn_hard_dur', 'delta_f0_pred']
-            tgt_specs_keys = ['mel_padded', 'attn_hard_dur', 'delta_f0_tgt']  
+            pred_specs_keys = ['mel_out', 'delta_f0_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'delta_f0_tgt', 'attn_hard_dur']  
     elif y_pred[12] is None and y_pred[4] is not None:
         pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
         tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
@@ -412,13 +411,13 @@ def log_validation_batch(x, y_pred, rank):
             pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur']  
     else:
-        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
-        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
+        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
+        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
         if y_pred[6] is None:
-            pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur', 'delta_f0_pred']
-            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur', 'delta_f0_tgt']
-    plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
-                     [validation_dict[key] for key in tgt_specs_keys]], rank)
+            pred_specs_keys = ['mel_out', 'pitch_pred', 'delta_f0_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'delta_f0_tgt', 'attn_hard_dur']
+    # plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
+    #                  [validation_dict[key] for key in tgt_specs_keys]], rank)
 
 
 def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
