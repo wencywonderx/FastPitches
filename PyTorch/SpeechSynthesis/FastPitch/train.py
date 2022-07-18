@@ -789,7 +789,10 @@ def main():
                 epoch_mel_loss += iter_mel_loss
                 if pitch_pred is not None:
                     epoch_pitch_loss += iter_pitch_loss
-                epoch_energy_loss += iter_energy_loss
+                #----------------changed by me-------------
+                if epoch_energy_loss is not None:
+                    epoch_energy_loss += iter_energy_loss
+                #-----------------------------------------
                 epoch_dur_loss += iter_dur_loss
                 #-------------added by me----------------
                 if delta_f0_pred is not None:
