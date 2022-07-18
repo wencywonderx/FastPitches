@@ -156,9 +156,9 @@ def parse_args(parser):
                       help='Calculate pitch on the fly during trainig')
     cond.add_argument('--pitch-online-dir', type=str, default=None,
                       help='A directory for storing pitch calculated on-line')
-    cond.add_argument('--pitch-mean', type=float, default=None,
+    cond.add_argument('--pitch-mean', type=float, default=214.72203,
                       help='Normalization value for pitch')
-    cond.add_argument('--pitch-std', type=float, default=None,
+    cond.add_argument('--pitch-std', type=float, default=65.72038,
                       help='Normalization value for pitch')
     cond.add_argument('--load-mel-from-disk', action='store_true',
                       help='Use mel-spectrograms cached on the disk')  
