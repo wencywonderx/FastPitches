@@ -578,8 +578,10 @@ def main():
         wandb.watch(model, log='all')
 
     # Store pitch mean/std as params to translate from Hz during inference
-    model.pitch_mean[0] = args.pitch_mean
-    model.pitch_std[0] = args.pitch_std
+    if args.pitch_mean is not None:
+        assert args.pitch_std is not None
+        model.pitch_mean[0] = args.pitch_mean
+        model.pitch_std[0] = args.pitch_std
     log({'pitch_mean': args.pitch_mean, 'pitch_std': args.pitch_std},
         args.local_rank)
 
