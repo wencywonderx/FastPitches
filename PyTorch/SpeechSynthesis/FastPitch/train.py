@@ -463,17 +463,23 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
     val_meta['took'] = time.perf_counter() - tik
 
     # log overall statistics of the validate step
-
-    # log({
-    #     'loss/validation-loss': val_meta['loss'].item(),
-    #     'mel-loss/validation-mel-loss': val_meta['mel_loss'].item(),
-    #     'pitch-loss/validation-pitch-loss': val_meta['pitch_loss'].item(),
-    #     'energy-loss/validation-energy-loss': val_meta['energy_loss'].item(),
-    #     'dur-loss/validation-dur-error': val_meta['duration_predictor_loss'].item(),
-    #     'validation-frames per s': num_frames.item() / val_meta['took'],
-    #     'validation-took': val_meta['took'],
-    # }, rank)
-
+#-----------------------------------changed by me----------------------------------
+    loss_log = {
+        'loss/validation-loss': val_meta['loss'].item(),
+        'mel-loss/validation-mel-loss': val_meta['mel_loss'].item(),
+        'dur-loss/validation-dur-error': val_meta['duration_predictor_loss'].item(),
+        'validation-frames per s': num_frames.item() / val_meta['took'],
+        'validation-took': val_meta['took']
+    }
+    if y_pred[4] is not None:
+        'pitch-loss/validation-pitch-loss': val_meta['pitch_loss'].item()
+    if y_pred[6] is not None:
+        'energy-loss/validation-energy-loss': val_meta['energy_loss'].item()
+    if y_pred[12] is not None:
+        'delta-f0-loss/validation-delta-f0-loss': val_meta['delta_f0_loss'].item()
+#----------------------------------------------------------------------------------
+    log(loss_log, rank)
+    
     if was_training:
         model.train()
     return val_meta
@@ -836,7 +842,7 @@ def main():
         bmark_stats.update(epoch_num_frames, epoch_loss, epoch_mel_loss,
                            epoch_time)
 
-        print("----------------------------------------------------------------------------training validation")
+        print("-------------------training validation-----------------")
         validate(model, criterion, valset, args.batch_size, collate_fn,
                  distributed_run, batch_to_gpu, args.local_rank)
 
@@ -851,7 +857,7 @@ def main():
     if len(bmark_stats) > 0:
         log(bmark_stats.get(args.benchmark_epochs_num), args.local_rank)
 
-    print("-------------------------------------------------------------------------------whole validation")
+    print("---------------------whole validation--------------------")
     validate(model, criterion, valset, args.batch_size, collate_fn,
              distributed_run, batch_to_gpu, args.local_rank)
 
