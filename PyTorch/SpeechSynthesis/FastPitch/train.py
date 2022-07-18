@@ -634,6 +634,9 @@ def main():
         epoch_dur_loss = 0.0
         epoch_num_frames = 0
         epoch_frames_per_sec = 0.0
+        #-----added by me----
+        epoch_delta_f0_loss
+        #--------------------
 
         if distributed_run:
             train_loader.sampler.set_epoch(epoch)
