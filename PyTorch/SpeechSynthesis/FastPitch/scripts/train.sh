@@ -91,7 +91,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 #----------------------------------added by me---------------------------------
 [ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
-[ "$NARMAL" = true ]               && ARGS+=" --raw-f0"
+[ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
 #------------------------------------------------------------------------------
 
 if [ "$SAMPLING_RATE" == "44100" ]; then
