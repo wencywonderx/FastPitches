@@ -45,7 +45,7 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
 # export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt --------------------changed
-export TRAIN_FILELIST=$FP/filelists/test_file_300.txt
+export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
 export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 
 # metadata for wandb logging
