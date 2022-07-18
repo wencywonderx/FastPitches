@@ -343,9 +343,12 @@ def plot_batch_mels(pred_tgt_lists, rank):
     regulated_features = []
     # prediction: mel, pitch, energy
     # target: mel, pitch, energy
+    print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
+    print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
+
     for mel_pitch_energy in pred_tgt_lists:
         mels = mel_pitch_energy[0]
-        print("this is plotting mels: ", mels)
+        print("this is plotting mels: ", mels.shape)
         if mels.size(dim=2) == 80:  # tgt and pred mel have diff dimension order
             mels = mels.permute(0, 2, 1)
         mel_lens = mel_pitch_energy[-1]
@@ -388,8 +391,8 @@ def log_validation_batch(x, y_pred, rank):
     # dec mask contains booleans, which to be logged need to be converted to integers
     validation_dict.pop('dec_mask', None)
     log(validation_dict, rank)  # something in here returns a warning
-    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
-    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
+    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur', 'delta_f0_pred']
+    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur', 'delta_f0_tgt']
     plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
                      [validation_dict[key] for key in tgt_specs_keys]], rank)
 
