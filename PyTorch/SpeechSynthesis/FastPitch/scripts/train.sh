@@ -93,9 +93,9 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
-if [ "$NORMALISE" = false ]; then
-  ARGS+=" --pitch-mean None" 
-  AGSS+=" --pitch-std None"
+if [ "$NORMALISE" = true ]; then
+  ARGS+=" --pitch-mean 214.72203" 
+  AGSS+=" --pitch-std 65.72038"
 fi
 #------------------------------------------------------------------------------
 
