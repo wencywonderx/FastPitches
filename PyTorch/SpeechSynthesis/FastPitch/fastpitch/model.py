@@ -101,11 +101,11 @@ class TemporalPredictor(nn.Module):
 
     def forward(self, enc_out, enc_out_mask): # mask is to ignore 0s when predicting
         out = enc_out * enc_out_mask
-        print(f'-------------Predictor: this is size after masking before LSTM {out}')
+        print(f'-------------Predictor: this is size after masking before LSTM {out.shape}')
         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-        print(f'-------------Predictor: this is size after LSTM and transpose {out}')
+        print(f'-------------Predictor: this is size after LSTM and transpose {out.shape}')
         out = self.fc(out) * enc_out_mask
-        print(f'-------------Predictor: this is size after FC {out}')
+        print(f'-------------Predictor: this is size after FC {out.shape}')
         return out
 
 # class MeanPredictor(nn.Module):
