@@ -89,6 +89,10 @@ def interpolate_f0(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
+def f0_slope(pitch):
+    pitch = pitch.numpy()
+    
+    return torch.from_numpy(f0_slope)
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
-# print(mean_delta(pitch))
+# print(pitch_slope(pitch))

@@ -101,8 +101,11 @@ class TemporalPredictor(nn.Module):
 
     def forward(self, enc_out, enc_out_mask): # mask is to ignore 0s when predicting
         out = enc_out * enc_out_mask
+        print(f'-------------Predictor: this is size after masking before LSTM {out}')
         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
+        print(f'-------------Predictor: this is size after LSTM and transpose {out}')
         out = self.fc(out) * enc_out_mask
+        print(f'-------------Predictor: this is size after FC {out}')
         return out
 
 # class MeanPredictor(nn.Module):
@@ -110,7 +113,7 @@ class TemporalPredictor(nn.Module):
 
 #     def __init__(self, input_size, filter_size, kernel_size, dropout,
 #                  n_layers=2, n_predictions=1):
-#         super(TemporalPredictor, self).__init__()
+#         super(MeanPredictor, self).__init__()
 
 #         self.layers = nn.Sequential(*[ # represent the input, dealing with input and learn different extractions
 #             ConvReLUNorm(input_size if i == 0 else filter_size, filter_size,
@@ -225,14 +228,12 @@ class FastPitch(nn.Module):
                 kernel_size=delta_f0_predictor_kernel_size,
                 dropout=p_delta_f0_predictor_dropout, 
                 n_layers=delta_f0_predictor_n_layers,
-                n_predictions=1
-            )
+                n_predictions=1)
             self.delta_f0_emb = nn.Conv1d(
                 1,
                 symbols_embedding_dim,
                 kernel_size=delta_f0_embedding_kernel_size,
-                padding=int((delta_f0_embedding_kernel_size - 1) / 2)
-            )
+                padding=int((delta_f0_embedding_kernel_size - 1) / 2))
 #---------------------------------------------------------------------
 
         self.energy_conditioning = energy_conditioning

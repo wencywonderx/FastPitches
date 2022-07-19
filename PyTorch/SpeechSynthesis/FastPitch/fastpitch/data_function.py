@@ -37,7 +37,7 @@ from scipy.stats import betabinom
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-from fastpitch.pitch_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0
+from fastpitch.pitch_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
