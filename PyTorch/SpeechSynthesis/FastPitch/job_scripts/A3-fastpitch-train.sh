@@ -59,7 +59,7 @@ export EXPERIMENT_DESC="FastPitch predicting mean f0" #-----------------------ch
 export PHONE=true
 export TEXT_CLEANERS=english_cleaners_v2
 # enable energy conditioning (errors in loss logging if false)
-export ENERGY=true
+export ENERGY=false # ----------------------------------------------------changed
 export NSPEAKERS=1
 export SAMPLING_RATE=22050
 export APPEND_SPACES=false
@@ -94,7 +94,7 @@ export NORMALISE=false
 export INTERPOLATE=true
 #-----------------------
 export MEAN_DELTA=true
-export NORMAL=true
+export NORMAL=false
 #-----------------------
 
 cd $FP
