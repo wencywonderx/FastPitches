@@ -394,7 +394,7 @@ class FastPitch(nn.Module):
             enc_out = enc_out + delta_f0_emb.transpose(1, 2)
             # print("\n added predicted delta f0 to the embedding : ", enc_out.shape) # e.g. [16, 148, 384]
             
-            input = enc_out, enc_mask
+            input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
             print("-------predicting mean f0")          
             # if use_gt_mean_f0 and mean_f0_tgt is not None:
