@@ -136,7 +136,6 @@ def parse_fastpitch_args(parent, add_help=False):
                             help='Number of conv-1D layers')
     #-----------------------------------------------------------------------------------------------
     delta_and_mean_f0_pred.add_argument('--mean-f0-predictor-hidden-size', default=256, type=int)
-    delta_and_mean_f0_pred.add_argument('--mean-f0-predictor-batch-size', type=int, required=True)    
     #-----------------------------------------------------------------------------------------------
 
     cond = parser.add_argument_group('conditioning parameters')

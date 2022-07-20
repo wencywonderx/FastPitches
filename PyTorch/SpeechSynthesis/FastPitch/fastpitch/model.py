@@ -111,16 +111,21 @@ class TemporalPredictor(nn.Module):
 class MeanPredictor(nn.Module):
     """Predicts a single float per sample"""
 
-    def __init__(self, input_size, hidden_size, batch_size, n_predictions=1):
+    def __init__(self, input_size, hidden_size, n_predictions=1):
         super(MeanPredictor, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size)
         self.fc = nn.Linear(hidden_size, n_predictions) 
-        self.hidden = (torch.zeros(1, batch_size, hidden_size),
-                       torch.zeros(1, batch_size, hidden_size))
-    def forward(self, enc_out, enc_mask):   
-        input = enc_out * enc_mask    
-        lstm_out, self.hidden = self.lstm(input.permute(1, 0, 2), self.hidden)
-        out = self.fc(lstm_out[-1, :, :]).squeeze(1)
+        self.hidden_size = hidden_size
+    def forward(self, input):       
+        # out = enc_out * enc_out_mask
+        # print(out.shape) # [16, 148, 384]
+        h0 = torch.zeros(1, input.size(0), self.hidden_size, device=input.device)
+        c0 = torch.zeros(1, input.size(0), self.hidden_size, device=input.device)
+        lstm_out, _ = self.lstm(input.permute(1, 0, 2), (h0,c0))
+        # print(lstm_out.shape) # [148, 16, 256]
+        # print(lstm_out[-1, :, :].shape) # [16, 256]
+        out = self.fc(lstm_out[-1, :, :]).squeeze(1)    
+        # print(out.shape) # [16]
         return out
 
 class FastPitch(nn.Module):
@@ -148,7 +153,6 @@ class FastPitch(nn.Module):
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
-                 mean_f0_predictor_batch_size, #-----added
                  mean_f0_predictor_hidden_size, #-----added
                  n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
                  ):
@@ -233,8 +237,7 @@ class FastPitch(nn.Module):
 
             self.mean_f0_predictor = MeanPredictor(
                 in_fft_output_size,
-                mean_f0_predictor_hidden_size,
-                mean_f0_predictor_batch_size)
+                mean_f0_predictor_hidden_size)
             # self.mean_f0_em = 
 #---------------------------------------------------------------------
 
@@ -391,7 +394,8 @@ class FastPitch(nn.Module):
             enc_out = enc_out + delta_f0_emb.transpose(1, 2)
             # print("\n added predicted delta f0 to the embedding : ", enc_out.shape) # e.g. [16, 148, 384]
             
-            mean_f0_pred = self.mean_f0_predictor(enc_out, enc_mask)
+            input = enc_out, enc_mask
+            mean_f0_pred = self.mean_f0_predictor(input)
             print("-------predicting mean f0")          
             # if use_gt_mean_f0 and mean_f0_tgt is not None:
             #     mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
