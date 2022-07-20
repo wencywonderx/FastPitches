@@ -111,10 +111,10 @@ class TemporalPredictor(nn.Module):
 class MeanPredictor(nn.Module):
     """Predicts a single float per sample"""
 
-    def __init__(self, input_size, hidden_size, batch_size):
+    def __init__(self, input_size, hidden_size, batch_size, n_predictions=1):
         super(MeanPredictor, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size)
-        self.fc = nn.Linear(hidden_size, n_predictions=1) 
+        self.fc = nn.Linear(hidden_size, n_predictions) 
         self.hidden = (torch.zeros(1, batch_size, hidden_size),
                        torch.zeros(1, batch_size, hidden_size))
     def forward(self, enc_out, enc_mask):   
@@ -234,7 +234,7 @@ class FastPitch(nn.Module):
             self.mean_f0_predictor = MeanPredictor(
                 in_fft_output_size,
                 mean_f0_predictor_hidden_size,
-                16)
+                mean_f0_predictor_batch_size)
             # self.mean_f0_em = 
 #---------------------------------------------------------------------
 
