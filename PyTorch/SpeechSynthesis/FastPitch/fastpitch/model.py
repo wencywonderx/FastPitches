@@ -234,7 +234,7 @@ class FastPitch(nn.Module):
             self.mean_f0_predictor = MeanPredictor(
                 in_fft_output_size,
                 mean_f0_predictor_hidden_size,
-                mean_f0_predictor_batch_size)
+                mean_f0_predictor_batch_size=16)
             # self.mean_f0_em = 
 #---------------------------------------------------------------------
 
