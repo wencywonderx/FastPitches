@@ -49,7 +49,7 @@ echo -e "\nAMP=$AMP, ${NUM_GPUS}x${BATCH_SIZE}x${GRAD_ACCUMULATION}" \
         "(global batch size ${GBS})\n"
 
 ARGS=""
-ARGS+=" --cuda" ----------------------------------------------------changed
+ARGS+=" --cuda" #----------------------------------------------------changed
 ARGS+=" -o $OUTPUT_DIR"
 ARGS+=" --dataset-path $DATASET_PATH"
 ARGS+=" --training-files $TRAIN_FILELIST"
