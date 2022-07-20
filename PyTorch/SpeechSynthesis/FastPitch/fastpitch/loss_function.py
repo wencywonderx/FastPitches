@@ -106,8 +106,9 @@ class FastPitchLoss(nn.Module):
             delta_f0_loss = 0
 
         if mean_f0_pred is not None:
-            print("-------calculating delta f0 loss")
-            ldiff = mean_f0_tgt - mean_f0_pred
+            print("-------calculating mean f0 loss")
+            ldiff = mean_f0_tgt.size(0) - mean_f0_pred.size(0)
+            # print(ldiff)
             mean_f0_pred = F.pad(mean_f0_pred, (0, ldiff), value=0.0)
             mean_f0_loss = F.mse_loss(mean_f0_tgt, mean_f0_pred, reduction='none')
         else:
