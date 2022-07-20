@@ -107,10 +107,13 @@ class FastPitchLoss(nn.Module):
 
         if mean_f0_pred is not None:
             print("-------calculating mean f0 loss")
+            print(f'this is predicted mean f0 {mean_f0_pred}')
+            print(f'this is target mean f0 {mean_f0_tgt}')           
             ldiff = mean_f0_tgt.size(0) - mean_f0_pred.size(0)
-            # print(ldiff)
+            print(f'this is ldiff mean f0 {ldiff}')
             mean_f0_pred = F.pad(mean_f0_pred, (0, ldiff), value=0.0)
             mean_f0_loss = F.mse_loss(mean_f0_tgt, mean_f0_pred, reduction='none')
+            print(f'this is mean f0 loss {mean_f0_loss}')           
         else:
             mean_f0_loss = 0
         #----------------------------------
