@@ -120,7 +120,9 @@ def parse_args(parser):
                      default=1.0, help='Rescale alignment loss')
 #---------------------------------added by me-----------------------------------
     opt.add_argument('--delta-f0-predictor-loss-scale', type=float,
-                     default=1.0, help='Rescale delta f0 loss')                     
+                     default=1.0, help='Rescale delta f0 loss')       
+    opt.add_argument('--mean-f0-predictor-loss-scale', type=float,
+                     default=1.0, help='Rescale mean f0 loss')                     
 #-------------------------------------------------------------------------------
 
     data = parser.add_argument_group('dataset parameters')
@@ -313,7 +315,7 @@ def plot_mels(pred_tgt_lists):
         ax1.plot(pitch, color="tomato")
         ax1.set_xlim(0, mel.shape[1])
         ax1.set_ylim(0, pitch_max)
-        ax1.set_ylabel("delta_F0", color="tomato")  # changed
+        ax1.set_ylabel("F0", color="tomato")  # -----changed
         ax1.tick_params(labelsize="x-small",
                         colors="tomato",
                         bottom=False,
@@ -383,13 +385,16 @@ def log_validation_batch(x, y_pred, rank):
     y_pred_fields = ['mel_out', 'dec_mask', 'dur_pred', 'log_dur_pred',
                      'pitch_pred', 'pitch_tgt', 'energy_pred',
                      'energy_tgt', 'attn_soft', 'attn_hard',
-                     'attn_hard_dur', 'attn_logprob', 'delta_f0_pred', 'delta_f0_tgt']
+                     'attn_hard_dur', 'attn_logprob', 
+                     'delta_f0_pred', 'delta_f0_tgt', 'mean_f0_pred', 'mean_f0_tgt']
 
     validation_dict = dict(zip(x_fields + y_pred_fields,
                                list(x) + list(y_pred)))
     # dec mask contains booleans, which to be logged need to be converted to integers
     validation_dict.pop('dec_mask', None)
     log(validation_dict, rank)  # something in here returns a warning
+
+    #-------------------------------------changed by me----------------------------------------
     pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
     tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
     if y_pred[4] is None and y_pred[12] is None:
@@ -416,8 +421,9 @@ def log_validation_batch(x, y_pred, rank):
         if y_pred[6] is None:
             pred_specs_keys = ['mel_out', 'pitch_pred', 'delta_f0_pred', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'delta_f0_tgt', 'attn_hard_dur']
-    # plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
-    #                  [validation_dict[key] for key in tgt_specs_keys]], rank)
+    #-------------------------------------------------------------------------------------------------
+    plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
+                     [validation_dict[key] for key in tgt_specs_keys]], rank)
 
 
 def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
@@ -463,7 +469,7 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
     val_meta['took'] = time.perf_counter() - tik
 
     # log overall statistics of the validate step
-#-----------------------------------changed by me----------------------------------
+#-----------------------------------changed by me--------------------------------------------
     loss_log = {
         'loss/validation-loss': val_meta['loss'].item(),
         'mel-loss/validation-mel-loss': val_meta['mel_loss'].item(),
@@ -477,7 +483,9 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
         loss_log['energy-loss/validation-energy-loss'] = val_meta['energy_loss'].item()
     if y_pred[12] is not None:
         loss_log['delta-f0-loss/validation-delta-f0-loss'] = val_meta['delta_f0_loss'].item()
-#----------------------------------------------------------------------------------
+    if y_pred[14] is not None:
+        loss_log['mean-f0-loss/validation-mean-f0-loss'] = val_meta['mean_f0_loss'].item()        
+#--------------------------------------------------------------------------------------------
     log(loss_log, rank)
     
     if was_training:
@@ -552,7 +560,7 @@ def main():
         tb_subsets.append('val_ema')
 
     parser = models.parse_model_args('FastPitch', parser)
-    args, unk_args = parser.parse_known_args(fixed_args_list) #--------------------------------Q
+    args, unk_args = parser.parse_known_args(fixed_args_list) 
     if len(unk_args) > 0:
         raise ValueError(f'Invalid options {unk_args}')
 
@@ -629,14 +637,15 @@ def main():
         dur_predictor_loss_scale=args.dur_predictor_loss_scale,
         pitch_predictor_loss_scale=args.pitch_predictor_loss_scale,
         attn_loss_scale=args.attn_loss_scale,
-        delta_f0_predictor_loss_scale=args.delta_f0_predictor_loss_scale) 
+        delta_f0_predictor_loss_scale=args.delta_f0_predictor_loss_scale, 
+        mean_f0_predictor_loss_scale=args.mean_f0_predictor_loss_scale) 
 
     collate_fn = TTSCollate()
 
     if args.local_rank == 0:
         prepare_tmp(args.pitch_online_dir)
 
-    trainset = TTSDataset(audiopaths_and_text=args.training_files, **vars(args)) # Q:need the same name?
+    trainset = TTSDataset(audiopaths_and_text=args.training_files, **vars(args)) # vars(args) take the same name
     valset = TTSDataset(audiopaths_and_text=args.validation_files, **vars(args))
 
     if distributed_run:
@@ -672,6 +681,7 @@ def main():
         epoch_frames_per_sec = 0.0
         #-------added by me------
         epoch_delta_f0_loss = 0.0
+        epoch_mean_f0_loss = 0.0      
         #------------------------
 
         if distributed_run:
@@ -712,7 +722,7 @@ def main():
                         and epoch >= args.kl_loss_start_epoch):
                     if args.kl_loss_start_epoch == epoch and epoch_iter == 1:
                         print('Begin hard_attn loss')
-                    _, _, _, _, pitch_pred, _, _, energy_pred, attn_soft, attn_hard, _, _, delta_f0_pred, _ = y_pred
+                    _, _, _, _, pitch_pred, _, _, energy_pred, attn_soft, attn_hard, _, _, delta_f0_pred, _, mean_f0_pred, _= y_pred
                     binarization_loss = attention_kl_loss(attn_hard, attn_soft)
                     kl_weight = min((epoch - args.kl_loss_start_epoch) / args.kl_loss_warmup_epochs, 1.0) * args.kl_loss_weight
                     meta['kl_loss'] = binarization_loss.clone().detach() * kl_weight
@@ -781,6 +791,10 @@ def main():
                     iter_delta_f0_loss = iter_meta['delta_f0_loss'].item()
                 else:
                     iter_delta_f0_loss = 0.0
+                if mean_f0_pred is not None:
+                    iter_mean_f0_loss = iter_meta['mean_f0_loss'].item()
+                else:
+                    iter_mean_f0_loss = 0.0
                 #----------------------------------------------------------
                 iter_time = time.perf_counter() - iter_start_time
                 epoch_frames_per_sec += iter_num_frames / iter_time
@@ -797,6 +811,8 @@ def main():
                 #-------------added by me----------------
                 if delta_f0_pred is not None:
                     epoch_delta_f0_loss += iter_delta_f0_loss
+                if mean_f0_pred is not None:
+                    epoch_mean_f0_loss += iter_mean_f0_loss                    
                 #----------------------------------------
 
                 if epoch_iter % 5 == 0:
@@ -814,6 +830,7 @@ def main():
                         'dur-loss/dur_loss': iter_dur_loss,
                         #------------------added by me--------------------
                         'delta_f0_loss/delta_f0_loss': iter_delta_f0_loss,
+                        'mean_f0_loss/mean_f0_loss': iter_mean_f0_loss,                        
                         #-------------------------------------------------
                         'frames per s': iter_num_frames / iter_time,
                         'took': iter_time,
@@ -840,6 +857,7 @@ def main():
             'dur-loss/epoch_dur_loss': epoch_dur_loss,
             # --------------------added by me----------------------
             'delta_f0_loss/epoch_delta_f0_loss': epoch_delta_f0_loss,
+            'mean_f0_loss/epoch_mean_f0_loss': epoch_mean_f0_loss,
             # -----------------------------------------------------
             'epoch_frames per s': epoch_num_frames / epoch_time,
             'epoch_took': epoch_time,
