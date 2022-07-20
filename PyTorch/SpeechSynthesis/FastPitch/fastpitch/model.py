@@ -148,7 +148,7 @@ class FastPitch(nn.Module):
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
-                 batch_size, #-----added
+                 mean_f0_predictor_batch_size, #-----added
                  mean_f0_predictor_hidden_size, #-----added
                  n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
                  ):
@@ -230,10 +230,11 @@ class FastPitch(nn.Module):
                 symbols_embedding_dim,
                 kernel_size=delta_f0_embedding_kernel_size,
                 padding=int((delta_f0_embedding_kernel_size - 1) / 2))
+
             self.mean_f0_predictor = MeanPredictor(
                 in_fft_output_size,
                 mean_f0_predictor_hidden_size,
-                batch_size)
+                mean_f0_predictor_batch_size)
             # self.mean_f0_em = 
 #---------------------------------------------------------------------
 

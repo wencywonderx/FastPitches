@@ -148,7 +148,8 @@ def get_model_config(model_name, args):
             mean_and_delta_f0 = args.mean_and_delta_f0,
             delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,
             # mean f0 predictor
-            mean_f0_predictor_hidden_size=args.mean_f0_predictor_hidden_size,    
+            mean_f0_predictor_hidden_size=args.mean_f0_predictor_hidden_size,   
+            mean_f0_predictor_batch_size=args.mean_f0_predictor_batch_size,             
             #-------------------------------------------------------------------         
            
             # speakers parameters
