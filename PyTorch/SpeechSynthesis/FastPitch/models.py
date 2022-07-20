@@ -146,7 +146,9 @@ def get_model_config(model_name, args):
             delta_f0_predictor_n_layers=args.delta_f0_predictor_n_layers,
             # delta f0 conditioning
             mean_and_delta_f0 = args.mean_and_delta_f0,
-            delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,    
+            delta_f0_embedding_kernel_size=args.delta_f0_embedding_kernel_size,
+            # mean f0 predictor
+            mean_f0_predictor_hidden_size=args.mean_f0_predictor_hidden_size,    
             #-------------------------------------------------------------------         
            
             # speakers parameters

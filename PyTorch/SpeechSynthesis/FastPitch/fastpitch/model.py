@@ -101,33 +101,27 @@ class TemporalPredictor(nn.Module):
 
     def forward(self, enc_out, enc_out_mask): # mask is to ignore 0s when predicting
         out = enc_out * enc_out_mask
-        print(f'-------------Predictor: this is size after masking before LSTM {out.shape}')
+        # print(f'-------------Predictor: this is size after masking before LSTM {out.shape}') [16, 148, 384]
         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-        print(f'-------------Predictor: this is size after LSTM and transpose {out.shape}')
+        # print(f'-------------Predictor: this is size after LSTM and transpose {out.shape}') [16, 148, 256]
         out = self.fc(out) * enc_out_mask
-        print(f'-------------Predictor: this is size after FC {out.shape}')
+        # print(f'-------------Predictor: this is size after FC {out.shape}') [16, 1, 256]
         return out
 
-# class MeanPredictor(nn.Module):
-#     """Predicts a single float per sample"""
+class MeanPredictor(nn.Module):
+    """Predicts a single float per sample"""
 
-#     def __init__(self, input_size, filter_size, kernel_size, dropout,
-#                  n_layers=2, n_predictions=1):
-#         super(MeanPredictor, self).__init__()
-
-#         self.layers = nn.Sequential(*[ # represent the input, dealing with input and learn different extractions
-#             ConvReLUNorm(input_size if i == 0 else filter_size, filter_size,
-#                          kernel_size=kernel_size, dropout=dropout)
-#             for i in range(n_layers)]
-#         )
-#         self.n_predictions = n_predictions
-#         self.fc = nn.Linear(filter_size, self.n_predictions, bias=True) #----------------------------------------change to LSTM
-
-#     def forward(self, enc_out, enc_out_mask):
-#         out = enc_out * enc_out_mask
-#         out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-#         out = self.fc(out) * enc_out_mask #-------------------------------------change here, keep the last one and mask others
-#         return out
+    def __init__(self, input_size, hidden_size, n_predictions, batch_size):
+        super(MeanPredictor, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size)
+        self.fc = nn.Linear(hidden_size, n_predictions) 
+        self.hidden = (torch.zeros(1, batch_size, hidden_size),
+                       torch.zeros(1, batch_size, hidden_size))
+    def forward(self, enc_out, enc_mask):   
+        input = enc_out * enc_mask    
+        lstm_out, self.hidden = self.lstm(input.permute(1, 0, 2), self.hidden)
+        out = self.fc(lstm_out[-1, :, :]).squeeze(1)
+        return out
 
 class FastPitch(nn.Module):
     def __init__(self, n_mel_channels, n_symbols, padding_idx,
@@ -149,11 +143,13 @@ class FastPitch(nn.Module):
                  energy_predictor_kernel_size, energy_predictor_filter_size,
                  p_energy_predictor_dropout, energy_predictor_n_layers,
                  energy_embedding_kernel_size,
-                 mean_and_delta_f0, #----added
-                 raw_f0, #---added
+                 mean_and_delta_f0, #-----added
+                 raw_f0, #-----added
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
+                 batch_size, #-----added
+                 mean_f0_predictor_hidden_size, #-----added
                  n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
                  ):
         super(FastPitch, self).__init__()
@@ -234,6 +230,11 @@ class FastPitch(nn.Module):
                 symbols_embedding_dim,
                 kernel_size=delta_f0_embedding_kernel_size,
                 padding=int((delta_f0_embedding_kernel_size - 1) / 2))
+            self.mean_f0_predictor = MeanPredictor(
+                in_fft_output_size,
+                mean_f0_predictor_hidden_size,
+                batch_size)
+            # self.mean_f0_em = 
 #---------------------------------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -289,22 +290,22 @@ class FastPitch(nn.Module):
                              out_lens.cpu().numpy(), width=1)
         return torch.from_numpy(attn_out).to(attn.get_device())
 
-    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, pace=1.0, max_duration=75): #- ------------ Q: where is use_gt from
+    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, pace=1.0, max_duration=75): 
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
          speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
-        print("\n --------------------------new batch--------------------------")
+        print("--------------------------new batch--------------------------")
         # print("\n inputs: ", inputs.shape) # (batch_size, max_input_length) e.g.[16, 148]
         # print("\n input_lens: ", input_lens) # (batch_size) e.g. tensor([148, 139...])
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
-        print("\n pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
-        print("\n delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        print("\n mean_f0_tgt", mean_f0_tgt) # e.g. [16]
+        print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
+        print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
+        print("mean_f0_tgt", mean_f0_tgt) # e.g. [16]
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
         # print("\n mel_max_len: ", mel_max_len) # e.g. 787, integer
@@ -330,7 +331,7 @@ class FastPitch(nn.Module):
         attn_mask = mask_from_lens(input_lens)[..., None] == 0 # alignment, how many phones need to be aligned
         # attn_mask should be 1 for unused timesteps in the text_enc_w_spkvec tensor
 
-        attn_soft, attn_logprob = self.attention( #----------------------------Q: logprob
+        attn_soft, attn_logprob = self.attention( #---------------------------------------------------------------------Q: log prob?
             mel_tgt, text_emb.permute(0, 2, 1), mel_lens, attn_mask,
             key_lens=input_lens, keys_encoded=enc_out, attn_prior=attn_prior)
 
@@ -344,35 +345,40 @@ class FastPitch(nn.Module):
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
         # Predict durations
-        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #------------------ Q: why log?
+        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #----------------------------------------- Q: why log?
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
 
-        #--------------------------------------modified by me----------------------------------------------
+        #------------modified by me----------
         # Predict pitch
         if self.raw_f0:
-            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  # permute to fit into convelutional layer
-            print("\n -------predicting pitch")
+            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  
+            # permute to fit into convelutional layer for embedding
+            print("-------predicting pitch")
             # Average pitch over characters
-            pitch_tgt = average_pitch(pitch_dense, dur_tgt) # new target, smaller, need to know the duration for each phone, to text length
+            pitch_tgt = average_pitch(pitch_dense, dur_tgt) 
+            # new target, smaller, need to know the duration for each phone, to text length
             # print("\n pitch target after averaging: ", pitch_tgt.shape)
-            if use_gt_pitch and pitch_tgt is not None: # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
+            if use_gt_pitch and pitch_tgt is not None: 
+                # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
                 pitch_emb = self.pitch_emb(pitch_tgt)
             else:
                 pitch_emb = self.pitch_emb(pitch_pred)
             # print('\n embedded pitch: ', pitch_emb.shape)
-            enc_out = enc_out + pitch_emb.transpose(1, 2)  # for FFT encoder output, make sure they are in right dimension then can be add to the following
+            enc_out = enc_out + pitch_emb.transpose(1, 2)  
+            # for FFT encoder output, make sure they are in right dimension then can be add to the following
             # print('\n added predicted pitch to the embedding: ', enc_out.shape)  
         else:
             pitch_pred = None
             pitch_tgt = None
-        #--------------------------------------------------------------------------------------------------
+        #--------------------------------
 
-        #------------------------------added by me---------------------------------
-        # Predict delta f0
+        #------------added by me----------
+        # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
-            print("\n -------predicting delta f0") # e.g. [16, 1, 148]
-            # Average delta f0 over charachtors, to predict for each input phone one value but not couple of frame values which is meaningless
+            print("-------predicting delta f0") # e.g. [16, 1, 148]
+            # Average delta f0 over charachtors, to predict for each input phone one value 
+            # but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
             # print("\n delta f0 target after average: ", delta_f0_tgt.shape) # e.g. [16, 1, 148]
             # if use ground truth
@@ -383,10 +389,20 @@ class FastPitch(nn.Module):
             # print('\n embedded delta f0: ', delta_f0_emb.shape) # e.g. [16, 384, 148]
             enc_out = enc_out + delta_f0_emb.transpose(1, 2)
             # print("\n added predicted delta f0 to the embedding : ", enc_out.shape) # e.g. [16, 148, 384]
+            
+            mean_f0_pred = self.mean_f0_predictor(enc_out, enc_mask)
+            print("-------predicting mean f0")          
+            # if use_gt_mean_f0 and mean_f0_tgt is not None:
+            #     mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
+            # else:
+            #     mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
+            # enc_out = enc_out + mean_f0_emb
         else:
             delta_f0_pred = None
-            delta_f0_pred = None
-        #-------------------------------------------------------------------------
+            delta_f0_emb = None
+            mean_f0_pred = None
+            # mean_f0_emb = None
+        #---------------------------
 
         # Predict energy
         if self.energy_conditioning:
@@ -395,7 +411,7 @@ class FastPitch(nn.Module):
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
             # print("\n energy target after average: ", energy_tgt.shape)
-            energy_tgt = torch.log(1.0 + energy_tgt) #-------------------------------------------Q: log?
+            energy_tgt = torch.log(1.0 + energy_tgt) #----------------------------------------------------------------------Q: log?
             # print("\n energy target after log: ", energy_tgt.shape)
             energy_emb = self.energy_emb(energy_tgt)
             # print("\n energy embedded: ", energy_emb.shape)
@@ -421,7 +437,7 @@ class FastPitch(nn.Module):
         # print("\n mel out", mel_out.shape)
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
-                attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt)
+                attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, mean_f0_pred, mean_f0_tgt)
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,

@@ -25,6 +25,7 @@
 #
 # *****************************************************************************
 
+from sklearn.metrics import mean_absolute_error
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -36,21 +37,22 @@ from fastpitch.attn_loss_function import AttentionCTCLoss
 class FastPitchLoss(nn.Module):
     def __init__(self, dur_predictor_loss_scale=1.0,
                  pitch_predictor_loss_scale=1.0, attn_loss_scale=1.0,
-                 energy_predictor_loss_scale=0.1, delta_f0_predictor_loss_scale=1.0):
+                 energy_predictor_loss_scale=0.1, delta_f0_predictor_loss_scale=1.0, mean_f0_predictor_loss_scale=1.0):
         super(FastPitchLoss, self).__init__()
         self.dur_predictor_loss_scale = dur_predictor_loss_scale
         self.pitch_predictor_loss_scale = pitch_predictor_loss_scale
         self.energy_predictor_loss_scale = energy_predictor_loss_scale
-        #---------------added by me-------------
+        #-------------------------added by me-------------------------
         self.delta_f0_predictor_loss_scale = delta_f0_predictor_loss_scale
-        #---------------------------------------
+        self.mean_f0_predictor_loss_scale = mean_f0_predictor_loss_scale
+        #-------------------------------------------------------------
         self.attn_loss_scale = attn_loss_scale
         self.attn_ctc_loss = AttentionCTCLoss()
 
     def forward(self, model_out, targets, is_training=True, meta_agg='mean'):
         (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred, pitch_tgt, 
         energy_pred, energy_tgt, attn_soft, attn_hard, attn_dur, attn_logprob, 
-        delta_f0_pred, delta_f0_tgt) = model_out 
+        delta_f0_pred, delta_f0_tgt, mean_f0_pred, mean_f0_tgt) = model_out 
 
         (mel_tgt, in_lens, out_lens) = targets
 
@@ -76,7 +78,7 @@ class FastPitchLoss(nn.Module):
 
         #-----------------------------modified by me----------------------------
         if pitch_pred is not None:
-            print("\n -------calculating pitch loss")            
+            print("-------calculating pitch loss")            
             ldiff = pitch_tgt.size(2) - pitch_pred.size(2)
             pitch_pred = F.pad(pitch_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) 
             pitch_loss = F.mse_loss(pitch_tgt, pitch_pred, reduction='none')
@@ -87,22 +89,30 @@ class FastPitchLoss(nn.Module):
 
         # if statements to control conditioning, instead if we don't want to calculate this part it will be broken 
         if energy_pred is not None:
-            print("\n -------calculating energy loss")
-            energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # ------------------Q: why use pitch ldiff?
+            print("-------calculating energy loss")
+            energy_pred = F.pad(energy_pred, (0, ldiff, 0, 0), value=0.0) # ---------------------------Q: why use pitch ldiff?
             energy_loss = F.mse_loss(energy_tgt, energy_pred, reduction='none')
             energy_loss = (energy_loss * dur_mask).sum() / dur_mask.sum()
         else:
             energy_loss = 0
-        #--------------------------------added by me-----------------------------------
+        #--------------added by me---------
         if delta_f0_pred is not None:
-            print("\n -------calculating delta f0 loss")
+            print("-------calculating delta f0 loss")
             ldiff = delta_f0_tgt.size(2) - delta_f0_pred.size(2)
-            delta_f0_pred = F.pad(delta_f0_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) # -------------------------Q: the dimention
+            delta_f0_pred = F.pad(delta_f0_pred, (0, ldiff, 0, 0, 0, 0), value=0.0) # -------------------------Q: why pad?
             delta_f0_loss = F.mse_loss(delta_f0_tgt, delta_f0_pred, reduction='none')
             delta_f0_loss = (delta_f0_loss * dur_mask.unsqueeze(1)).sum() / dur_mask.sum()
         else:
             delta_f0_loss = 0
-        #------------------------------------------------------------------------------
+
+        if mean_f0_pred is not None:
+            print("-------calculating delta f0 loss")
+            ldiff = mean_f0_tgt - mean_f0_pred
+            mean_f0_pred = F.pad(mean_f0_pred, (0, ldiff), value=0.0)
+            mean_f0_loss = F.mse_loss(mean_f0_tgt, mean_f0_pred, reduction='none')
+        else:
+            mean_f0_loss = 0
+        #----------------------------------
 
         # Attention loss
         attn_loss = self.attn_ctc_loss(attn_logprob, in_lens, out_lens)
@@ -112,6 +122,7 @@ class FastPitchLoss(nn.Module):
                 + pitch_loss * self.pitch_predictor_loss_scale
                 # --------------------added by me--------------------
                 + delta_f0_loss * self.delta_f0_predictor_loss_scale 
+                + mean_f0_loss * self.mean_f0_predictor_loss_scale
                 #----------------------------------------------------
                 + energy_loss * self.energy_predictor_loss_scale
                 + attn_loss * self.attn_loss_scale)
@@ -133,6 +144,8 @@ class FastPitchLoss(nn.Module):
             meta['pitch_loss'] =  pitch_loss.clone().detach()
         if delta_f0_pred is not None:
             meta['delta_f0_loss'] = delta_f0_loss.clone().detach()
+        if mean_f0_pred is not None:
+            meta['mean_f0_loss'] = mean_f0_loss.clone().detach()       
         #-----------------------------------------------------------
 
         assert meta_agg in ('sum', 'mean')

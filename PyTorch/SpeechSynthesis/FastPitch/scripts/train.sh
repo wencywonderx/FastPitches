@@ -68,6 +68,7 @@ ARGS+=" --dur-predictor-loss-scale 0.1"
 ARGS+=" --pitch-predictor-loss-scale 0.1"
 #-----------------added by me----------------------
 ARGS+=" --delta-f0-predictor-loss-scale 0.1"
+ARGS+=" --mean-f0-predictor-loss-scale 0.1"
 #--------------------------------------------------
 
 # Autoalign & new features

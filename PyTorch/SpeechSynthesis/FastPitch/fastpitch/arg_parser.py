@@ -122,19 +122,21 @@ def parse_fastpitch_args(parent, add_help=False):
     energy_pred.add_argument('--energy-predictor-n-layers', default=2, type=int,
                             help='Number of conv-1D layers')
 
-    #------------------------------added by me-----------------------------------------------------------Q
-    delta_f0_pred = parser.add_argument_group('delta f0 predictor parameters')
+    #------------------------------added by me-------------------------------------------------------
+    delta_and_mean_f0_pred = parser.add_argument_group('delta and mean f0 predictor parameters')
     # delta_f0_pred.add_argument('--delta-f0-conditioning', action='store_true')    
-    delta_f0_pred.add_argument('--mean-and-delta-f0', action='store_true')    
-    delta_f0_pred.add_argument('--delta-f0-predictor-kernel-size', default=3, type=int,
+    delta_and_mean_f0_pred.add_argument('--mean-and-delta-f0', action='store_true')    
+    delta_and_mean_f0_pred.add_argument('--delta-f0-predictor-kernel-size', default=3, type=int,
                             help='Delta f0 predictor conv-1D kernel size')
-    delta_f0_pred.add_argument('--delta-f0-predictor-filter-size', default=256, type=int,
+    delta_and_mean_f0_pred.add_argument('--delta-f0-predictor-filter-size', default=256, type=int,
                             help='Delta f0 predictor conv-1D filter size')
-    delta_f0_pred.add_argument('--p-delta-f0-predictor-dropout', default=0.1, type=float,
+    delta_and_mean_f0_pred.add_argument('--p-delta-f0-predictor-dropout', default=0.1, type=float,
                             help='Dropout probability for delta f0 predictor')
-    delta_f0_pred.add_argument('--delta-f0-predictor-n-layers', default=2, type=int,
+    delta_and_mean_f0_pred.add_argument('--delta-f0-predictor-n-layers', default=2, type=int,
                             help='Number of conv-1D layers')
-    #------------------------------------------------------------------------------------------------------
+    #-----------------------------------------------------------------------------------------------
+    delta_and_mean_f0_pred.add_argument('--mean-f0-predictor-hidden-size', default=256, type=int)
+    #-----------------------------------------------------------------------------------------------
 
     cond = parser.add_argument_group('conditioning parameters')
     cond.add_argument('--pitch-embedding-kernel-size', default=3, type=int,
@@ -143,9 +145,9 @@ def parse_fastpitch_args(parent, add_help=False):
                       help='Pitch embedding conv-1D kernel size')
     cond.add_argument('--speaker-emb-weight', type=float, default=1.0,
                       help='Scale speaker embedding')  
-    #------------------------------added by me-----------------------------------------------------------Q
+    #------------------------------added by me----------------------------------
     cond.add_argument('--delta-f0-embedding-kernel-size', default=3, type=int,
                       help='delta f0 embedding conv-1D kernel size')
-    #----------------------------------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
 
     return parser
