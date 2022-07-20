@@ -427,7 +427,7 @@ def batch_to_gpu(batch):
     if speaker is not None:
         speaker = to_gpu(speaker).long()
     if delta_f0_padded is not None and mean_f0 is not None:
-        mean_f0 = to_gpu(mean_f0).long()
+        mean_f0 = to_gpu(mean_f0).float()
         delta_f0_padded = to_gpu(delta_f0_padded).float()
 
     # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
