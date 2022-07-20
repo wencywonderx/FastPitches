@@ -111,10 +111,10 @@ class TemporalPredictor(nn.Module):
 class MeanPredictor(nn.Module):
     """Predicts a single float per sample"""
 
-    def __init__(self, input_size, hidden_size, n_predictions, batch_size):
+    def __init__(self, input_size, hidden_size, batch_size):
         super(MeanPredictor, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size)
-        self.fc = nn.Linear(hidden_size, n_predictions) 
+        self.fc = nn.Linear(hidden_size, n_predictions=1) 
         self.hidden = (torch.zeros(1, batch_size, hidden_size),
                        torch.zeros(1, batch_size, hidden_size))
     def forward(self, enc_out, enc_mask):   
