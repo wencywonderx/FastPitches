@@ -112,7 +112,7 @@ class FastPitchLoss(nn.Module):
             ldiff = mean_f0_tgt.size(0) - mean_f0_pred.size(0)
             print(f'this is ldiff mean f0 {ldiff}')
             mean_f0_pred = F.pad(mean_f0_pred, (0, ldiff), value=0.0)
-            mean_f0_loss = F.mse_loss(mean_f0_tgt, mean_f0_pred, reduction='none')
+            mean_f0_loss = F.mse_loss(mean_f0_tgt, mean_f0_pred, reduction='mean')
             print(f'this is mean f0 loss {mean_f0_loss}')           
         else:
             mean_f0_loss = 0
