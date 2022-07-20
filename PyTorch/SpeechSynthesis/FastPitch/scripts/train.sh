@@ -93,7 +93,6 @@ ARGS+=" --n-speakers $NSPEAKERS"
 #----------------------------------added by me---------------------------------
 [ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
-[ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-f0-predictor-batch-size $BATCH_SIZE"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
 if [ "$NORMALISE" = true ]; then
   ARGS+=" --pitch-mean 214.72203" 
