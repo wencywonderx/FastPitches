@@ -107,7 +107,7 @@ class TTSDataset(torch.utils.data.Dataset):
                  pitch_online_method='pyin',
                  interpolate_f0 = False, #-------------------------C
                  mean_and_delta_f0 = False, #----------------------C
-                 f0_slope = False, #--------------------------C
+                 slope_f0 = False, #--------------------------C
                  **ignored):
 
         # Expect a list of filenames
@@ -140,8 +140,11 @@ class TTSDataset(torch.utils.data.Dataset):
         self.f0_method = pitch_online_method
         self.betabinomial_tmp_dir = betabinomial_online_dir
         self.use_betabinomial_interpolator = use_betabinomial_interpolator
+        #----------------added by me----------------
         self.interpolate_f0 = interpolate_f0
         self.mean_and_delta_f0 = mean_and_delta_f0
+        self.slope_f0 = slope_f0
+        #-------------------------------------------
 
         if use_betabinomial_interpolator:
             self.betabinomial_interpolator = BetaBinomialInterpolator() 
@@ -172,13 +175,27 @@ class TTSDataset(torch.utils.data.Dataset):
 
         mel = self.get_mel(audiopath) # (n_mel_channel, mel_len)
         text = self.get_text(text) # (text_len)
+
+        #----------------------changed by me------------------
         if self.mean_and_delta_f0:
-            pitch, mean_f0, delta_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0)
+            if self.slope_f0:
+                pitch, mean_f0, delta_f0, slope_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
+            else:
+                pitch, mean_f0, delta_f0= self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
+                slope_f0 = None
         else:
-            pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0) # (num_formants, mel_len)
-            mean_f0 = None
-            delta_f0 = None
+            if self.slope_f0:
+                pitch, slope_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
+                mean_f0 = None
+                delta_f0 = None                
+            else:
+                pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)  # (num_formants, mel_len)
+                slope_f0 = None
+                mean_f0 = None
+                delta_f0 = None      
         # mean_f0, delta_f0 = self.get_mean_and_f0(pitch) 
+        #-----------------------------------------------------
+
         energy = torch.norm(mel.float(), dim=0, p=2) # (mel_len) ----------------------------------------Q: why energy norm mel_len?
         attn_prior = self.get_prior(index, mel.shape[1], text.shape[0])
         assert pitch.size(-1) == mel.size(-1) # (mel_len, text_len)
@@ -248,7 +265,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return attn_prior
 
-    def get_pitch(self, index, mel_len=None, interpolate = False, mean_delta = False):
+    def get_pitch(self, index, mel_len=None, interpolate = False, mean_delta = False, slope_f0 = False):
         audiopath, *fields = self.audiopaths_and_text[index]
 
         if self.n_speakers > 1:
@@ -268,16 +285,27 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = interpolate_f0(pitch)
                 # print("\n interpolated pitch array \n", pitch)
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
-                # print("\n convert to pitch tensor\n", pitch)
+                # print("\n convert to pitch tensor\n", pitch)            
+            if mean_delta:
+                if slope_f0:
+                    print("extracting mean and delta f0, and f0 slope")
+                    mean_f0, delta_f0 = mean_delta_f0(pitch)
+                    slope_f0 = f0_slope(pitch)
+                # print("\n mean and delta calculated \n", mean_f0, delta_f0)
+                    return pitch, mean_f0, delta_f0, slope_f0
+                else:
+                    print("extracting mean and delta f0 without f0 slope")
+                    mean_f0, delta_f0 = mean_delta_f0(pitch)
+                    return pitch, mean_f0, delta_f0
+            else:
+                if slope_f0:
+                    print("extracting f0 slope without mean and delta f0")
+                    slope_f0 = f0_slope(pitch)
+                    return pitch, slope_f0
             if self.pitch_mean is not None:
                 print("doing normalization")
                 assert self.pitch_std is not None
-                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)                
-            if mean_delta:
-                print("extracting mean and delta f0")
-                mean_f0, delta_f0 = mean_delta_f0(pitch)
-                # print("\n mean and delta calculated \n", mean_f0, delta_f0)
-                return pitch, mean_f0, delta_f0 
+                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)    
             return pitch
 
         if self.pitch_tmp_dir is not None: # a temperary directory to load pitch file after the frst epoch calculated. to speed up
@@ -352,6 +380,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
         mean_f0 = torch.zeros_like(input_lengths)
+        slope_f0 = torch.zeros_like(input_lengths)
         # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
@@ -367,8 +396,11 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 delta_f0 = None,
                 delta_f0_padded = None,
                 mean_f0 = None
+            if batch[0][10] is not None:
+                slope_f0[i] = batch[ids_sorted_decreasing[i]][10]
+            else:
+                slope_f0 = None
             #-------------------------------------------------
-
         # print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
         # print("n\ this is energy_padded:", energy_padded.size, energy_padded)
         # print("n\ this is delta_f0_padded:", delta_f0_padded.size)
@@ -402,7 +434,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
 
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths, mean_f0, delta_f0_padded) # change also in prepare_data.py and model.py(245)
+                audiopaths, mean_f0, delta_f0_padded, slope_f0) # change also in prepare_data.py and model.py(245)
                 # original batch:
                 # mel : [n_mel_channel, mel_len]
                 # text : [text_len]
@@ -429,10 +461,12 @@ def batch_to_gpu(batch):
     if delta_f0_padded is not None and mean_f0 is not None:
         mean_f0 = to_gpu(mean_f0).float()
         delta_f0_padded = to_gpu(delta_f0_padded).float()
+    if slope_f0 is not None:
+        slope_f0 = to_gpu(slope_f0).float
 
     # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
     x = [text_padded, input_lengths, mel_padded, output_lengths,
-         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded]
+         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0]
     y = [mel_padded, input_lengths, output_lengths]
-    len_x = torch.sum(output_lengths) # still input length ------------------------------------------------2
+    len_x = torch.sum(output_lengths) # still input length ------------------------------------------------2 Q: why still input length?
     return (x, y, len_x)

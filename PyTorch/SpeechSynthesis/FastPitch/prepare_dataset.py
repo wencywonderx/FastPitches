@@ -81,8 +81,8 @@ def parse_args(parser):
     # --------------------------------added by me----------------------------------------
     parser.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
     parser.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
-    parser.add_argument('--f0-slope', action='store_true', help='extract slope of f0')
-
+    parser.add_argument('--slope-f0', action='store_true', help='extract slope of f0')
+    #------------------------------------------------------------------------------------
 
     return parser
 
@@ -136,7 +136,7 @@ def main():
             pitch_online_method=args.f0_method,
             interpolate_f0=args.interpolate_f0, #--------------------------added
             mean_and_delta_f0=args.mean_and_delta_f0, #------------------------added
-            f0_slope=args.f0_slope) #-------------------------added
+            slope_f0=args.f0_slope) #-------------------------added
 
 
         data_loader = DataLoader(

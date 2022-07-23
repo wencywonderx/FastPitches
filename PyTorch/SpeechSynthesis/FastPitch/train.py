@@ -301,7 +301,12 @@ def plot_mels(pred_tgt_lists):
         return ax
 
     for i in range(2):  # we always only expect 2: pred and tgt
-        mel, pitch, energy = local_prep_tgts[i]
+        #-------------------changed by me----------------------
+        if len(local_prep_tgts[i]) == 5:
+            mel, pitch, energy, delta_f0, mean_f0 = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 5:
+            mel, pitch, energy, slope_f0 = local_prep_tgts[i]
+        #------------------------------------------------------
         pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
         axes[i][0].set_aspect(2.5, adjustable="box")
@@ -335,9 +340,29 @@ def plot_mels(pred_tgt_lists):
             left=False,
             labelleft=False,
             right=True,
-            labelright=True,
-        )
-
+            labelright=True,)
+        #----------------added by me------------------
+        if len(local_prep_tgts[i]) == 5:
+            ax3 = add_axis(fig, axes[i][0])
+            ax3.plot(delta_f0, color="blue")
+            ax3.set_xlim(0, mel.shape[1])
+            ax3.set_ylabel("Delta F0", color="blue")
+            ax3.tick_params(labelsize="x-small",
+                        colors="blue",
+                        bottom=False,
+                        labelbottom=False)    
+            ax4 = add_axis(fig, axes[i][0])
+            ax4.plot(delta_f0, color="green")
+            ax4.set_xlim(0, mel.shape[1])
+            ax4.set_ylabel("Mean F0", color="green")
+            ax4.tick_params(labelsize="x-small",
+                        colors="green",
+                        bottom=False,
+                        labelbottom=False)     
+        if len(local_prep_tgts[i]) == 6:   
+            ax5 = add_axis(fig, axes[i][0])
+            ax5.plot(np.poly1d(slope_f0), color="black")  
+        #-----------------------------------------------
     return fig
 
 
@@ -356,23 +381,41 @@ def plot_batch_mels(pred_tgt_lists, rank):
         mel_lens = mel_pitch_energy[-1]
         # reverse regulation for plotting: for every mel frame get pitch+energy
         # if len(mel_pitch_energy) == 4:
-        if len(mel_pitch_energy) == 2:
-            new_pitch = regulate_len(mel_lens, mel_pitch_energy[1].permute(0, 2, 1))[0]
-            new_energy = regulate_len(mel_lens, mel_pitch_energy[2].unsqueeze(dim=-1))[0]
-            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[3].permute(0, 1, 2)[0])
-            regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2)])
-
+        #--------------------------------------changed by me------------------------------------------
+        new_pitch = regulate_len(mel_lens, mel_pitch_energy[1].permute(0, 2, 1))[0]
+        new_energy = regulate_len(mel_lens, mel_pitch_energy[2].unsqueeze(dim=-1))[0]
+        if len(mel_pitch_energy) == 6:                    
+            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[3].permute(0, 1, 2))[0]
+            new_mean_f0 = regulate_len(mel_lens, mel_pitch_energy[4][0])
+            print(f'this is new mean f0: {new_mean_f0}')
+            print(f'this is new delta f0: {new_delta_f0}')   
+            regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
+        if len(mel_pitch_energy) == 5:
+            new_slope_f0 = regulate_len(mel_lens, mel_pitch_energy[3])[0]
+            print(f'this is new slope f0: {new_slope_f0}')   
+            regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_slope_f0])
+        #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
                    for pred_tgt in regulated_features
                    for feature in pred_tgt]
     assert len(set(batch_sizes)) == 1
 
-    for i in range(batch_sizes[0]):
-        fig = plot_mels([
-            [array[i] for array in regulated_features[0]],
-            [array[i] for array in regulated_features[1]],
-            [array[i] for array in regulated_features[2]]
-        ])
+    for i in range(batch_sizes[0]):       
+        #-------------------------changed by me--------------------
+        if len(pred_tgt_lists[0]) == 6:
+            fig = plot_mels([
+                [array[i] for array in regulated_features[0]],
+                [array[i] for array in regulated_features[1]],
+                [array[i] for array in regulated_features[2]],
+                [array[i] for array in regulated_features[3]],
+                [array[i] for array in regulated_features[4]]])
+        if len(pred_tgt_lists[0]) == 5:
+            fig = plot_mels([
+                [array[i] for array in regulated_features[0]],
+                [array[i] for array in regulated_features[1]],
+                [array[i] for array in regulated_features[2]],
+                [array[i] for array in regulated_features[3]]])  
+        #---------------------------------------------------------         
         log({'spectrogram': fig}, rank)
         # empty pyplot
         plt.close('all')
@@ -381,12 +424,12 @@ def plot_batch_mels(pred_tgt_lists, rank):
 def log_validation_batch(x, y_pred, rank):
     x_fields = ['text_padded', 'input_lengths', 'mel_padded',
                 'output_lengths', 'pitch_padded', 'energy_padded',
-                'speaker', 'attn_prior', 'audiopaths', 'mean_f0', 'delta_f0_padded']
+                'speaker', 'attn_prior', 'audiopaths', 'mean_f0', 'delta_f0_padded', 'slope_f0']
     y_pred_fields = ['mel_out', 'dec_mask', 'dur_pred', 'log_dur_pred',
                      'pitch_pred', 'pitch_tgt', 'energy_pred',
                      'energy_tgt', 'attn_soft', 'attn_hard',
                      'attn_hard_dur', 'attn_logprob', 
-                     'delta_f0_pred', 'delta_f0_tgt', 'mean_f0_pred', 'mean_f0_tgt']
+                     'delta_f0_pred', 'delta_f0_tgt', 'mean_f0_pred', 'mean_f0_tgt', 'slope_f0_pred', 'slope_f0_tgt']
 
     validation_dict = dict(zip(x_fields + y_pred_fields,
                                list(x) + list(y_pred)))
@@ -395,35 +438,43 @@ def log_validation_batch(x, y_pred, rank):
     log(validation_dict, rank)  # something in here returns a warning
 
     #-------------------------------------changed by me----------------------------------------
-    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
-    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
-    if y_pred[4] is None and y_pred[12] is None:
-        pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur']
-        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur']
-        if y_pred[6] is None:
-            pred_specs_keys = ['mel_out', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'attn_hard_dur']
-    elif y_pred[4] is None and y_pred[12] is not None:
-        pred_specs_keys = ['mel_out', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
-        tgt_specs_keys = ['mel_padded', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
-        if y_pred[6] is None:
-            pred_specs_keys = ['mel_out', 'delta_f0_pred', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'delta_f0_tgt', 'attn_hard_dur']  
-    elif y_pred[12] is None and y_pred[4] is not None:
-        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
-        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
-        if y_pred[6] is None:
-            pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur']  
-    else:
-        pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
-        tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
-        if y_pred[6] is None:
-            pred_specs_keys = ['mel_out', 'pitch_pred', 'delta_f0_pred', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'delta_f0_tgt', 'attn_hard_dur']
+    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred', 'slope_f0_pred', 'attn_hard_dur']
+    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'slope_f0_tgt', 'attn_hard_dur']
+    if y_pred[12] is not None and y_pred[14] is not None:
+        if y_pred[16] is None:
+            pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred','attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
+    if y_pred[12] is None and y_pred[14] is None:
+        if y_pred[16] is not None:
+            pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'slope_f0_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'slope_f0_tgt', 'attn_hard_dur']                          
+    # if y_pred[4] is None and y_pred[12] is None:
+    #     pred_specs_keys = ['mel_out', 'energy_pred', 'attn_hard_dur']
+    #     tgt_specs_keys = ['mel_padded', 'energy_tgt', 'attn_hard_dur']
+    #     if y_pred[6] is None:
+    #         pred_specs_keys = ['mel_out', 'attn_hard_dur']
+    #         tgt_specs_keys = ['mel_padded', 'attn_hard_dur']
+    # elif y_pred[4] is None and y_pred[12] is not None:
+    #     pred_specs_keys = ['mel_out', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
+    #     tgt_specs_keys = ['mel_padded', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
+    #     if y_pred[6] is None:
+    #         pred_specs_keys = ['mel_out', 'delta_f0_pred', 'attn_hard_dur']
+    #         tgt_specs_keys = ['mel_padded', 'delta_f0_tgt', 'attn_hard_dur']  
+    # elif y_pred[12] is None and y_pred[4] is not None:
+    #     pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'attn_hard_dur']
+    #     tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'attn_hard_dur']
+    #     if y_pred[6] is None:
+    #         pred_specs_keys = ['mel_out', 'pitch_pred', 'attn_hard_dur']
+    #         tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'attn_hard_dur']  
+    # else:
+    #     pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'attn_hard_dur']
+    #     tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'attn_hard_dur']
+    #     if y_pred[6] is None:
+    #         pred_specs_keys = ['mel_out', 'pitch_pred', 'delta_f0_pred', 'attn_hard_dur']
+    #         tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'delta_f0_tgt', 'attn_hard_dur']
     #-------------------------------------------------------------------------------------------------
-    # plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
-    #                  [validation_dict[key] for key in tgt_specs_keys]], rank)
+    plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
+                     [validation_dict[key] for key in tgt_specs_keys]], rank)
 
 
 def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
@@ -484,7 +535,9 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
     if y_pred[12] is not None:
         loss_log['delta-f0-loss/validation-delta-f0-loss'] = val_meta['delta_f0_loss'].item()
     if y_pred[14] is not None:
-        loss_log['mean-f0-loss/validation-mean-f0-loss'] = val_meta['mean_f0_loss'].item()        
+        loss_log['mean-f0-loss/validation-mean-f0-loss'] = val_meta['mean_f0_loss'].item()   
+    if y_pred[16] is not None:
+        loss_log['slope-f0-loss/validation-slope-f0-loss'] = val_meta['slope_f0_loss'].item()   
 #--------------------------------------------------------------------------------------------
     log(loss_log, rank)
     
@@ -638,7 +691,8 @@ def main():
         pitch_predictor_loss_scale=args.pitch_predictor_loss_scale,
         attn_loss_scale=args.attn_loss_scale,
         delta_f0_predictor_loss_scale=args.delta_f0_predictor_loss_scale, 
-        mean_f0_predictor_loss_scale=args.mean_f0_predictor_loss_scale) 
+        mean_f0_predictor_loss_scale=args.mean_f0_predictor_loss_scale,
+        slope_f0_predictor_loss_scale=args.slope_f0_predictor_loss_scale) 
 
     collate_fn = TTSCollate()
 
@@ -681,7 +735,8 @@ def main():
         epoch_frames_per_sec = 0.0
         #-------added by me------
         epoch_delta_f0_loss = 0.0
-        epoch_mean_f0_loss = 0.0      
+        epoch_mean_f0_loss = 0.0   
+        epoch_slope_f0_loss = 0.0   
         #------------------------
 
         if distributed_run:
@@ -722,7 +777,7 @@ def main():
                         and epoch >= args.kl_loss_start_epoch):
                     if args.kl_loss_start_epoch == epoch and epoch_iter == 1:
                         print('Begin hard_attn loss')
-                    _, _, _, _, pitch_pred, _, _, energy_pred, attn_soft, attn_hard, _, _, delta_f0_pred, _, mean_f0_pred, _= y_pred
+                    _, _, _, _, pitch_pred, _, _, energy_pred, attn_soft, attn_hard, _, _, delta_f0_pred, _, mean_f0_pred, _, slope_f0_pred, _= y_pred #-----changed
                     binarization_loss = attention_kl_loss(attn_hard, attn_soft)
                     kl_weight = min((epoch - args.kl_loss_start_epoch) / args.kl_loss_warmup_epochs, 1.0) * args.kl_loss_weight
                     meta['kl_loss'] = binarization_loss.clone().detach() * kl_weight
@@ -795,6 +850,10 @@ def main():
                     iter_mean_f0_loss = iter_meta['mean_f0_loss'].item()
                 else:
                     iter_mean_f0_loss = 0.0
+                if slope_f0_pred is not None:
+                    iter_slope_f0_loss = iter_meta['slope_f0_loss'].item()
+                else:
+                    iter_slope_f0_loss = 0.0
                 #----------------------------------------------------------
                 iter_time = time.perf_counter() - iter_start_time
                 epoch_frames_per_sec += iter_num_frames / iter_time
@@ -812,7 +871,9 @@ def main():
                 if delta_f0_pred is not None:
                     epoch_delta_f0_loss += iter_delta_f0_loss
                 if mean_f0_pred is not None:
-                    epoch_mean_f0_loss += iter_mean_f0_loss                    
+                    epoch_mean_f0_loss += iter_mean_f0_loss      
+                if slope_f0_pred is not None:
+                    epoch_slope_f0_loss += iter_slope_f0_loss                               
                 #----------------------------------------
 
                 if epoch_iter % 5 == 0:
@@ -830,7 +891,8 @@ def main():
                         'dur-loss/dur_loss': iter_dur_loss,
                         #------------------added by me--------------------
                         'delta_f0_loss/delta_f0_loss': iter_delta_f0_loss,
-                        'mean_f0_loss/mean_f0_loss': iter_mean_f0_loss,                        
+                        'mean_f0_loss/mean_f0_loss': iter_mean_f0_loss,     
+                        'slope_f0_loss/slope_f0_loss': iter_slope_f0_loss,     
                         #-------------------------------------------------
                         'frames per s': iter_num_frames / iter_time,
                         'took': iter_time,
@@ -858,6 +920,7 @@ def main():
             # --------------------added by me----------------------
             'delta_f0_loss/epoch_delta_f0_loss': epoch_delta_f0_loss,
             'mean_f0_loss/epoch_mean_f0_loss': epoch_mean_f0_loss,
+            'slope_f0_loss/epoch_slope_f0_loss': epoch_slope_f0_loss,
             # -----------------------------------------------------
             'epoch_frames per s': epoch_num_frames / epoch_time,
             'epoch_took': epoch_time,

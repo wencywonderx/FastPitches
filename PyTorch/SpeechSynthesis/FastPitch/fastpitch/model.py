@@ -150,10 +150,12 @@ class FastPitch(nn.Module):
                  energy_embedding_kernel_size,
                  mean_and_delta_f0, #-----added
                  raw_f0, #-----added
+                 slope_f0, #-----added
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
                  mean_f0_predictor_hidden_size, #-----added
+                 slope_f0_predictor_hidden_size, #-----added                 
                  n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
                  ):
         super(FastPitch, self).__init__()
@@ -239,6 +241,13 @@ class FastPitch(nn.Module):
                 in_fft_output_size,
                 mean_f0_predictor_hidden_size)
             # self.mean_f0_em = 
+
+        self.slope_f0 = slope_f0
+        if self.slope_f0:
+            self.slope_f0 = MeanPredictor(
+                in_fft_output_size,
+                slope_f0_predictor_hidden_size)
+            # self.slope_f0_emb =
 #---------------------------------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -294,10 +303,10 @@ class FastPitch(nn.Module):
                              out_lens.cpu().numpy(), width=1)
         return torch.from_numpy(attn_out).to(attn.get_device())
 
-    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, pace=1.0, max_duration=75): 
+    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, pace=1.0, max_duration=75): 
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt) = inputs # data_function.py, TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
@@ -310,6 +319,8 @@ class FastPitch(nn.Module):
         print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         print("mean_f0_tgt", mean_f0_tgt) # e.g. [16]
+        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16]
+
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
         # print("\n mel_max_len: ", mel_max_len) # e.g. 787, integer
@@ -407,6 +418,19 @@ class FastPitch(nn.Module):
             delta_f0_emb = None
             mean_f0_pred = None
             # mean_f0_emb = None
+        
+        if self.slope_f0:
+            print("-------predicting f0 slope")                      
+            input = enc_out * enc_mask
+            slope_f0_pred = self.slope_f0_predictor(input)
+            # if use_gt_slope_f0 and slope_f0_tgt is not None:
+            #     slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
+            # else:
+            #     slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
+            # enc_out = enc_out + slope_f0_emb            
+        else:
+            slope_f0 = None
+            # slope_f0_emb = None
         #---------------------------
 
         # Predict energy
@@ -442,7 +466,8 @@ class FastPitch(nn.Module):
         # print("\n mel out", mel_out.shape)
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
-                attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, mean_f0_pred, mean_f0_tgt)
+                attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, 
+                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt)  #---------changed
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,
