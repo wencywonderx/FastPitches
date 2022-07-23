@@ -59,7 +59,7 @@ export EXPERIMENT_DESC="FastPitch predicting slope f0" #-----------------------c
 export PHONE=true
 export TEXT_CLEANERS=english_cleaners_v2
 # enable energy conditioning (errors in loss logging if false)
-export ENERGY=false # ----------------------------------------------------changed
+export ENERGY=true # ----------------------------------------------------changed
 export NSPEAKERS=1
 export SAMPLING_RATE=22050
 export APPEND_SPACES=false
