@@ -434,7 +434,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         # (text, mel, len(text), pitch, energy, speaker, attn_prior, audiopath, mean_f0, delta_f0)
         # print("n\ this is audiopaths:", audiopaths)
 
-        return (text_padded, input_lengths, mel_padded, output_lengths, len_x,
+        #-----------------------------------changed----------------------------------------
+        return (text_padded, input_lengths, mel_padded, output_lengths, len_x, 
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
                 audiopaths, mean_f0, delta_f0_padded, slope_f0) # change also in prepare_data.py and model.py(245)
                 # original batch:
@@ -445,11 +446,14 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 # prior : [mel_len, text_len] 
                 # input length is text length, output length is mel length from TactronSTFT(short time fourier transform)
                 # input_lengths and output_lens are for unpadding
+        #-----------------------------------------------------------------------------------
 
 
 def batch_to_gpu(batch):
+    #--------------------Changed--------------------
     (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded) = batch
+     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0) = batch 
+    #-----------------------------------------------
 
     text_padded = to_gpu(text_padded).long()
     input_lengths = to_gpu(input_lengths).long()
