@@ -444,10 +444,12 @@ def log_validation_batch(x, y_pred, rank):
     tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'slope_f0_tgt', 'attn_hard_dur']
     if y_pred[12] is not None and y_pred[14] is not None:
         if y_pred[16] is None:
+            print("--------preparing delta mean plot data")
             pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred','attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
     if y_pred[12] is None and y_pred[14] is None:
         if y_pred[16] is not None:
+            print("--------preparing slope plot data")
             pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'slope_f0_pred', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'slope_f0_tgt', 'attn_hard_dur']                          
     # if y_pred[4] is None and y_pred[12] is None:
