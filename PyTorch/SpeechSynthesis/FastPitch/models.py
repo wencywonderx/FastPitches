@@ -150,6 +150,7 @@ def get_model_config(model_name, args):
             # mean f0 predictor
             mean_f0_predictor_hidden_size=args.mean_f0_predictor_hidden_size,   
             # f0 slope predictor
+            slope_f0 = args.slope_f0,
             slope_f0_predictor_hidden_size=args.slope_f0_predictor_hidden_size,   
             #-------------------------------------------------------------------         
            
