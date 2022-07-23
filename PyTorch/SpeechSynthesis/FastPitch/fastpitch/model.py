@@ -429,14 +429,14 @@ class FastPitch(nn.Module):
             #     slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
             # enc_out = enc_out + slope_f0_emb            
         else:
-            slope_f0 = None
+            slope_f0_pred = None
             # slope_f0_emb = None
         #---------------------------
 
         # Predict energy
         if self.energy_conditioning:
             energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
-            print("\n -------predicting energy")
+            print("-------predicting energy")
             # Average energy over characters
             energy_tgt = average_pitch(energy_dense.unsqueeze(1), dur_tgt)
             # print("\n energy target after average: ", energy_tgt.shape)
@@ -464,10 +464,12 @@ class FastPitch(nn.Module):
         mel_out = self.proj(dec_out)
         # print("\n dec out", dec_out.shape)
         # print("\n mel out", mel_out.shape)
+        #-----------------------------changed----------------------------
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, 
-                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt)  #---------changed
+                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt) 
+        #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
               energy_tgt=None, pitch_transform=None, max_duration=75,
