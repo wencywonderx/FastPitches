@@ -138,6 +138,7 @@ def parse_fastpitch_args(parent, add_help=False):
     delta_and_mean_f0_pred.add_argument('--mean-f0-predictor-hidden-size', default=256, type=int)
     #-----------------------------------------------------------------------------------------------    
     slope_f0_pred = parser.add_argument_group('slope f0 predictor parameters')
+    slope_f0_pred.add_argument('--slope-f0', action='store_true')     
     slope_f0_pred.add_argument('--slope-f0-predictor-hidden-size', default=256, type=int)
     #-----------------------------------------------------------------------------------------------
 
