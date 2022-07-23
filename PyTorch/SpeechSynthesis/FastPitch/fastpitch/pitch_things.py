@@ -111,7 +111,7 @@ def f0_slope(pitch):
     # plt.plot(x, fit_fn(x))
     # plt.show()
 
-    return torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))))
+    return torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
 # pitch = pitch.numpy()[0]
