@@ -122,7 +122,9 @@ def parse_args(parser):
     opt.add_argument('--delta-f0-predictor-loss-scale', type=float,
                      default=1.0, help='Rescale delta f0 loss')       
     opt.add_argument('--mean-f0-predictor-loss-scale', type=float,
-                     default=1.0, help='Rescale mean f0 loss')                     
+                     default=1.0, help='Rescale mean f0 loss')     
+    opt.add_argument('--slope-f0-predictor-loss-scale', type=float,
+                     default=1.0, help='Rescale slope f0 loss')                     
 #-------------------------------------------------------------------------------
 
     data = parser.add_argument_group('dataset parameters')
