@@ -196,7 +196,7 @@ class TTSDataset(torch.utils.data.Dataset):
         # mean_f0, delta_f0 = self.get_mean_and_f0(pitch) 
         #-----------------------------------------------------
 
-        energy = torch.norm(mel.float(), dim=0, p=2) # (mel_len) ----------------------------------------Q: why energy norm mel_len?
+        energy = torch.norm(mel.float(), dim=0, p=2) # (mel_len) -------------------------------------Q: why energy norm mel_len?
         attn_prior = self.get_prior(index, mel.shape[1], text.shape[0])
         assert pitch.size(-1) == mel.size(-1) # (mel_len, text_len)
 
@@ -204,8 +204,10 @@ class TTSDataset(torch.utils.data.Dataset):
         if len(pitch.size()) == 1:
             pitch = pitch[None, :] # None is for formants (how to add formants?)
 
+        #-------------------------------------Changed by me-----------------------------------
         return (text, mel, len(text), pitch, energy, speaker, attn_prior,
-                audiopath, mean_f0, delta_f0) # final return for TTSDataset -----------------------------------------------C
+                audiopath, mean_f0, delta_f0, mean_f0, slope_f0) # final return for TTSDataset 
+        #-------------------------------------------------------------------------------------
 
     def __len__(self):
         return len(self.audiopaths_and_text)
