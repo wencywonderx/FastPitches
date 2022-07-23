@@ -422,8 +422,8 @@ def log_validation_batch(x, y_pred, rank):
             pred_specs_keys = ['mel_out', 'pitch_pred', 'delta_f0_pred', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'delta_f0_tgt', 'attn_hard_dur']
     #-------------------------------------------------------------------------------------------------
-    plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
-                     [validation_dict[key] for key in tgt_specs_keys]], rank)
+    # plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
+    #                  [validation_dict[key] for key in tgt_specs_keys]], rank)
 
 
 def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,

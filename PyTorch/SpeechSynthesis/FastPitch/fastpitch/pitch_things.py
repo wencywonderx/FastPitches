@@ -1,7 +1,9 @@
 import torch
 import librosa
 import numpy as np
-import torch.nn.functional as F 
+import torch.nn.functional as F
+import matplotlib.pyplot as plt 
+from scipy.stats import linregress
 
 def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
                    normalize_std=None, n_formants=1):
@@ -89,10 +91,57 @@ def interpolate_f0(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-def f0_slope(pitch):
-    pitch = pitch.numpy()
-    
-    return torch.from_numpy(f0_slope)
 
-# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
-# print(pitch_slope(pitch))
+def f0_slope(pitch):
+    pitch = pitch.numpy()[0]
+    # print(pitch.size)
+    x = range(len(pitch))
+    y = pitch
+    fit = np.polyfit(x, y, 1)
+    # fit_fn = np.poly1d(fit)
+    s, i = fit
+    # print("slope: ",s," intercept: ",i)
+    # for i in range(len(y)):
+    #     plt.plot(x[i], y[i], markersize=3, marker='o')
+    # # plt.xlabel('Period (T)')
+    # # plt.ylabel('Semimajor Axis (a)')
+    # # plt.xscale('log')
+    # # plt.yscale('log')
+    # # plt.title('Logarithmic scale of T vs a')
+    # plt.plot(x, fit_fn(x))
+    # plt.show()
+
+    return s, i
+
+# def f0_slope(pitch):
+#     pitch = pitch.numpy()[0]
+#     # print(pitch.size)
+#     x = range(len(pitch))
+#     y = pitch
+#     slope, intercept, r_value, p_value, std_err = linregress(x, y)
+#     def a_predict(x):
+#         return intercept + slope*x
+#     T_min, T_max = min(x), max(x)
+#     a_min, a_max = a_predict(T_min), a_predict(T_max)
+#     print("slope: ",slope," intercept: ",intercept)
+#     for i in range(len(y)):
+#         plt.plot(x[i], y[i], markersize=3, marker='o')
+#     # plt.xlabel('Period (T)')
+#     # plt.ylabel('Semimajor Axis (a)')
+#     # plt.xscale('log')
+#     # plt.yscale('log')
+#     # plt.title('Logarithmic scale of T vs a')
+#     # plt.plot(x, y)
+#     # plt.plot(x, intercept + slope*x, 'r--')
+#     # plt.plot([T_min, T_max], [a_min, a_max], 'r--')
+#     plt.show()
+
+#     print(slope, intercept, r_value, p_value, std_err)
+
+#     # return torch.from_numpy(f0_slope)
+
+pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+pitch = pitch.numpy()[0]
+pitch = interpolate_f0(pitch)
+pitch = torch.from_numpy(pitch).unsqueeze(0)
+f0_slope(pitch)
