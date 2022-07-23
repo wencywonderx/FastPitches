@@ -188,7 +188,6 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch, slope_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
                 mean_f0 = None
                 delta_f0 = None
-                print(f'this is extracted f0 slope {slope_f0}')
             else:
                 pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)  # (num_formants, mel_len)
                 slope_f0 = None
@@ -207,7 +206,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         #-------------------------------------Changed by me-----------------------------------
         return (text, mel, len(text), pitch, energy, speaker, attn_prior,
-                audiopath, mean_f0, delta_f0, mean_f0, slope_f0) # final return for TTSDataset 
+                audiopath, mean_f0, delta_f0, slope_f0) # final return for TTSDataset 
         #-------------------------------------------------------------------------------------
 
     def __len__(self):
