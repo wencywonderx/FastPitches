@@ -43,7 +43,7 @@ class TemporalPredictor(nn.Module):
 class MeanPredictor(nn.Module):
     """Predicts a single float per sample"""
 
-    def __init__(self, input_size, hidden_size, n_predictions=1):
+    def __init__(self, input_size, hidden_size, n_predictions=2):
         super(MeanPredictor, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size)
         self.fc = nn.Linear(hidden_size, n_predictions) 
@@ -59,7 +59,7 @@ class MeanPredictor(nn.Module):
         # print(self.hidden[1].shape) # [1, 16, 256]
         print(lstm_out[-1, :, :].shape) # [16, 256]
         y_pred = self.fc(lstm_out[-1, :, :]).squeeze(0)    
-        print(y_pred.shape) # [16]
+        print(y_pred.shape) # [16, 1]
         return y_pred
 
 # >>> rnn = nn.LSTM(10, 20, 2)

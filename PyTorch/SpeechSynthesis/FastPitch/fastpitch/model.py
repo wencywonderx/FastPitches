@@ -246,7 +246,8 @@ class FastPitch(nn.Module):
         if self.slope_f0:
             self.slope_f0_predictor = MeanPredictor(
                 in_fft_output_size,
-                slope_f0_predictor_hidden_size)
+                slope_f0_predictor_hidden_size,
+                n_predictions=2)
             # self.slope_f0_emb =
         #--------------------------------------------
 
