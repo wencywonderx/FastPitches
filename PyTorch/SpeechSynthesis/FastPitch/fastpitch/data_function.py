@@ -381,8 +381,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         # ----------------------------added by me------------------------------
         delta_f0_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
-        mean_f0 = torch.zeros_like(input_lengths)
-        slope_f0 = torch.zeros_like(input_lengths)
+        mean_f0 = torch.zeros_like(mel_padded.size(0), 1)
+        slope_f0 = torch.zeros_like(mel_padded.size(0), 2)
         # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
