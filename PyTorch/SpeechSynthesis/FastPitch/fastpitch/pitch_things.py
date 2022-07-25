@@ -110,13 +110,13 @@ def f0_slope(pitch):
     # # plt.title('Logarithmic scale of T vs a')
     # plt.plot(x, fit_fn(x))
     # plt.show()
+    f0_slope = torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)[0]
+    return f0_slope
 
-    return torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)
-
-# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
-# pitch = pitch.numpy()[0]
-# pitch = interpolate_f0(pitch)
-# pitch = torch.from_numpy(pitch).unsqueeze(0)
+pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+pitch = pitch.numpy()[0]
+pitch = interpolate_f0(pitch)
+pitch = torch.from_numpy(pitch).unsqueeze(0)
 # print(mean_delta_f0(pitch))
-# print(f0_slope(pitch))
-# print(f0_slope(pitch).shape)
+print(f0_slope(pitch))
+print(f0_slope(pitch).shape)

@@ -474,5 +474,6 @@ def batch_to_gpu(batch):
     x = [text_padded, input_lengths, mel_padded, output_lengths,
          pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0]
     y = [mel_padded, input_lengths, output_lengths]
+    print("this is slope_f0", slope_f0)
     len_x = torch.sum(output_lengths) # still input length ------------------------------------------------2 Q: why still input length?
     return (x, y, len_x)
