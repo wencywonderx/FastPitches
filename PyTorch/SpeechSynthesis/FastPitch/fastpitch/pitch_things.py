@@ -113,10 +113,10 @@ def f0_slope(pitch):
     f0_slope = torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)[0]
     return f0_slope
 
-pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
-pitch = pitch.numpy()[0]
-pitch = interpolate_f0(pitch)
-pitch = torch.from_numpy(pitch).unsqueeze(0)
-# print(mean_delta_f0(pitch))
-print(f0_slope(pitch))
-print(f0_slope(pitch).shape)
+# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+# pitch = pitch.numpy()[0]
+# pitch = interpolate_f0(pitch)
+# pitch = torch.from_numpy(pitch).unsqueeze(0)
+# # print(mean_delta_f0(pitch))
+# print(f0_slope(pitch))
+# print(f0_slope(pitch).shape)
