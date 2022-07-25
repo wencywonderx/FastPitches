@@ -400,7 +400,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 mean_f0 = None
             if batch[0][10] is not None:
                 slope_f0[i, :] = batch[ids_sorted_decreasing[i]][10]
-                print(f'this is slope f0 {slope_f0}')
+                # print(f'this is slope f0 {slope_f0}')
             else:
                 slope_f0 = None
             #-------------------------------------------------
