@@ -469,7 +469,7 @@ def batch_to_gpu(batch):
         mean_f0 = to_gpu(mean_f0).float()
         delta_f0_padded = to_gpu(delta_f0_padded).float()
     if slope_f0 is not None:
-        slope_f0 = to_gpu(slope_f0).float
+        slope_f0 = to_gpu(slope_f0).float()
 
     # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
     x = [text_padded, input_lengths, mel_padded, output_lengths,

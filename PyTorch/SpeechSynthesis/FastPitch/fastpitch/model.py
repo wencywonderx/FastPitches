@@ -319,7 +319,7 @@ class FastPitch(nn.Module):
         print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
-        print("slope_f0_tgt", slope_f0_tgt, slope_f0_tgt.shape) # e.g. [16, 2]
+        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
 
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
