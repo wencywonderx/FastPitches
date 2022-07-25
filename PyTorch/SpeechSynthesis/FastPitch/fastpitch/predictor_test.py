@@ -58,7 +58,7 @@ class MeanPredictor(nn.Module):
         # print(self.hidden[0].shape) # [1, 16, 256]
         # print(self.hidden[1].shape) # [1, 16, 256]
         print(lstm_out[-1, :, :].shape) # [16, 256]
-        y_pred = self.fc(lstm_out[-1, :, :]).squeeze(1)    
+        y_pred = self.fc(lstm_out[-1, :, :]).squeeze(0)    
         print(y_pred.shape) # [16]
         return y_pred
 

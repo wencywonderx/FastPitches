@@ -124,7 +124,7 @@ class MeanPredictor(nn.Module):
         lstm_out, _ = self.lstm(input.permute(1, 0, 2), (h0,c0))
         # print(lstm_out.shape) # [148, 16, 256]
         # print(lstm_out[-1, :, :].shape) # [16, 256]
-        out = self.fc(lstm_out[-1, :, :]).squeeze(1)    
+        out = self.fc(lstm_out[-1, :, :]).squeeze(0)    
         # print(out.shape) # [16]
         return out
 
