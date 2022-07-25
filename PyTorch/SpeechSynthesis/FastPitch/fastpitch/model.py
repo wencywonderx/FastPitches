@@ -221,7 +221,7 @@ class FastPitch(nn.Module):
         self.register_buffer('pitch_mean', torch.zeros(1))
         self.register_buffer('pitch_std', torch.zeros(1))
 
-#-----------------------------added by me-----------------------------
+        #------------------added by me--------------------
         self.mean_and_delta_f0 = mean_and_delta_f0
         if self.mean_and_delta_f0:
             self.delta_f0_predictor = TemporalPredictor(
@@ -248,7 +248,7 @@ class FastPitch(nn.Module):
                 in_fft_output_size,
                 slope_f0_predictor_hidden_size)
             # self.slope_f0_emb =
-#---------------------------------------------------------------------
+        #--------------------------------------------
 
         self.energy_conditioning = energy_conditioning
         if energy_conditioning:

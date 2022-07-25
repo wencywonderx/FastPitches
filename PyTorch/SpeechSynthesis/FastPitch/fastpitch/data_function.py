@@ -287,7 +287,11 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = interpolate_f0(pitch)
                 # print("\n interpolated pitch array \n", pitch)
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
-                # print("\n convert to pitch tensor\n", pitch)            
+                # print("\n convert to pitch tensor\n", pitch)
+            if self.pitch_mean is not None:
+                print("doing normalization")
+                assert self.pitch_std is not None
+                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)              
             if mean_delta:
                 if slope_f0:
                     print("extracting mean and delta f0, and f0 slope")
@@ -303,11 +307,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 if slope_f0:
                     print("extracting f0 slope without mean and delta f0")
                     slope_f0 = f0_slope(pitch)
-                    return pitch, slope_f0
-            if self.pitch_mean is not None:
-                print("doing normalization")
-                assert self.pitch_std is not None
-                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)    
+                    return pitch, slope_f0  
             return pitch
 
         if self.pitch_tmp_dir is not None: # a temperary directory to load pitch file after the frst epoch calculated. to speed up

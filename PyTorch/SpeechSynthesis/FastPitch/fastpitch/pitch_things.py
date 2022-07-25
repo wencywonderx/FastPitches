@@ -117,5 +117,6 @@ def f0_slope(pitch):
 # pitch = pitch.numpy()[0]
 # pitch = interpolate_f0(pitch)
 # pitch = torch.from_numpy(pitch).unsqueeze(0)
+# print(mean_delta_f0(pitch))
 # print(f0_slope(pitch))
 # print(f0_slope(pitch).shape)
