@@ -240,7 +240,7 @@ class FastPitch(nn.Module):
             self.mean_f0_predictor = MeanPredictor(
                 in_fft_output_size,
                 mean_f0_predictor_hidden_size)
-            # self.mean_f0_em = 
+            self.mean_f0_em = nn.Linear(1, 384)
 
         self.slope_f0 = slope_f0
         if self.slope_f0:
@@ -248,7 +248,7 @@ class FastPitch(nn.Module):
                 in_fft_output_size,
                 slope_f0_predictor_hidden_size,
                 n_predictions=2)
-            # self.slope_f0_emb =
+            self.slope_f0_emb = nn.Linear(2, 384)
         #--------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -409,29 +409,31 @@ class FastPitch(nn.Module):
             print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
-            # if use_gt_mean_f0 and mean_f0_tgt is not None:
-            #     mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
-            # else:
-            #     mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-            # enc_out = enc_out + mean_f0_emb
+            if use_gt_mean_f0 and mean_f0_tgt is not None:
+                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
+                print(f'this is mean f0 embedding: {mean_f0_emb}')
+            else:
+                mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
+            enc_out = enc_out + mean_f0_emb
         else:
             delta_f0_pred = None
             delta_f0_emb = None
             mean_f0_pred = None
-            # mean_f0_emb = None
+            mean_f0_emb = None
         
         if self.slope_f0:
             print("-------predicting f0 slope")                      
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input)
-            # if use_gt_slope_f0 and slope_f0_tgt is not None:
-            #     slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
-            # else:
-            #     slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-            # enc_out = enc_out + slope_f0_emb            
+            if use_gt_slope_f0 and slope_f0_tgt is not None:
+                slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
+                print(f'this is f0 slope embedding: {slope_f0_emb}')
+            else:
+                slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
+            enc_out = enc_out + slope_f0_emb            
         else:
             slope_f0_pred = None
-            # slope_f0_emb = None
+            slope_f0_emb = None
         #---------------------------
 
         # Predict energy
