@@ -304,10 +304,10 @@ def plot_mels(pred_tgt_lists):
 
     for i in range(2):  # we always only expect 2: pred and tgt
         #-------------------changed by me----------------------
-        # if len(local_prep_tgts[i]) == 5:
-        #     mel, pitch, energy, delta_f0, mean_f0 = local_prep_tgts[i]
-        # if len(local_prep_tgts[i]) == 4:
-        mel, pitch, energy, slope_f0 = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 5:
+            mel, pitch, energy, delta_f0, mean_f0 = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 4:
+            mel, pitch, energy, slope_f0 = local_prep_tgts[i]
         #------------------------------------------------------
         pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
@@ -372,8 +372,8 @@ def plot_batch_mels(pred_tgt_lists, rank):
     regulated_features = []
     # prediction: mel, pitch, energy
     # target: mel, pitch, energy
-    print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
-    print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
+    # print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
+    # print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
 
     for mel_pitch_energy in pred_tgt_lists:
         mels = mel_pitch_energy[0]
