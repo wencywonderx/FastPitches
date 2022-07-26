@@ -91,7 +91,7 @@ export DISTRIBUTED=' '
 
 #------added be me------
 export NORMALISE=true
-export INTERPOLATE=true
+export INTERPOLATE=false
 #-----------------------
 export MEAN_DELTA=true
 export NORMAL=true
