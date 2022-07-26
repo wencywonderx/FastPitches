@@ -396,6 +396,7 @@ def plot_batch_mels(pred_tgt_lists, rank):
             new_slope_f0 = mel_pitch_energy[3]
             print(f'this is new slope f0: {new_slope_f0}')   
             regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_slope_f0])
+            print("this is regulated features", regulated_features)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
                    for pred_tgt in regulated_features
@@ -505,7 +506,7 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
             #  spectral_tilt_pred, spectral_tilt_tgt,
             #  attn_soft, attn_hard, attn_hard_dur, attn_logprob)
             y_pred = model(x)
-            print(x[11], y_pred[16])
+            # print(x[11], y_pred[16])
 
             loss, meta = criterion(y_pred, y, is_training=False, meta_agg='sum')
             if i % 5 == 0:
