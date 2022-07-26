@@ -160,9 +160,9 @@ def parse_args(parser):
                       help='Calculate pitch on the fly during trainig')
     cond.add_argument('--pitch-online-dir', type=str, default=None,
                       help='A directory for storing pitch calculated on-line')
-    cond.add_argument('--pitch-mean', type=float, default=214.72203,
+    cond.add_argument('--pitch-mean', type=float, default=None,
                       help='Normalization value for pitch')
-    cond.add_argument('--pitch-std', type=float, default=65.72038,
+    cond.add_argument('--pitch-std', type=float, default=None,
                       help='Normalization value for pitch')
     cond.add_argument('--load-mel-from-disk', action='store_true',
                       help='Use mel-spectrograms cached on the disk')  
@@ -352,15 +352,15 @@ def plot_mels(pred_tgt_lists):
             ax3.tick_params(labelsize="x-small",
                         colors="blue",
                         bottom=False,
-                        labelbottom=False)    
+                        labelbottom=True)    
             ax4 = add_axis(fig, axes[i][0])
             ax4.plot(mean_f0, color="green")
             ax4.set_xlim(0, mel.shape[1])
-            ax4.set_ylabel("Mean F0", color="green")
+            ax4.set_ylabel("Mean F0", color="grey")
             ax4.tick_params(labelsize="x-small",
-                        colors="green",
+                        colors="grey",
                         bottom=False,
-                        labelbottom=False)     
+                        labelbottom=True)     
         if len(local_prep_tgts[i]) == 4:   
             ax5 = add_axis(fig, axes[i][0])
             ax5.plot(np.poly1d(slope_f0), color="black")  

@@ -77,9 +77,10 @@ class MeanPredictor(nn.Module):
 # print(outputs)
 
 input = rand(16, 1)
-enc_out = rand(16, 148, 384)
-mean_f0_emb = nn.Linear(1, 384)
-emb = mean_f0_emb(input)
-print(emb.shape)
-output = emb.view(16, 1, 384) + enc_out
-print(output.shape)
+# enc_out = rand(16, 148, 384)
+# mean_f0_emb = nn.Linear(1, 384)
+# emb = mean_f0_emb(input)
+# print(emb.shape)
+# output = emb.view(16, 1, 384) + enc_out
+# print(output.shape)
+print(input.view(16, 10, 1))
