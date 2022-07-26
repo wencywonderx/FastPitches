@@ -388,15 +388,15 @@ def plot_batch_mels(pred_tgt_lists, rank):
         new_energy = regulate_len(mel_lens, mel_pitch_energy[2].unsqueeze(dim=-1))[0]
         if len(mel_pitch_energy) == 6:                    
             new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[3].permute(0, 1, 2))[0]
-            new_mean_f0 = mel_pitch_energy[4][0]
-            print(f'this is new mean f0: {new_mean_f0}')
-            print(f'this is new delta f0: {new_delta_f0}')   
+            new_mean_f0 = mel_pitch_energy[4]
+            # print(f'this is new mean f0: {new_mean_f0}')
+            # print(f'this is new delta f0: {new_delta_f0}')   
             regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
         if len(mel_pitch_energy) == 5:
-            new_slope_f0 = mel_pitch_energy[3][0]
-            print(f'this is new slope f0: {new_slope_f0}')   
+            new_slope_f0 = mel_pitch_energy[3]
+            # print(f'this is new slope f0: {new_slope_f0}')   
             regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_slope_f0])
-            print("this is regulated features", regulated_features.size)
+            # print("this is regulated features", regulated_features.size)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
                    for pred_tgt in regulated_features
@@ -404,21 +404,10 @@ def plot_batch_mels(pred_tgt_lists, rank):
     assert len(set(batch_sizes)) == 1
 
     for i in range(batch_sizes[0]):       
-        #-------------------------changed by me--------------------
-        if len(pred_tgt_lists[0]) == 6:
-            fig = plot_mels([
-                [array[i] for array in regulated_features[0]],
-                [array[i] for array in regulated_features[1]],
-                [array[i] for array in regulated_features[2]],
-                [array[i] for array in regulated_features[3]],
-                [array[i] for array in regulated_features[4]]])
-        if len(pred_tgt_lists[0]) == 5:
-            fig = plot_mels([
-                [array[i] for array in regulated_features[0]],
-                [array[i] for array in regulated_features[1]],
-                [array[i] for array in regulated_features[2]],
-                [array[i] for array in regulated_features[3]]])  
-        #---------------------------------------------------------         
+        fig = plot_mels([
+            [array[i] for array in regulated_features[0]],
+            [array[i] for array in regulated_features[1]]
+        ])       
         log({'spectrogram': fig}, rank)
         # empty pyplot
         plt.close('all')
