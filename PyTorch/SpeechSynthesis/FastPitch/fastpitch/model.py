@@ -175,7 +175,7 @@ class FastPitch(nn.Module):
             padding_idx=padding_idx)
 
         if n_speakers > 1:
-            self.speaker_emb = nn.Embedding(n_speakers, symbols_embedding_dim)
+            self.speaker_emb = nn.Embedding(n_speakers, symbols_embedding_dim) # bins, range, index
         else:
             self.speaker_emb = None
         self.speaker_emb_weight = speaker_emb_weight
