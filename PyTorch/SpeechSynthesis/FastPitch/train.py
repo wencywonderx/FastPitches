@@ -450,7 +450,6 @@ def log_validation_batch(x, y_pred, rank):
     if y_pred[12] is None and y_pred[14] is None:
         if y_pred[16] is not None:
             print("--------preparing slope plot data")
-            print(x[16], y_pred[16])
             pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'slope_f0_pred', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'slope_f0_tgt', 'attn_hard_dur']                          
     # if y_pred[4] is None and y_pred[12] is None:
@@ -506,6 +505,7 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
             #  spectral_tilt_pred, spectral_tilt_tgt,
             #  attn_soft, attn_hard, attn_hard_dur, attn_logprob)
             y_pred = model(x)
+            print(x[16], y_pred[16])
 
             loss, meta = criterion(y_pred, y, is_training=False, meta_agg='sum')
             if i % 5 == 0:
