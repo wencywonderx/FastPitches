@@ -322,7 +322,7 @@ def plot_mels(pred_tgt_lists):
         ax1.plot(pitch, color="tomato")
         ax1.set_xlim(0, mel.shape[1])
         ax1.set_ylim(0, pitch_max)
-        ax1.set_ylabel("F0", color="tomato")  # -----changed
+        ax1.set_ylabel("F0", color="tomato") 
         ax1.tick_params(labelsize="x-small",
                         colors="tomato",
                         bottom=False,
@@ -354,14 +354,14 @@ def plot_mels(pred_tgt_lists):
                         bottom=False,
                         labelbottom=False)    
             ax4 = add_axis(fig, axes[i][0])
-            ax4.plot(delta_f0, color="green")
+            ax4.plot(mean_f0, color="green")
             ax4.set_xlim(0, mel.shape[1])
             ax4.set_ylabel("Mean F0", color="green")
             ax4.tick_params(labelsize="x-small",
                         colors="green",
                         bottom=False,
                         labelbottom=False)     
-        if len(local_prep_tgts[i]) == 6:   
+        if len(local_prep_tgts[i]) == 4:   
             ax5 = add_axis(fig, axes[i][0])
             ax5.plot(np.poly1d(slope_f0), color="black")  
         #-----------------------------------------------
