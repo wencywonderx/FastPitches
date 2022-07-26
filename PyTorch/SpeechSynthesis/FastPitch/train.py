@@ -387,7 +387,7 @@ def plot_batch_mels(pred_tgt_lists, rank):
         new_pitch = regulate_len(mel_lens, mel_pitch_energy[1].permute(0, 2, 1))[0]
         new_energy = regulate_len(mel_lens, mel_pitch_energy[2].unsqueeze(dim=-1))[0]
         if len(mel_pitch_energy) == 6:                    
-            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[3].permute(0, 1, 2))[0]
+            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[3].permute(0, 2, 1))[0]
             new_mean_f0 = mel_pitch_energy[4]
             # print(f'this is new mean f0: {new_mean_f0}')
             # print(f'this is new delta f0: {new_delta_f0}')   
