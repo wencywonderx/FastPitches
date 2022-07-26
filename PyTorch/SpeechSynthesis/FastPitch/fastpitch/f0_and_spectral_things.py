@@ -120,3 +120,9 @@ def f0_slope(pitch):
 # # print(mean_delta_f0(pitch))
 # print(f0_slope(pitch))
 # print(f0_slope(pitch).shape)
+
+def spectral_tilt():
+    pass
+
+def hnr():
+    pass

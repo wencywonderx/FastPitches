@@ -68,10 +68,18 @@ class MeanPredictor(nn.Module):
 # >>> c0 = torch.randn(2, 3, 20)
 # >>> output, (hn, cn) = rnn(input, (h0, c0))
 
-model = MeanPredictor(384, 256)
-enc_out = rand(16, 148, 384) # input size: [batch_size, input_length, hidden]
-enc_mask = rand(16, 148, 1) 
-input = enc_out * enc_mask
-outputs = model.forward(input)
-# reshape = outputs.unsqueeze(1) # expected [batch_size]
-print(outputs)
+# model = MeanPredictor(384, 256)
+# enc_out = rand(16, 148, 384) # input size: [batch_size, input_length, hidden]
+# enc_mask = rand(16, 148, 1) 
+# input = enc_out * enc_mask
+# outputs = model.forward(input)
+# # reshape = outputs.unsqueeze(1) # expected [batch_size]
+# print(outputs)
+
+# input = rand(16, 2)
+# enc_out = rand(16, 148, 384)
+# mean_f0_emb = nn.Linear(2, 384)
+# output = mean_f0_emb(input)
+# print(output.shape)
+# output = output.view(16, 1, 384) + enc_out
+# print(output.shape)
