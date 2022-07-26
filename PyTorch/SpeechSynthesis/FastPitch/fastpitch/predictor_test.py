@@ -76,10 +76,10 @@ class MeanPredictor(nn.Module):
 # # reshape = outputs.unsqueeze(1) # expected [batch_size]
 # print(outputs)
 
-# input = rand(16, 2)
-# enc_out = rand(16, 148, 384)
-# mean_f0_emb = nn.Linear(2, 384)
-# output = mean_f0_emb(input)
-# print(output.shape)
-# output = output.view(16, 1, 384) + enc_out
-# print(output.shape)
+input = rand(16, 1)
+enc_out = rand(16, 148, 384)
+mean_f0_emb = nn.Linear(1, 384)
+emb = mean_f0_emb(input)
+print(emb.shape)
+output = emb.view(16, 1, 384) + enc_out
+print(output.shape)

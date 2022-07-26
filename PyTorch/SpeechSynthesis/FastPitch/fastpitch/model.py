@@ -319,7 +319,7 @@ class FastPitch(nn.Module):
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
+        print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt.shape) # e.g. [16, 2]
 
 
@@ -387,7 +387,7 @@ class FastPitch(nn.Module):
             mean_f0_pred = self.mean_f0_predictor(input)
             if use_gt_mean_f0 and mean_f0_tgt is not None:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
-                print(f'this is mean f0 embedding: {mean_f0_emb}')
+                print(f'this is mean f0 embedding shape: {mean_f0_emb.shape}')
             else:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
             enc_out = enc_out + mean_f0_emb.view(16, 1, 384)
