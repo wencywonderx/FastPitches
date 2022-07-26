@@ -154,7 +154,7 @@ def main():
         for i, batch in enumerate(tqdm.tqdm(data_loader)):
             tik = time.time()
 
-            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _, _ = batch  # ---------------------changed
+            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _, _ = batch  # -------changed
 
             # (text_padded, input_lengths, mel_padded, output_lengths, len_x,
             #     pitch_padded, energy_padded, speaker, attn_prior_padded,
