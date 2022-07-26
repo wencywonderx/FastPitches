@@ -136,7 +136,7 @@ def main():
             pitch_online_method=args.f0_method,
             interpolate_f0=args.interpolate_f0, #--------------------------added
             mean_and_delta_f0=args.mean_and_delta_f0, #------------------------added
-            slope_f0=args.f0_slope) #-------------------------added
+            slope_f0=args.slope.f0) #-------------------------added
 
 
         data_loader = DataLoader(
