@@ -364,30 +364,6 @@ class FastPitch(nn.Module):
         log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #----------------------------------------- Q: why log?
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
 
-        #------------modified by me----------
-        # Predict pitch
-        if self.raw_f0:
-            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  
-            # permute to fit into convelutional layer for embedding
-            print("-------predicting pitch")
-            # Average pitch over characters
-            pitch_tgt = average_pitch(pitch_dense, dur_tgt) 
-            # new target, smaller, need to know the duration for each phone, to text length
-            # print("\n pitch target after averaging: ", pitch_tgt.shape)
-            if use_gt_pitch and pitch_tgt is not None: 
-                # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
-                pitch_emb = self.pitch_emb(pitch_tgt)
-            else:
-                pitch_emb = self.pitch_emb(pitch_pred)
-            # print('\n embedded pitch: ', pitch_emb.shape)
-            enc_out = enc_out + pitch_emb.transpose(1, 2)  
-            # for FFT encoder output, make sure they are in right dimension then can be add to the following
-            # print('\n added predicted pitch to the embedding: ', enc_out.shape)  
-        else:
-            pitch_pred = None
-            pitch_tgt = None
-        #--------------------------------
-
         #------------added by me----------
         # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
@@ -435,6 +411,30 @@ class FastPitch(nn.Module):
             slope_f0_pred = None
             slope_f0_emb = None
         #---------------------------
+
+        #------------modified and moved by me----------
+        # Predict pitch
+        if self.raw_f0:
+            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1)  
+            # permute to fit into convelutional layer for embedding
+            print("-------predicting pitch")
+            # Average pitch over characters
+            pitch_tgt = average_pitch(pitch_dense, dur_tgt) 
+            # new target, smaller, need to know the duration for each phone, to text length
+            # print("\n pitch target after averaging: ", pitch_tgt.shape)
+            if use_gt_pitch and pitch_tgt is not None: 
+                # use ground truth for the following model, or predicted crazy numbers will mess with mel predicting
+                pitch_emb = self.pitch_emb(pitch_tgt)
+            else:
+                pitch_emb = self.pitch_emb(pitch_pred)
+            # print('\n embedded pitch: ', pitch_emb.shape)
+            enc_out = enc_out + pitch_emb.transpose(1, 2)  
+            # for FFT encoder output, make sure they are in right dimension then can be add to the following
+            # print('\n added predicted pitch to the embedding: ', enc_out.shape)  
+        else:
+            pitch_pred = None
+            pitch_tgt = None
+        #--------------------------------------------
 
         # Predict energy
         if self.energy_conditioning:

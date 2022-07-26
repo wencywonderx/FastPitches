@@ -58,7 +58,7 @@ class MeanPredictor(nn.Module):
         # print(self.hidden[0].shape) # [1, 16, 256]
         # print(self.hidden[1].shape) # [1, 16, 256]
         print(lstm_out[-1, :, :].shape) # [16, 256]
-        y_pred = self.fc(lstm_out[-1, :, :]).
+        y_pred = self.fc(lstm_out[-1, :, :])
         print(y_pred.shape) # [16, 1]
         return y_pred
 
@@ -75,4 +75,3 @@ input = enc_out * enc_mask
 outputs = model.forward(input)
 # reshape = outputs.unsqueeze(1) # expected [batch_size]
 print(outputs)
-
