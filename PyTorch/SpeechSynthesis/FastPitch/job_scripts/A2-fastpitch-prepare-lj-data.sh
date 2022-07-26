@@ -43,7 +43,7 @@ for FILELIST in ljs_audio_pitch_text_train_v3.txt \
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \
-        --extract-pitch \
+        # --extract-pitch \
         --extract-mels #---------------------------------------------------C
         # --load-pitch-from-disk \ #-------------------------------------------C
         # --interpolate-f0 \ #----------------------------------------------------C
