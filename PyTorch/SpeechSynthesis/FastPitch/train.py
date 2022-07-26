@@ -505,7 +505,7 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
             #  spectral_tilt_pred, spectral_tilt_tgt,
             #  attn_soft, attn_hard, attn_hard_dur, attn_logprob)
             y_pred = model(x)
-            print(x[16], y_pred[16])
+            print(x[11], y_pred[16])
 
             loss, meta = criterion(y_pred, y, is_training=False, meta_agg='sum')
             if i % 5 == 0:
