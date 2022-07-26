@@ -390,7 +390,7 @@ class FastPitch(nn.Module):
                 print(f'this is mean f0 embedding shape: {mean_f0_emb.shape}')
             else:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb[0], 1, 384)
+            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384)
         else:
             delta_f0_pred = None
             delta_f0_emb = None
@@ -406,7 +406,7 @@ class FastPitch(nn.Module):
                 print(f'this is f0 slope embedding: {slope_f0_emb}')
             else:
                 slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-            enc_out = enc_out + slope_f0_emb.view(16, 1, 384)            
+            enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)            
         else:
             slope_f0_pred = None
             slope_f0_emb = None
