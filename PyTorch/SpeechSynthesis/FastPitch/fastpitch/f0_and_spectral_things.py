@@ -124,5 +124,5 @@ def f0_slope(pitch):
 def spectral_tilt():
     pass
 
-def hnr():
+def h_n_r():
     pass
