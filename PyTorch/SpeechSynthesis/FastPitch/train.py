@@ -393,7 +393,7 @@ def plot_batch_mels(pred_tgt_lists, rank):
             print(f'this is new delta f0: {new_delta_f0}')   
             regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
         if len(mel_pitch_energy) == 5:
-            new_slope_f0 = mel_lens, mel_pitch_energy[3]
+            new_slope_f0 = mel_pitch_energy[3]
             print(f'this is new slope f0: {new_slope_f0}')   
             regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_slope_f0])
         #-----------------------------------------------------------------------------------------------
@@ -450,7 +450,7 @@ def log_validation_batch(x, y_pred, rank):
     if y_pred[12] is None and y_pred[14] is None:
         if y_pred[16] is not None:
             print("--------preparing slope plot data")
-            print(x[16, ]y_pred[16])
+            print(x[16, ], y_pred[16])
             pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'slope_f0_pred', 'attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'slope_f0_tgt', 'attn_hard_dur']                          
     # if y_pred[4] is None and y_pred[12] is None:
