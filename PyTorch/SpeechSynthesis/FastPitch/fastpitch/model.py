@@ -319,7 +319,7 @@ class FastPitch(nn.Module):
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
+        # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt.shape) # e.g. [16, 2]
 
 
