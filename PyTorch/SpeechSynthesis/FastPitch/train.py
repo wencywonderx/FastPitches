@@ -292,8 +292,10 @@ def plot_mels(pred_tgt_lists):
 
     # this is just for the axes limits
     # pitch_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
-    energy_max = max([feature_list[2].max() for feature_list in local_prep_tgts])
-    energy_min = min([feature_list[2].min() for feature_list in local_prep_tgts])
+    energy_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
+    energy_min = min([feature_list[1].min() for feature_list in local_prep_tgts])
+    delta_max = max([feature_list[2].max() for feature_list in local_prep_tgts])
+    delta_min = min([feature_list[2].min() for feature_list in local_prep_tgts])    
     # pitch_std = max([feature_list[2].std() for feature_list in local_prep_tgts])
     # pitch_mean = max([feature_list[2].mean() for feature_list in local_prep_tgts])
     # pitch_max = pitch_max * pitch_std + pitch_mean
@@ -349,14 +351,17 @@ def plot_mels(pred_tgt_lists):
             ax3 = add_axis(fig, axes[i][0])
             ax3.plot(delta_f0, color="blue")
             ax3.set_xlim(0, mel.shape[1])
+            ax3.set_ylim(delta_min, delta_max)
             ax3.set_ylabel("Delta F0", color="blue")
             ax3.tick_params(labelsize="x-small",
                         colors="blue",
                         bottom=False,
                         labelbottom=False)    
             ax4 = add_axis(fig, axes[i][0])
+            mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
             ax4.plot(mean_f0, color="red")
             ax4.set_xlim(0, mel.shape[1])
+            ax4.set_ylim(delta_min, delta_max)
             ax4.set_ylabel("Mean F0", color="red")
             ax4.tick_params(labelsize="x-small",
                         colors="red",
@@ -373,8 +378,8 @@ def plot_batch_mels(pred_tgt_lists, rank):
     regulated_features = []
     # prediction: mel, pitch, energy
     # target: mel, pitch, energy
-    # print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
-    # print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
+    print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
+    print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
 
     for mel_pitch_energy in pred_tgt_lists:
         mels = mel_pitch_energy[0]
