@@ -373,8 +373,8 @@ def plot_batch_mels(pred_tgt_lists, rank):
     regulated_features = []
     # prediction: mel, pitch, energy
     # target: mel, pitch, energy
-    print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
-    print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
+    # print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
+    # print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
 
     for mel_pitch_energy in pred_tgt_lists:
         mels = mel_pitch_energy[0]
@@ -434,7 +434,7 @@ def log_validation_batch(x, y_pred, rank):
     pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred', 'slope_f0_pred', 'attn_hard_dur']
     tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'slope_f0_tgt', 'attn_hard_dur']
     if y_pred[12] is not None and y_pred[14] is not None:
-        if y_pred[16] is None and y_pred[2] is None:
+        if y_pred[16] is None and y_pred[4] is None:
             print("--------preparing delta mean plot data")
             pred_specs_keys = ['mel_out', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred','attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
