@@ -90,8 +90,8 @@ class TTSDataset(torch.utils.data.Dataset):
                  n_speakers=1,
                  load_mel_from_disk=True,
                  load_pitch_from_disk=True,
-                 pitch_mean=214.72203,  # LJSpeech defaults
-                 pitch_std=65.72038,
+                 pitch_mean=None, # 214.72203,  # LJSpeech defaults
+                 pitch_std=None, # 65.72038,
                  max_wav_value=None,
                  sampling_rate=None,
                  filter_length=None,
@@ -280,10 +280,6 @@ class TTSDataset(torch.utils.data.Dataset):
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
-            if self.pitch_mean is not None:
-                print("doing normalization")
-                assert self.pitch_std is not None
-                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)    
             if interpolate:
                 print("interpolating f0")
                 pitch = pitch.numpy()[0]
@@ -291,7 +287,11 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = interpolate_f0(pitch)
                 # print("\n interpolated pitch array \n", pitch)
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
-                # print("\n convert to pitch tensor\n", pitch)          
+                # print("\n convert to pitch tensor\n", pitch)       
+            if self.pitch_mean is not None:
+                print("doing normalization")
+                assert self.pitch_std is not None
+                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)       
             if mean_delta:
                 if slope_f0:
                     print("extracting mean and delta f0, and f0 slope")

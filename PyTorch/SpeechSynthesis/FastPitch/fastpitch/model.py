@@ -121,7 +121,7 @@ class MeanPredictor(nn.Module):
         # print(out.shape) # [16, 148, 384]
         h0 = torch.zeros(1, input.size(0), self.hidden_size, device=input.device)
         c0 = torch.zeros(1, input.size(0), self.hidden_size, device=input.device)
-        lstm_out, _ = self.lstm(input.permute(1, 0, 2), (h0,c0))
+        lstm_out, _ = self.lstm(input.permute(1, 0, 2), (h0, c0))
         # print(lstm_out.shape) # [148, 16, 256]
         # print(lstm_out[-1, :, :].shape) # [16, 256]
         out = self.fc(lstm_out[-1, :, :]).squeeze(0)    
@@ -317,10 +317,10 @@ class FastPitch(nn.Module):
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
-        # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
-        # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
-        # print("slope_f0_tgt", slope_f0_tgt.shape) # e.g. [16, 2]
+        print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
+        print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
+        print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
+        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
 
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
@@ -379,18 +379,18 @@ class FastPitch(nn.Module):
             else:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
             # print('\n embedded delta f0: ', delta_f0_emb.shape) # e.g. [16, 384, 148]
-            enc_out = enc_out + delta_f0_emb.transpose(1, 2)
+            # enc_out = enc_out + delta_f0_emb.transpose(1, 2)
             # print("\n added predicted delta f0 to the embedding : ", enc_out.shape) # e.g. [16, 148, 384]
 
             print("-------predicting mean f0")                      
             input = enc_out * enc_mask
-            mean_f0_pred = self.mean_f0_predictor(input)
+            mean_f0_pred = self.mean_f0_predictor(input) # [16, 1]
             if use_gt_mean_f0 and mean_f0_tgt is not None:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
-                # print(f'this is mean f0 embedding shape: {mean_f0_emb.shape}')
+                # print(f'this is mean f0 embedding shape: {mean_f0_emb.shape}') [16, 1, 384]/ [16, 384]]
             else:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384)
+            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
         else:
             delta_f0_pred = None
             delta_f0_emb = None
@@ -400,10 +400,10 @@ class FastPitch(nn.Module):
         if self.slope_f0:
             print("-------predicting f0 slope")                      
             input = enc_out * enc_mask
-            slope_f0_pred = self.slope_f0_predictor(input)
+            slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
             if use_gt_slope_f0 and slope_f0_tgt is not None:
                 slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
-                # print(f'this is f0 slope embedding: {slope_f0_emb}')
+                # print(f'this is f0 slope embedding: {slope_f0_emb}') [16, 2, 384]
             else:
                 slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
             enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)            

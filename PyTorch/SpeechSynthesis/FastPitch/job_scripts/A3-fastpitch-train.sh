@@ -33,7 +33,7 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # some values are set by the queuing software, e.g. $JOB_ID
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
-# export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #---------------------------changed
+# export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #-----------------------------------------------------------changed
 export OUTPUT_DIR=$SCRATCH/test_train
 
 export DATASET_PATH=$SCRATCH/LJSpeech-1.1
@@ -44,14 +44,14 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # which point to saved pitch contours. If extracting pitches from audio
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
-# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt --------------------changed
+# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt ---------------------------------------changed
 # export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
 export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
-export PROJECT=fastpitches_slope_f0 #----------------------------------------------changed
-export EXPERIMENT_DESC="FastPitch predicting slope f0" #-----------------------changed
+export PROJECT=fastpitch_mean_delta_only_adding_after_emb #---------------------------------------------------------------------changed
+export EXPERIMENT_DESC="FastPitch predicting reconstructed f0 by mean f0 and delta f0" #-----------------------changed
 
 # convert input texts to phones using cmudict
 # (download to default path: $FP/cmudict/cmudict-0.7b beforehand!)
@@ -59,7 +59,7 @@ export EXPERIMENT_DESC="FastPitch predicting slope f0" #-----------------------c
 export PHONE=true
 export TEXT_CLEANERS=english_cleaners_v2
 # enable energy conditioning (errors in loss logging if false)
-export ENERGY=true # ----------------------------------------------------changed
+export ENERGY=true
 export NSPEAKERS=1
 export SAMPLING_RATE=22050
 export APPEND_SPACES=false
@@ -74,8 +74,8 @@ export GRAD_ACCUMULATION=1
 # set random seed for ~reproducible runs
 export SEED=
 
-export EPOCHS=3 #-------------------------------------------changed
-export EPOCHS_PER_CHECKPOINT=1 #-----------------------------------------changed
+export EPOCHS=3 #---------------------------------------------------------------------------------------------changed
+export EPOCHS_PER_CHECKPOINT=1 #------------------------------------------------------------------------------changed
 export WARMUP_STEPS=1000
 export KL_LOSS_WARMUP=100
 
@@ -90,11 +90,11 @@ export PITCH_ONLINE_DIR=
 export DISTRIBUTED=' '
 
 #------added be me------
-export NORMALISE=false
+export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
 export MEAN_DELTA=true
-export NORMAL=true
+export NORMAL=false
 export SLOPE=false
 #-----------------------
 
