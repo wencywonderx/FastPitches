@@ -305,8 +305,8 @@ def plot_mels(pred_tgt_lists):
 
     for i in range(2):  # we always only expect 2: pred and tgt
         #-------------------changed by me----------------------
-        if len(local_prep_tgts[i]) == 4:
-            mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
+        # if len(local_prep_tgts[i]) == 4:
+        mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
         # if len(local_prep_tgts[i]) == 4:
         #     mel, pitch, energy, slope_f0 = local_prep_tgts[i]
         #------------------------------------------------------
@@ -387,12 +387,11 @@ def plot_batch_mels(pred_tgt_lists, rank):
         #--------------------------------------changed by me------------------------------------------
         # new_pitch = regulate_len(mel_lens, mel_pitch_energy[1].permute(0, 2, 1))[0]
         new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
-        if len(mel_pitch_energy) == 4:                    
-            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-            new_mean_f0 = mel_pitch_energy[3]
-            # print(f'this is new mean f0: {new_mean_f0}')
-            # print(f'this is new delta f0: {new_delta_f0}')   
-            regulated_features.append([mels, new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
+        new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+        new_mean_f0 = mel_pitch_energy[3]
+        # print(f'this is new mean f0: {new_mean_f0}')
+        # print(f'this is new delta f0: {new_delta_f0}')   
+        regulated_features.append([mels, new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
         # if len(mel_pitch_energy) == 5:
         #     new_slope_f0 = mel_pitch_energy[3]
         #     # print(f'this is new slope f0: {new_slope_f0}')   
