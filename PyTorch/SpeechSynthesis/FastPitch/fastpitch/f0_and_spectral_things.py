@@ -126,3 +126,7 @@ def spectral_tilt():
 
 def h_n_r():
     pass
+
+
+# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+# print(pitch)

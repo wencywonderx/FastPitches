@@ -43,14 +43,14 @@ export OMP_NUM_THREADS=1
 : ${SLOPE:=false}
 #------------------------------
 
-# Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.
+# Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.  ---------Q
 GBS=$(($NUM_GPUS * $BATCH_SIZE * $GRAD_ACCUMULATION))
 [ $GBS -ne 256 ] && echo -e "\nWARNING: Global batch size changed from 256 to ${GBS}."
 echo -e "\nAMP=$AMP, ${NUM_GPUS}x${BATCH_SIZE}x${GRAD_ACCUMULATION}" \
         "(global batch size ${GBS})\n"
 
 ARGS=""
-ARGS+=" --cuda" #----------------------------------------------------changed
+ARGS+=" --cuda" # use GPU
 ARGS+=" -o $OUTPUT_DIR"
 ARGS+=" --dataset-path $DATASET_PATH"
 ARGS+=" --training-files $TRAIN_FILELIST"
@@ -92,7 +92,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$PITCH_ONLINE_METHOD" != "" ]   && ARGS+=" --pitch-online-method $PITCH_ONLINE_METHOD"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --prepend-space-to-text"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --append-space-to-text"
-#----------------------------------added by me---------------------------------
+#-----------------------------added by me-------------------------
 [ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
@@ -101,7 +101,7 @@ if [ "$NORMALISE" = true ]; then
   ARGS+=" --pitch-mean 214.72203" 
   AGSS+=" --pitch-std 65.72038"
 fi
-#------------------------------------------------------------------------------
+#-----------------------------------------------------------------
 
 if [ "$SAMPLING_RATE" == "44100" ]; then
   ARGS+=" --sampling-rate 44100"
