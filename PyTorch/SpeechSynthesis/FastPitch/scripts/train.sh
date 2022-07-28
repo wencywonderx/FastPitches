@@ -97,10 +97,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]                && ARGS+=" --slope-f0"
-if [ "$NORMALISE" = true ]; then
-  ARGS+=" --pitch-mean 214.72203" 
-  AGSS+=" --pitch-std 65.72038"
-fi
+[ "$NORMALISE" = true ]            && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"
 #-----------------------------------------------------------------
 
 if [ "$SAMPLING_RATE" == "44100" ]; then
