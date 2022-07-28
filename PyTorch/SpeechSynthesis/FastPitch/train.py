@@ -358,6 +358,7 @@ def plot_mels(pred_tgt_lists):
                         bottom=False,
                         labelbottom=False)    
             ax4 = add_axis(fig, axes[i][0])
+            mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
             ax4.plot(mean_f0, color="red")
             ax4.set_xlim(0, mel.shape[1])
             ax4.set_ylim(delta_min, delta_max)
