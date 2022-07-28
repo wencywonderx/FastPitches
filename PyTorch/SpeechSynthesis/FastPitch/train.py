@@ -373,8 +373,8 @@ def plot_batch_mels(pred_tgt_lists, rank):
     regulated_features = []
     # prediction: mel, pitch, energy
     # target: mel, pitch, energy
-    # print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
-    # print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
+    print("input pred list for plotting: ", [i.shape for i in pred_tgt_lists[0]])
+    print("input tgt list for plotting: ", [i.shape for i in pred_tgt_lists[1]])
 
     for mel_pitch_energy in pred_tgt_lists:
         mels = mel_pitch_energy[0]
