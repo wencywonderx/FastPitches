@@ -414,8 +414,8 @@ def plot_batch_mels(pred_tgt_lists, rank):
             [array[i] for array in regulated_features[0]],
             [array[i] for array in regulated_features[1]]
         ])       
-        log({'spectrogram': fig}, rank)
-        # log({'spectrogram': wandb.Image(fig)}, rank)        
+        # log({'spectrogram': fig}, rank)
+        log({'spectrogram': wandb.Image(fig)}, rank)        
         # empty pyplot
         plt.close('all')
 
