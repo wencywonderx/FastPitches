@@ -61,7 +61,7 @@ export VAL_FILELIST=$FP/filelists/val_file_10.txt
 >>>>>>> 8ee7977f82f64432a8b28025a4ccfba91adddd2b
 
 # metadata for wandb logging
-export PROJECT=fastpitch_mean_delta #----------------------------------------------------changed
+export PROJECT=fastpitch_mean_delta_emb_test #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
@@ -101,11 +101,11 @@ export PITCH_ONLINE_DIR=
 export DISTRIBUTED=' '
 
 #------added be me------
-export NORMALISE=false
+export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
-export MEAN_DELTA=false
-export NORMAL=true
+export MEAN_DELTA=true
+export NORMAL=false
 export SLOPE=false
 #-----------------------
 

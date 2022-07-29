@@ -294,8 +294,8 @@ def plot_mels(pred_tgt_lists):
     # pitch_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
     # energy_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
     # energy_min = min([feature_list[1].min() for feature_list in local_prep_tgts])
-    delta_max = max([feature_list[2].max() for feature_list in local_prep_tgts])
-    delta_min = min([feature_list[2].min() for feature_list in local_prep_tgts])    
+    # delta_max = max([feature_list[2].max() for feature_list in local_prep_tgts])
+    # delta_min = min([feature_list[2].min() for feature_list in local_prep_tgts])    
     # pitch_std = max([feature_list[2].std() for feature_list in local_prep_tgts])
     # pitch_mean = max([feature_list[2].mean() for feature_list in local_prep_tgts])
     # pitch_max = pitch_max * pitch_std + pitch_mean
@@ -353,7 +353,7 @@ def plot_mels(pred_tgt_lists):
             ax3 = add_axis(fig, axes[i][0])
             ax3.plot(delta_f0, color="blue")
             ax3.set_xlim(0, mel.shape[1])
-            ax3.set_ylim(delta_min, delta_max)
+            # ax3.set_ylim(delta_min, delta_max)
             ax3.set_ylabel("Delta F0", color="blue")
             ax3.tick_params(labelsize="x-small",
                         colors="blue",
@@ -363,7 +363,7 @@ def plot_mels(pred_tgt_lists):
             mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
             ax4.plot(mean_f0, color="red")
             ax4.set_xlim(0, mel.shape[1])
-            ax4.set_ylim(delta_min, delta_max)
+            # ax4.set_ylim(delta_min, delta_max)
             ax4.set_ylabel("Mean F0", color="red")
             ax4.tick_params(labelsize="x-small",
                         colors="red",
@@ -390,22 +390,17 @@ def plot_batch_mels(pred_tgt_lists, rank):
             mels = mels.permute(0, 2, 1)
         mel_lens = mel_pitch_energy[-1]
         # reverse regulation for plotting: for every mel frame get pitch+energy
-        # if len(mel_pitch_energy) == 4:
         #--------------------------------------changed by me------------------------------------------
-        # new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-        new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
-        new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-        new_mean_f0 = mel_pitch_energy[3]
-        print(f'this is new mean f0: {new_mean_f0}')
-        print(f'this is new delta f0: {new_delta_f0}')   
-        regulated_features.append([mels, new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
-        # regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2)])
-
-        # if len(mel_pitch_energy) == 5:
-        #     new_slope_f0 = mel_pitch_energy[3]
-        #     # print(f'this is new slope f0: {new_slope_f0}')   
-        #     regulated_features.append([mels, new_pitch.squeeze(axis=2), new_energy.squeeze(axis=2), new_slope_f0])
-        #     print("this is regulated features", regulated_features)
+        if len(mel_pitch_energy) == 5:
+            new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
+            new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+            new_mean_f0 = mel_pitch_energy[3]
+            regulated_features.append([mels, new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
+        if len(mel_pitch_energy) == 4:
+            new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
+            new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2)])
+            # print("this is regulated features", regulated_features)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
                    for pred_tgt in regulated_features
@@ -446,11 +441,11 @@ def log_validation_batch(x, y_pred, rank):
             print("--------preparing delta mean plot data")
             pred_specs_keys = ['mel_out', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred','attn_hard_dur']
             tgt_specs_keys = ['mel_padded', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
-    # if y_pred[12] is None and y_pred[14] is None:
-    #     if y_pred[16] is None and y_pred[4] is not None:
-    #         print("--------preparing normal f0 plot data")
-    #         pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'attn_hard_dur']
-    #         tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'attn_hard_dur']                          
+    if y_pred[12] is None and y_pred[14] is None:
+        if y_pred[16] is None and y_pred[4] is not None:
+            print("--------preparing normal f0 plot data")
+            pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'attn_hard_dur']                          
     #-------------------------------------------------------------------------------------------------
     plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
                      [validation_dict[key] for key in tgt_specs_keys]], rank)
