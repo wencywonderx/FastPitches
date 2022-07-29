@@ -392,11 +392,13 @@ def plot_batch_mels(pred_tgt_lists, rank):
         # reverse regulation for plotting: for every mel frame get pitch+energy
         #--------------------------------------changed by me------------------------------------------
         if len(mel_pitch_energy) == 5:
+            print("-------for mean and delta")
             new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
             new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
             new_mean_f0 = mel_pitch_energy[3]
             regulated_features.append([mels, new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
         if len(mel_pitch_energy) == 4:
+            print("------for normal f0")
             new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
             new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
             regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2)])
