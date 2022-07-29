@@ -475,7 +475,7 @@ class FastPitch(nn.Module):
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
-              energy_tgt=None, pitch_transform=None, max_duration=75,
+              energy_tgt=None, delta_f0_tgt=None, mean_f0_tgt=None, pitch_transform=None, max_duration=75,
               speaker=0):
 
         if self.speaker_emb is None:
@@ -494,22 +494,22 @@ class FastPitch(nn.Module):
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration)
 
         # Pitch over chars
-        pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1) # without ground truth
+        if self.raw_f0:
+            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1) # without ground truth
 
-        if pitch_transform is not None:
-            if self.pitch_std[0] == 0.0:
+            if pitch_transform is not None:
+                if self.pitch_std[0] == 0.0:
                 # XXX LJSpeech-1.1 defaults
-                mean, std = 218.14, 67.24
+                    mean, std = 218.14, 67.24
+                else:
+                    mean, std = self.pitch_mean[0], self.pitch_std[0]
+                pitch_pred = pitch_transform(pitch_pred, enc_mask.sum(dim=(1,2)), mean, std)
+            if pitch_tgt is None:
+                pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
             else:
-                mean, std = self.pitch_mean[0], self.pitch_std[0]
-            pitch_pred = pitch_transform(pitch_pred, enc_mask.sum(dim=(1,2)),
-                                         mean, std)
-        if pitch_tgt is None:
-            pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
-        else:
-            pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
+                pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
 
-        enc_out = enc_out + pitch_emb
+            enc_out = enc_out + pitch_emb
 
         # Predict energy
         if self.energy_conditioning:
@@ -523,6 +523,10 @@ class FastPitch(nn.Module):
             enc_out = enc_out + energy_emb
         else:
             energy_pred = None
+        
+        # predict mean and delta f0:
+        if self.mean_and_delta_f0:
+            if mean
 
         len_regulated, dec_lens = regulate_len(
             dur_pred if dur_tgt is None else dur_tgt,

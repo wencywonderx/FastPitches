@@ -18,6 +18,14 @@
 : ${SPEAKER:=0}
 : ${NUM_SPEAKERS:=1}
 
+#---------added by me----------
+: ${INTERPOLATE:=false}
+: ${MEAN_DELTA:=false}
+: ${NORMAL:=false}
+: ${NORMALISE:=false}
+: ${SLOPE:=false}
+#------------------------------
+
 echo -e "\nAMP=$AMP, batch_size=$BATCH_SIZE\n"
 
 ARGS=""
@@ -39,6 +47,13 @@ ARGS+=" --n-speakers $NUM_SPEAKERS"
 [ "$PHONE" = "true" ]       && ARGS+=" --p-arpabet 1.0"
 [ "$ENERGY" = "true" ]      && ARGS+=" --energy-conditioning"
 [ "$TORCHSCRIPT" = "true" ] && ARGS+=" --torchscript"
+#-----------------------------added by me-------------------------
+[ "$INTERPOLATE" = true ]   && ARGS+=" --interpolate-f0"
+[ "$MEAN_DELTA" = true ]    && ARGS+=" --mean-and-delta-f0"
+[ "$NORMAL" = true ]        && ARGS+=" --raw-f0"
+[ "$SLOPE" = true ]         && ARGS+=" --slope-f0"
+[ "$NORMALISE" = true ]     && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"
+#-----------------------------------------------------------------
 
 mkdir -p "$OUTPUT_DIR"
 
