@@ -50,7 +50,7 @@ export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
 export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
-export PROJECT=base without norm #----------------------------------------------------changed
+export PROJECT=base_without_norm #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch" #-----------------------changed
 
 # convert input texts to phones using cmudict
@@ -81,7 +81,7 @@ export KL_LOSS_WARMUP=100
 
 # load saved pitch contours from disk after running prepare_dataset.py
 export LOAD_PITCH_FROM_DISK=true
-export LOAD_MEL_FROM_DISK=false  # something wrong with loading saved mels
+export LOAD_MEL_FROM_DISK=true  # something wrong with loading saved mels
 # or, cache extracted pitch contours to this dir during first epoch
 export PITCH_ONLINE_DIR=
 
