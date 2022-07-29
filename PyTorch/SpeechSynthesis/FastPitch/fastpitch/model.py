@@ -474,7 +474,7 @@ class FastPitch(nn.Module):
                 mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt) 
         #----------------------------------------------------------------
 
-    def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None, #-----------remember to change after training, add delta f0
+    def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
               energy_tgt=None, pitch_transform=None, max_duration=75,
               speaker=0):
 
