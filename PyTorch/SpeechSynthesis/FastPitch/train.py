@@ -368,7 +368,11 @@ def plot_mels(pred_tgt_lists):
             ax4.tick_params(labelsize="x-small",
                         colors="red",
                         bottom=False,
-                        labelbottom=False)     
+                        labelbottom=False,
+                        left=False,
+                        labelleft=False,
+                        right=True,
+                        labelright=True,)     
         # if len(local_prep_tgts[i]) == 4:   
         #     ax5 = add_axis(fig, axes[i][0])
         #     ax5.plot(np.poly1d(slope_f0), color="black")  
