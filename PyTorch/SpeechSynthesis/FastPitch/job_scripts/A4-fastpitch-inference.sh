@@ -54,5 +54,14 @@ export SPEAKER=0  # select speaker by index
 export CPU=true  # false => run on GPU
 export AMP=false
 
+#------added be me------
+export NORMALISE=false
+export INTERPOLATE=true
+#-----------------------
+export MEAN_DELTA=false
+export NORMAL=true
+export SLOPE=false
+#-----------------------
+
 cd $FP
 scripts/inference_example.sh

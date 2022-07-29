@@ -33,8 +33,8 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # some values are set by the queuing software, e.g. $JOB_ID
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
-export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
-# export OUTPUT_DIR=$SCRATCH/test_train
+# export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
+export OUTPUT_DIR=$SCRATCH/test_train
 
 export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # export DATASET_PATH=$FP/test_folder
@@ -45,6 +45,7 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #---------------------------------------changed
 =======
 export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
@@ -52,10 +53,16 @@ export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #---------
 export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 # export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
 # export VAL_FILELIST=$FP/filelists/val_file_10.txt
+=======
+# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
+# export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
+export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
+export VAL_FILELIST=$FP/filelists/val_file_10.txt
+>>>>>>> 8ee7977f82f64432a8b28025a4ccfba91adddd2b
 
 # metadata for wandb logging
-export PROJECT=fastpitch_mean_delta_only_adding_after_emb #----------------------------------------------------changed
-export EXPERIMENT_DESC="FastPitch predicting reconstructed f0 by mean f0 and delta f0" #-----------------------changed
+export PROJECT=fastpitch_mean_delta #----------------------------------------------------changed
+export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
 # (download to default path: $FP/cmudict/cmudict-0.7b beforehand!)
