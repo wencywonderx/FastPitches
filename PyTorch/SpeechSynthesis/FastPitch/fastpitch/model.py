@@ -495,6 +495,7 @@ class FastPitch(nn.Module):
 
         # Pitch over chars
         if self.raw_f0:
+            print("inferencing pitch")
             pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1) # without ground truth
 
             if pitch_transform is not None:
@@ -508,12 +509,13 @@ class FastPitch(nn.Module):
                 pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
             else:
                 pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
-
             enc_out = enc_out + pitch_emb
+        else:
+            pitch_pred = None
 
         # Predict energy
         if self.energy_conditioning:
-
+            print("inferancing energy")
             if energy_tgt is None:
                 energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
                 energy_emb = self.energy_emb(energy_pred.unsqueeze(1)).transpose(1, 2)
@@ -524,9 +526,22 @@ class FastPitch(nn.Module):
         else:
             energy_pred = None
         
-        # # predict mean and delta f0:
-        # if self.mean_and_delta_f0:
-        #     if mean
+        # predict mean and delta f0:
+        if self.mean_and_delta_f0:
+            print("inferencing delta and mean f0")
+            if mean_f0_tgt is None and delta_f0_tgt is None:
+                delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+                delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+                input = enc_out * enc_mask
+                mean_f0_pred = self.mean_f0_predictor(input)
+                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
+            else:
+                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
+            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
+        else:
+            delta_f0_pred = None
+            mean_f0_pred = None
 
         len_regulated, dec_lens = regulate_len(
             dur_pred if dur_tgt is None else dur_tgt,
@@ -536,4 +551,4 @@ class FastPitch(nn.Module):
         mel_out = self.proj(dec_out)
         # mel_lens = dec_mask.squeeze(2).sum(axis=1).long()
         mel_out = mel_out.permute(0, 2, 1)  # For inference.py
-        return mel_out, dec_lens, dur_pred, pitch_pred, energy_pred
+        return mel_out, dec_lens, dur_pred, pitch_pred, energy_pred, delta_f0_pred, mean_f0_pred
