@@ -85,3 +85,13 @@ class MeanPredictor(nn.Module):
 # output = emb.view(16, 1, 384) + enc_out
 # print(output)
 # # print(input.view(16, 10, 1))
+
+
+
+# delta_f0_pred = rand(16, 1, 148)
+# print(delta_f0_pred)
+# mean_f0_pred = rand(16, 1)
+# print(mean_f0_pred)
+# mean_and_delta_pred = delta_f0_pred + mean_f0_pred.view(16, 1, 1)
+# print(mean_and_delta_pred.shape)
+

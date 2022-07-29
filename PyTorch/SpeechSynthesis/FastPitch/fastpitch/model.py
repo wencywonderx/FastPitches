@@ -367,21 +367,24 @@ class FastPitch(nn.Module):
         #------------added by me----------
         # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
-            print("-------predicting delta f0") # e.g. [16, 1, 148]            
-            delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+            print("-------predicting delta f0")           
+            delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
             print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
+            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(16, 1, 1)
             # Average delta f0 over charachtors, to predict for each input phone one value 
             # but not couple of frame values which is meaningless
-            delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) 
-            # print("\n delta f0 target after average: ", delta_f0_tgt.shape) # e.g. [16, 1, 148]
+            delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # e.g. [16, 1, 148]
+            mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(16, 1, 1)
+            print(f"mean and delta f0 tgt {mean_and_delta_f0_tgt}")
             # if use ground truth
             if use_gt_delta_f0 and delta_f0_tgt is not None:
                 assert use_gt_mean_f0 and mean_f0_tgt is not None
-                delta_and_mean_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt)
+                print(f"this is shape of delta_and_mean_f0_emb: {delta_and_mean_f0_emb.shape}")
             else:
-                delta_and_mean_f0_emb = self.delta_f0_emb(delta_f0_pred)
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred)
             # print('\n embedded delta f0: ', delta_f0_emb.shape) # e.g. [16, 384, 148]
             # enc_out = enc_out + delta_f0_emb.transpose(1, 2)
             # print("\n added predicted delta f0 to the embedding : ", enc_out.shape) # e.g. [16, 148, 384]
