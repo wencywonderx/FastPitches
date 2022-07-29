@@ -524,9 +524,9 @@ class FastPitch(nn.Module):
         else:
             energy_pred = None
         
-        # predict mean and delta f0:
-        if self.mean_and_delta_f0:
-            if mean
+        # # predict mean and delta f0:
+        # if self.mean_and_delta_f0:
+        #     if mean
 
         len_regulated, dec_lens = regulate_len(
             dur_pred if dur_tgt is None else dur_tgt,
