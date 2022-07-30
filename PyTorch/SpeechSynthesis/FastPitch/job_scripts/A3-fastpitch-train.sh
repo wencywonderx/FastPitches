@@ -34,7 +34,7 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
 # export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
-export OUTPUT_DIR=$SCRATCH/new_add_first
+export OUTPUT_DIR=$SCRATCH/new_emb_first
 
 export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # export DATASET_PATH=$FP/test_folder
@@ -50,7 +50,7 @@ export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
 export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
-export PROJECT=new_add_first #----------------------------------------------------changed
+export PROJECT=new_emb_first #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
@@ -90,7 +90,7 @@ export PITCH_ONLINE_DIR=
 export DISTRIBUTED=' '
 
 #------added be me------
-export NORMALISE=false
+export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
 export MEAN_DELTA=true
