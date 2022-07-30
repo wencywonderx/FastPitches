@@ -290,7 +290,7 @@ def plot_mels(pred_tgt_lists):
     for lizt in pred_tgt_lists:
         local_prep_tgts.append([tenzor.cpu().numpy() for tenzor in lizt])
 
-    # this is just for the axes limits
+    # # this is just for the axes limits
     # pitch_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
     # energy_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
     # energy_min = min([feature_list[1].min() for feature_list in local_prep_tgts])
@@ -307,12 +307,10 @@ def plot_mels(pred_tgt_lists):
 
     for i in range(2):  # we always only expect 2: pred and tgt
         #-------------------changed by me----------------------
-        # if len(local_prep_tgts[i]) == 4:
-        # mel, energy, pitch = local_prep_tgts[i]
-        mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
-
-        # if len(local_prep_tgts[i]) == 4:
-        #     mel, pitch, energy, slope_f0 = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 3:
+            mel, energy, pitch = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 4:
+            mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
@@ -323,31 +321,32 @@ def plot_mels(pred_tgt_lists):
                                labelleft=False)
         axes[i][0].set_anchor("W")
 
-        # ax1 = add_axis(fig, axes[i][0])
-        # ax1.plot(pitch, color="tomato")
-        # ax1.set_xlim(0, mel.shape[1])
-        # # ax1.set_ylim(0, pitch_max)
-        # ax1.set_ylabel("F0", color="tomato") 
-        # ax1.tick_params(labelsize="x-small",
-        #                 colors="tomato",
-        #                 bottom=False,
-        #                 labelbottom=False)
+        if len(local_prep_tgts[i]) == 3:
+            ax1 = add_axis(fig, axes[i][0])
+            ax1.plot(pitch, color="tomato")
+            ax1.set_xlim(0, mel.shape[1])
+            # ax1.set_ylim(0, pitch_max)
+            ax1.set_ylabel("F0", color="tomato") 
+            ax1.tick_params(labelsize="x-small",
+                            colors="tomato",
+                            bottom=False,
+                            labelbottom=False)
 
-        # ax2 = add_axis(fig, axes[i][0])
-        # ax2.plot(energy, color="darkviolet")
-        # ax2.set_xlim(0, mel.shape[1])
-        # ax2.set_ylim(energy_min, energy_max)
-        # ax2.set_ylabel("Energy", color="darkviolet")
-        # ax2.yaxis.set_label_position("right")
-        # ax2.tick_params(
-        #     labelsize="x-small",
-        #     colors="darkviolet",
-        #     bottom=False,
-        #     labelbottom=False,
-        #     left=False,
-        #     labelleft=False,
-        #     right=True,
-        #     labelright=True,)
+            # ax2 = add_axis(fig, axes[i][0])
+            # ax2.plot(energy, color="darkviolet")
+            # ax2.set_xlim(0, mel.shape[1])
+            # ax2.set_ylim(energy_min, energy_max)
+            # ax2.set_ylabel("Energy", color="darkviolet")
+            # ax2.yaxis.set_label_position("right")
+            # ax2.tick_params(
+            #     labelsize="x-small",
+            #     colors="darkviolet",
+            #     bottom=False,
+            #     labelbottom=False,
+            #     left=False,
+            #     labelleft=False,
+            #     right=True,
+            #     labelright=True,)
         #----------------added by me------------------
         if len(local_prep_tgts[i]) == 4:
             ax3 = add_axis(fig, axes[i][0])
@@ -358,7 +357,8 @@ def plot_mels(pred_tgt_lists):
             ax3.tick_params(labelsize="x-small",
                         colors="blue",
                         bottom=False,
-                        labelbottom=False)    
+                        labelbottom=False) 
+
             ax4 = add_axis(fig, axes[i][0])
             mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
             ax4.plot(mean_f0, color="red")
