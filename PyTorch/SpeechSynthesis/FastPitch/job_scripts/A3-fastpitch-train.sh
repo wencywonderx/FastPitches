@@ -44,10 +44,10 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # which point to saved pitch contours. If extracting pitches from audio
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
-export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
-export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
-# export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
-# export VAL_FILELIST=$FP/filelists/val_file_10.txt
+# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
+# export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
+export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
+export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
 export PROJECT=add_first #----------------------------------------------------changed
@@ -90,7 +90,7 @@ export PITCH_ONLINE_DIR=
 export DISTRIBUTED=' '
 
 #------added be me------
-export NORMALISE=false
+export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
 export MEAN_DELTA=true
