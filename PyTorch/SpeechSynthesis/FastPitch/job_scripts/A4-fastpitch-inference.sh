@@ -55,7 +55,7 @@ export CPU=true  # false => run on GPU
 export AMP=false
 
 #------added be me------
-export NORMALISE=true
+# export NORMALISE=true
 #-----------------------
 export MEAN_DELTA=true
 export NORMAL=false
