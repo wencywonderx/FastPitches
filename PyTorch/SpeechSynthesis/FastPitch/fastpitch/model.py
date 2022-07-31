@@ -369,39 +369,40 @@ class FastPitch(nn.Module):
             print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
-            # mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #-------------changed
+            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             
             # Average delta f0 over charachtors, to predict for each input phone one value 
             # but not couple of frame values which is meaningless
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # e.g. [16, 1, 148]
-            # mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #-------------changed
+            mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             # print(f"mean and delta f0 tgt {mean_and_delta_f0_tgt}")
             
-            # # if use ground truth 
-            # if use_gt_delta_f0 and delta_f0_tgt is not None:
-            #     assert use_gt_mean_f0 and mean_f0_tgt is not None
-            #     delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) 
-            #     print(f"this is shape of delta_and_mean_f0_emb: {delta_and_mean_f0_emb.shape}")
-            # else:
-            #     delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred)
-
+            # if use ground truth 
             if use_gt_delta_f0 and delta_f0_tgt is not None:
-                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt) # e.g. [16, 384, 148]
+                assert use_gt_mean_f0 and mean_f0_tgt is not None
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) 
+                print(f"this is shape of delta_and_mean_f0_emb: {delta_and_mean_f0_emb.shape}")
             else:
-                delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred)
 
-            if use_gt_mean_f0 and mean_f0_tgt is not None:
-                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt) # [16, 1, 384]/ [16, 384]]
-            else:
-                mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
+            # if use_gt_delta_f0 and delta_f0_tgt is not None:
+            #     delta_f0_emb = self.delta_f0_emb(delta_f0_tgt) # e.g. [16, 384, 148]
+            # else:
+            #     delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
 
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
+            # if use_gt_mean_f0 and mean_f0_tgt is not None:
+            #     mean_f0_emb = self.mean_f0_emb(mean_f0_tgt) # [16, 1, 384]/ [16, 384]]
+            # else:
+            #     mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
+
+            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
+            enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2)
         else:
             delta_f0_pred = None
             mean_f0_pred = None
-            # delta_and_mean_f0_emb = None
-            delta_f0_emb = None
-            mean_f0_emb = None
+            delta_and_mean_f0_emb = None
+            # delta_f0_emb = None
+            # mean_f0_emb = None
         
         if self.slope_f0:
             print("-------predicting f0 slope")                      
