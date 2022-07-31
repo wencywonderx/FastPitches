@@ -57,8 +57,8 @@ export AMP=false
 #------added be me------
 # export NORMALISE=true
 #-----------------------
-export MEAN_DELTA=true
-export NORMAL=false
+export MEAN_DELTA=false
+export NORMAL=true
 export SLOPE=false
 #-----------------------
 

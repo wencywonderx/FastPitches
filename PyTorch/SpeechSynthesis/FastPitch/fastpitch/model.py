@@ -317,10 +317,10 @@ class FastPitch(nn.Module):
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
-        print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
-        print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
-        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
+        # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
+        # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
+        # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
+        # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
 
 
         mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
@@ -380,27 +380,25 @@ class FastPitch(nn.Module):
             # mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             # print(f"mean and delta f0 tgt {mean_and_delta_f0_tgt}")
             
-            # if use ground truth
+            # # if use ground truth 
             # if use_gt_delta_f0 and delta_f0_tgt is not None:
             #     assert use_gt_mean_f0 and mean_f0_tgt is not None
             #     delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) 
             #     print(f"this is shape of delta_and_mean_f0_emb: {delta_and_mean_f0_emb.shape}")
             # else:
             #     delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred)
-            # print('\n embedded delta f0: ', delta_f0_emb.shape) # e.g. [16, 384, 148]
-            # enc_out = enc_out + delta_f0_emb.transpose(1, 2)
-            # print("\n added predicted delta f0 to the embedding : ", enc_out.shape) # e.g. [16, 148, 384]
+
             if use_gt_delta_f0 and delta_f0_tgt is not None:
-                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt) # e.g. [16, 384, 148]
             else:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+
             if use_gt_mean_f0 and mean_f0_tgt is not None:
-                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
-                # print(f'this is mean f0 embedding shape: {mean_f0_emb.shape}') [16, 1, 384]/ [16, 384]]
+                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt) # [16, 1, 384]/ [16, 384]]
             else:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
-            # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) 
+
+            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
         else:
             delta_f0_pred = None
             mean_f0_pred = None
@@ -543,6 +541,7 @@ class FastPitch(nn.Module):
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
+            print(f'this is predicted mean f0 {mean_f0_pred}')
             # mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed   
             # mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #------------------changed         
             # if pitch_transform is not None:
