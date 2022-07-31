@@ -35,10 +35,14 @@ class TemporalPredictor(nn.Module):
 
     def forward(self, enc_out, enc_out_mask): # mask is to ignore 0s when predicting
         out = enc_out * enc_out_mask # [16, 148, 384]
+        # print(out.shape)
         out = self.layers(out.transpose(1, 2)).transpose(1, 2) # [16, 148, 256]
-        out = self.fc(out) * enc_out_mask # [16, 1, 256] 
+        # print(out.shape)
+        # print(self.fc(out).shape) # [16, 148, 1]
+        out = self.fc(out) * enc_out_mask # [16, 148, 1], after embedding [16, 148, 384]
+        # print(out.shape)
         return out
-        # after embedding [16, 148, 384]
+
 
 class MeanPredictor(nn.Module):
     """Predicts a single float per sample"""
@@ -62,19 +66,23 @@ class MeanPredictor(nn.Module):
         print(y_pred.shape) # [16, 1]
         return y_pred
 
-# >>> rnn = nn.LSTM(10, 20, 2)
-# >>> input = torch.randn(5, 3, 10)
-# >>> h0 = torch.randn(2, 3, 20)
-# >>> c0 = torch.randn(2, 3, 20)
-# >>> output, (hn, cn) = rnn(input, (h0, c0))
+# model = TemporalPredictor(384, 256, 3, 0.1)
+# enc_out = rand(16, 148, 384)
+# # print(enc_out)
+# enc_mask = rand(16, 148, 1)
+# # print(enc_mask)
+# outputs = model.forward(enc_out, enc_mask)
 
-# model = MeanPredictor(384, 256)
-# enc_out = rand(16, 148, 384) # input size: [batch_size, input_length, hidden]
-# enc_mask = rand(16, 148, 1) 
-# input = enc_out * enc_mask
-# outputs = model.forward(input)
-# # reshape = outputs.unsqueeze(1) # expected [batch_size]
-# print(outputs)
+model = MeanPredictor(384, 256)
+enc_out = rand(16, 148, 384) # input size: [batch_size, max_input_length, hidden]
+enc_mask = rand(16, 148, 1) 
+input = enc_out * enc_mask
+outputs = model.forward(input)
+print(outputs)
+# reshape = outputs.unsqueeze(1) # expected [batch_size]
+
+
+
 
 # input_mean = rand(3, 1)
 # input_delta = rand(3, 4, 10)
@@ -85,8 +93,6 @@ class MeanPredictor(nn.Module):
 # output = emb.view(16, 1, 384) + enc_out
 # print(output)
 # # print(input.view(16, 10, 1))
-
-
 
 # delta_f0_pred = rand(16, 1, 148)
 # print(delta_f0_pred)

@@ -100,12 +100,9 @@ class TemporalPredictor(nn.Module):
         self.fc = nn.Linear(filter_size, self.n_predictions, bias=True)
 
     def forward(self, enc_out, enc_out_mask): # mask is to ignore 0s when predicting
-        out = enc_out * enc_out_mask
-        # print(f'-------------Predictor: this is size after masking before LSTM {out.shape}') [16, 148, 384]
-        out = self.layers(out.transpose(1, 2)).transpose(1, 2)
-        # print(f'-------------Predictor: this is size after LSTM and transpose {out.shape}') [16, 148, 256]
-        out = self.fc(out) * enc_out_mask
-        # print(f'-------------Predictor: this is size after FC {out.shape}') [16, 1, 256]
+        out = enc_out * enc_out_mask # [16, 148, 384]
+        out = self.layers(out.transpose(1, 2)).transpose(1, 2) # [16, 148, 256]
+        out = self.fc(out) * enc_out_mask # [16, 1, 256]
         return out
 
 class MeanPredictor(nn.Module):
@@ -208,7 +205,7 @@ class FastPitch(nn.Module):
                 filter_size=pitch_predictor_filter_size,
                 kernel_size=pitch_predictor_kernel_size,
                 dropout=p_pitch_predictor_dropout, n_layers=pitch_predictor_n_layers,
-                n_predictions=pitch_conditioning_formants # a mistake, may take f0 as formant, but still need this channel
+                n_predictions=pitch_conditioning_formants 
             )
 
             self.pitch_emb = nn.Conv1d(
@@ -323,10 +320,10 @@ class FastPitch(nn.Module):
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
 
 
-        mel_max_len = mel_tgt.size(2) # same with duration, longgest sentence, other samples were padded along this length
-        # print("\n mel_max_len: ", mel_max_len) # e.g. 787, integer
-        # Calculate speaker embedding
+        mel_max_len = mel_tgt.size(2) 
+        # same with duration, longgest sentence, other samples were padded along this length e.g. 787, integer
         
+        # Calculate speaker embedding       
         if self.speaker_emb is None:
             spk_emb = 0 # add nothing to the embedding, it is trained(the speaker embedding)
         else:
@@ -337,7 +334,7 @@ class FastPitch(nn.Module):
         enc_out, enc_mask = self.encoder(inputs, conditioning=spk_emb) 
         # enc_mask? speaker conditioning can also add this to later
         # print("\n encoder out: ", enc_out.shape) # (batch_size, max_input_length, 384) e.g. [16, 148, 384]
-        # print("\n encoder mask: ", enc_mask.shape) #(batch_size, max_input_length, 1) e.g. [16, 148, 1]
+        # print("\n encoder mask: ", enc_mask.shape, enc_mask) #(batch_size, max_input_length, 1) e.g. [16, 148, 1]
 
         
         # Alignment
@@ -524,7 +521,7 @@ class FastPitch(nn.Module):
 
         # Predict energy
         if self.energy_conditioning:
-            print("inferancing energy")
+            print("inferencing energy")
             if energy_tgt is None:
                 energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
                 energy_emb = self.energy_emb(energy_pred.unsqueeze(1)).transpose(1, 2)
