@@ -545,14 +545,14 @@ class FastPitch(nn.Module):
             mean_f0_pred = self.mean_f0_predictor(input)
             # mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed   
             # mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #------------------changed         
-            # if pitch_transform is not None:
-            #     # if self.pitch_std[0] == 0.0:
-            #     # # XXX LJSpeech-1.1 defaults
-            #     #     mean, std = 218.14, 67.24
-            #     # else:
-            #     #     mean, std = self.pitch_mean[0], self.pitch_std[0]
-            #     mean_f0_pred = pitch_transform(mean_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
-            #     delta_f0_pred = pitch_transform(delta_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
+            if pitch_transform is not None:
+                # if self.pitch_std[0] == 0.0:
+                # # XXX LJSpeech-1.1 defaults
+                #     mean, std = 218.14, 67.24
+                # else:
+                #     mean, std = self.pitch_mean[0], self.pitch_std[0]
+                mean_f0_pred = pitch_transform(mean_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
+                delta_f0_pred = pitch_transform(delta_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
             if mean_f0_tgt is None and delta_f0_tgt is None:
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
