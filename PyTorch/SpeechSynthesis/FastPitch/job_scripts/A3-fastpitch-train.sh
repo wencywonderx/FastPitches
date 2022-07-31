@@ -33,8 +33,8 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # some values are set by the queuing software, e.g. $JOB_ID
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
-export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
-# export OUTPUT_DIR=$SCRATCH/new_emb_first
+#export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
+export OUTPUT_DIR=$SCRATCH/whole_emb_first
 
 export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # export DATASET_PATH=$FP/test_folder
@@ -74,7 +74,7 @@ export GRAD_ACCUMULATION=1
 # set random seed for ~reproducible runs
 export SEED=
 
-export EPOCHS=50 #---------------------------------------------------------------------------------------------changed
+export EPOCHS=100 #---------------------------------------------------------------------------------------------changed
 export EPOCHS_PER_CHECKPOINT=2 #------------------------------------------------------------------------------changed
 export WARMUP_STEPS=1000
 export KL_LOSS_WARMUP=100
