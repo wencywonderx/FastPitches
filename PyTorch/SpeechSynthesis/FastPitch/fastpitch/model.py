@@ -551,6 +551,7 @@ class FastPitch(nn.Module):
             #     mean_f0_pred = pitch_transform(mean_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
             #     delta_f0_pred = pitch_transform(delta_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
             if mean_f0_tgt is None and delta_f0_tgt is None:
+                print("-----------------there is no target !!!!!!!!!")
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
                 # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) #---------------------------------changed
