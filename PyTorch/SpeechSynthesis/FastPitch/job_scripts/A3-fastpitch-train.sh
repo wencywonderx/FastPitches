@@ -27,7 +27,7 @@ YOUR_NAME=Xi_Wang
 
 SCRATCH=/exports/eddie/scratch/$UUN
 DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAME}
-FP=$DS_HOME/FastPitches_emb_first_with_norm/PyTorch/SpeechSynthesis/FastPitch
+FP=$DS_HOME/FastPitches_emb_first_with_norm/PyTorch/SpeechSynthesis/FastPitch #-----------------------changed
 
 # set up train script options using environment variables
 # some values are set by the queuing software, e.g. $JOB_ID
