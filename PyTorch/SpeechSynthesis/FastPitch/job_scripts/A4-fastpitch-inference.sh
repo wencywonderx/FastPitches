@@ -38,7 +38,7 @@ export WAVEGLOW="$FP/pretrained_models/waveglow/nvidia_waveglow256pyt_fp16.pt"
 # inference on CPU afterwards!
 
 export PHRASES="$FP/phrases/devset10.tsv"
-export OUTPUT_DIR=$DS_HOME/fastpitch_audio/emb_before_add/$(basename ${PHRASES} .tsv) #--------------------------changed
+export OUTPUT_DIR=$DS_HOME/fastpitch_audio/emb_first/$(basename ${PHRASES} .tsv) #--------------------------changed
 export BATCH_SIZE=16  # this might need to be bigger than #utts in $PHRASES...
 
 # these affect model architecture => match to settings used during model training!

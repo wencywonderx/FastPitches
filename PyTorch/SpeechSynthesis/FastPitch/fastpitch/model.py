@@ -395,12 +395,12 @@ class FastPitch(nn.Module):
             # else:
             #     mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
 
-            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
+            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384] #---changed
             enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2)
         else:
             delta_f0_pred = None
             mean_f0_pred = None
-            delta_and_mean_f0_emb = None
+            delta_and_mean_f0_emb = None #-----------------------------------------changed
             # delta_f0_emb = None
             # mean_f0_emb = None
         
@@ -540,31 +540,23 @@ class FastPitch(nn.Module):
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
             print(f'this is predicted mean f0 {mean_f0_pred}')
-            # mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed   
-            # mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #------------------changed         
-            # if pitch_transform is not None:
-            #     if self.pitch_std[0] == 0.0:
-            #     # XXX LJSpeech-1.1 defaults
-            #         mean, std = 218.14, 67.24
-            #     else:
-            #         mean, std = self.pitch_mean[0], self.pitch_std[0]
-            #     mean_f0_pred = pitch_transform(mean_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
-            #     delta_f0_pred = pitch_transform(delta_f0_pred, enc_mask.sum(dim=(1,2)), mean, std)
+            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed   
+            mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #------------------changed         
             if mean_f0_tgt is None and delta_f0_tgt is None:
-                print("-----------------there is no target !!!!!!!!!")
-                delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
-                mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-                # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) #---------------------------------changed
+                print("-----------------without target")
+                # delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+                # mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) #---------------------------------changed
             else:
-                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
-                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
-                # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) #-----------------------------------changed
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
-            # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2)
+                print("-----------------with target")
+                # delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
+                # mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) #-----------------------------------changed
+            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
+            enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) #---------------------------changed
         else:
             delta_f0_pred = None
             mean_f0_pred = None
-            # mean_and_delta_f0_pred = None
 
         len_regulated, dec_lens = regulate_len(
             dur_pred if dur_tgt is None else dur_tgt,
