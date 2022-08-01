@@ -26,7 +26,7 @@ UUN=s2258422
 YOUR_NAME=Xi_Wang
 
 DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAME}
-FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
+FP=$DS_HOME/FastPitches_emb_first_with_norm/PyTorch/SpeechSynthesis/FastPitch
 
 # see $FP/scripts/download_{fastpitch,waveglow}.sh to get pre-trained
 # checkpoints, or substitute your own (can pass as script argument)
