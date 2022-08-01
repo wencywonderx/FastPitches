@@ -90,7 +90,7 @@ export PITCH_ONLINE_DIR=
 export DISTRIBUTED=' '
 
 #------added be me------
-export NORMALISE=false
+export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
 export MEAN_DELTA=true
