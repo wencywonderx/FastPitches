@@ -540,7 +540,8 @@ class FastPitch(nn.Module):
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
             print(f'this is predicted mean f0 {mean_f0_pred}')
-            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed   
+            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed  
+            print(f'this is mean f0 tgt {mean_f0_tgt}') 
             mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #------------------changed         
             if mean_f0_tgt is None and delta_f0_tgt is None:
                 print("-----------------without target")
