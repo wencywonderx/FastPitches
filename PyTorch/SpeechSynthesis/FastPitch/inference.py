@@ -70,7 +70,7 @@ def parse_args(parser):
     parser.add_argument('--cudnn-benchmark', action='store_true',
                         help='Enable cudnn benchmark mode')
     parser.add_argument('--fastpitch', type=str,
-                        help='Full path to the generator checkpoint file (skip to use ground truth mels)')
+                        help='Full path to the generator checkpoint file (skip to use ground truth mels)') #----------------------Q:what does it mean?
     parser.add_argument('--waveglow', type=str,
                         help='Full path to the WaveGlow model checkpoint file (skip to only generate mels)')
     parser.add_argument('-s', '--sigma-infer', default=0.9, type=float,
@@ -96,6 +96,9 @@ def parse_args(parser):
                         help='Path to dataset (for loading extra data fields)')
     parser.add_argument('--speaker', type=int, default=0,
                         help='Speaker ID for a multi-speaker model')
+    #-----------------------------------------added-------------------------------------------
+    parser.add_argument('--mean_f0_tgt', type=list, default=None, help='input target list, control mean f0')
+    #-----------------------------------------------------------------------------------------
 
     parser.add_argument('--p-arpabet', type=float, default=0.0, help='')
     parser.add_argument('--heteronyms-path', type=str, default='cmudict/heteronyms',
@@ -359,7 +362,8 @@ def main():
     gen_kw = {'pace': args.pace,
               'speaker': args.speaker,
               'pitch_tgt': None,
-              'pitch_transform': build_pitch_transformation(args)}
+              'pitch_transform': build_pitch_transformation(args),
+              'mean_f0_tgt': torch.FloatTensor(args.mean_f0_tgt)} #----------------------------------------------changed
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')

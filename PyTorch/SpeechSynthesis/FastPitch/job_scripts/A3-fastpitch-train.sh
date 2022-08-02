@@ -3,8 +3,8 @@
 # grid engine options
 #$ -P lel_hcrc_cstr_students
 #$ -N fastpitches_train
-#$ -l h_rt=48:00:00  
-#$ -l h_vmem=64G
+#$ -l h_rt=24:00:00  
+#$ -l h_vmem=48G
 #$ -pe gpu-titanx 1
 #$ -o /exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/s2258422_Xi_Wang/job_logs/$JOB_NAME_$JOB_ID.stdout
 #$ -e /exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/s2258422_Xi_Wang/job_logs/$JOB_NAME_$JOB_ID.stderr

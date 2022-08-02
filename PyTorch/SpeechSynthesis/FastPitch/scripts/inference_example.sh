@@ -24,6 +24,7 @@
 : ${NORMAL:=false}
 # : ${NORMALISE:=false}
 : ${SLOPE:=false}
+: ${MEAN_F0_TGT:=None}
 #------------------------------
 
 echo -e "\nAMP=$AMP, batch_size=$BATCH_SIZE\n"
@@ -41,6 +42,9 @@ ARGS+=" --repeats $REPEATS"
 ARGS+=" --warmup-steps $WARMUP"
 ARGS+=" --speaker $SPEAKER"
 ARGS+=" --n-speakers $NUM_SPEAKERS"
+#--------------added---------------
+ARGS+=" --mean_f0_tgt $MEAN_F0_TGT"
+#----------------------------------
 [ "$CPU" = false ]          && ARGS+=" --cuda"
 [ "$CPU" = false ]          && ARGS+=" --cudnn-benchmark"
 [ "$AMP" = true ]           && ARGS+=" --amp"
@@ -52,7 +56,7 @@ ARGS+=" --n-speakers $NUM_SPEAKERS"
 [ "$MEAN_DELTA" = true ]    && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]        && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]         && ARGS+=" --slope-f0"
-# [ "$NORMALISE" = true ]     && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"
+# [ "$NORMALISE" = true ]     && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"  #-----------------------Q:why it doesn't work?
 #-----------------------------------------------------------------
 
 mkdir -p "$OUTPUT_DIR"
