@@ -189,7 +189,7 @@ def load_and_setup_model(model_name, parser, checkpoint, amp, device,
 
 def load_fields(fpath):
     lines = [l.strip() for l in open(fpath, encoding='utf-8')]
-    if fpath.endswith('.tsv'): # contaning the sentences you want to stnthesise
+    if fpath.endswith('.tsv'): # contaning the sentences you want to synthesise
         columns = lines[0].split('\t')
         fields = list(zip(*[t.split('\t') for t in lines[1:]]))
     else:
@@ -363,7 +363,7 @@ def main():
               'speaker': args.speaker,
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
-              'mean_f0_tgt': torch.FloatTensor([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])} #args.mean_f0_tgt----------------------------------------------changed
+              'mean_f0_tgt': fields['mean_f0']} #-----changed
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')

@@ -540,23 +540,30 @@ class FastPitch(nn.Module):
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
             print(f'this is predicted mean f0 {mean_f0_pred}')
-            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #---------------changed  
+            mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1)
             print(f'this is predicted mean and delta f0 {mean_and_delta_f0_pred}')
             if mean_f0_tgt is None and delta_f0_tgt is None:
                 print("-----------------without target")
-                # delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
-                # mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) #---------------------------------changed
-            else:
-                print("-----------------with target")
-                # delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
-                # mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
                 print(f'this is mean f0 tgt {mean_f0_tgt}') 
                 print(f'this is delta f0 tgt {delta_f0_tgt}') 
-                mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #------------------changed         
-                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) #-----------------------------------changed
-            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
-            enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) #---------------------------changed
+                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) 
+            if mean_f0_tgt is not None and delta_f0_tgt is None:
+                print("-----------------with mean f0 target")
+                print(f'this is mean f0 tgt {mean_f0_tgt}') 
+                print(f'this is delta f0 tgt {delta_f0_tgt}') 
+                mean_and_delta_f0_tgt = delta_f0_pred + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1)
+            if mean_f0_tgt is None and delta_f0_tgt is not None:
+                print("-----------------with mean f0 target")
+                print(f'this is mean f0 tgt {mean_f0_tgt}') 
+                print(f'this is delta f0 tgt {delta_f0_tgt}') 
+                mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1)                
+            if mean_f0_tgt is not None and delta_f0_tgt is not None:
+                print("-----------------with mean f0 and delta f0 target")
+                print(f'this is mean f0 tgt {mean_f0_tgt}') 
+                print(f'this is delta f0 tgt {delta_f0_tgt}') 
+                mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1)       
+            delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) 
+            enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) 
         else:
             delta_f0_pred = None
             mean_f0_pred = None

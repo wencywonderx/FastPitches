@@ -55,12 +55,9 @@ export CPU=false  # false => run on GPU
 export AMP=false
 
 #------added be me------
-# export NORMALISE=true
-#-----------------------
 export MEAN_DELTA=true
 export NORMAL=false
 export SLOPE=false
-# export MEAN_F0_TGT= # what if the given values are out of range
 #-----------------------
 
 cd $FP
