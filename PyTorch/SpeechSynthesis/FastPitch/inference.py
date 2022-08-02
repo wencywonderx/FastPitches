@@ -192,6 +192,7 @@ def load_fields(fpath):
     if fpath.endswith('.tsv'): # contaning the sentences you want to synthesise
         columns = lines[0].split('\t')
         fields = list(zip(*[t.split('\t') for t in lines[1:]]))
+        print(f'fields {fields}')
     else:
         columns = ['text']
         fields = [lines]
