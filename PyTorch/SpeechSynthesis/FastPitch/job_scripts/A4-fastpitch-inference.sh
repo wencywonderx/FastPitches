@@ -60,7 +60,7 @@ export AMP=false
 export MEAN_DELTA=true
 export NORMAL=false
 export SLOPE=false
-export MEAN_F0_TGT=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0] # what if the given values are out of range
+# export MEAN_F0_TGT= # what if the given values are out of range
 #-----------------------
 
 cd $FP

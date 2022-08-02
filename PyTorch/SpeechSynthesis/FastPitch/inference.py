@@ -363,7 +363,7 @@ def main():
               'speaker': args.speaker,
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
-              'mean_f0_tgt': torch.FloatTensor(args.mean_f0_tgt)} #----------------------------------------------changed
+              'mean_f0_tgt': torch.FloatTensor([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0])} #args.mean_f0_tgt----------------------------------------------changed
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')

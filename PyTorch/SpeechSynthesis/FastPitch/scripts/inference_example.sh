@@ -43,7 +43,7 @@ ARGS+=" --warmup-steps $WARMUP"
 ARGS+=" --speaker $SPEAKER"
 ARGS+=" --n-speakers $NUM_SPEAKERS"
 #--------------added---------------
-ARGS+=" --mean_f0_tgt $MEAN_F0_TGT"
+# ARGS+=" --mean_f0_tgt $MEAN_F0_TGT"
 #----------------------------------
 [ "$CPU" = false ]          && ARGS+=" --cuda"
 [ "$CPU" = false ]          && ARGS+=" --cudnn-benchmark"
