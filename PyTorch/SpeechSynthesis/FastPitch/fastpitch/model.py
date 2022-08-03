@@ -546,7 +546,7 @@ class FastPitch(nn.Module):
                 print("-----------------without target")
                 print(f'this is mean f0 tgt {mean_f0_tgt}') 
                 print(f'this is delta f0 tgt {delta_f0_tgt}') 
-                delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) 
+                mean_and_delta_f0_tgt = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) 
             if mean_f0_tgt is not None and delta_f0_tgt is None:
                 print("-----------------with mean f0 target")
                 print(f'this is mean f0 tgt {mean_f0_tgt}') 
