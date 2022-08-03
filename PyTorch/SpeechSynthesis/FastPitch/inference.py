@@ -245,7 +245,10 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
                 batch[f] = pad_sequence(batch[f], batch_first=True).permute(0, 2, 1)
             elif f == 'pitch' and load_pitch:
                 batch[f] = pad_sequence(batch[f], batch_first=True)
-
+            #-----------------------added--------------------------
+            elif f == 'mean_f0':
+                batch[f] = pad_sequence(batch[f], batch_first=True)
+            #------------------------------------------------------
             if type(batch[f]) is torch.Tensor:
                 batch[f] = batch[f].to(device)
         batches.append(batch)
@@ -369,7 +372,7 @@ def main():
               'speaker': args.speaker,
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
-              'mean_f0_tgt': None} #fields['mean_f0']----------------------changed
+              'mean_f0_tgt': fields['mean_f0']} #----------------------changed
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')
