@@ -1,4 +1,4 @@
-mel mean_f0 output  text	
+mel	mean_f0	output	text	
 mels/LJ022-0023.pt	0.1	001_the_overwhelming_majority_of_people_in.wav	The overwhelming majority of people in this country know how to sift the wheat from the chaff in what they hear and what they read.
 mels/LJ043-0030.pt	0.2	002_if_somebody_did_that_to_me,.wav	If somebody did that to me, a lousy trick like that, to take my wife away, and all the furniture, I would be mad as hell, too.
 mels/LJ005-0201.pt	0.3	003_as_is_shown_by_the_report.wav	as is shown by the report of the Commissioners to inquire into the state of the municipal corporations in eighteen thirty-five.
