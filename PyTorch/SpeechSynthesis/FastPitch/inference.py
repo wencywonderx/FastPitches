@@ -248,6 +248,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             #-----------------------added--------------------------
             elif f == 'mean_f0':
+                print("triggered!")
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             #------------------------------------------------------
             if type(batch[f]) is torch.Tensor:
