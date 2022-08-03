@@ -359,12 +359,12 @@ def main():
 
     gen_measures = MeasureTime(cuda=args.cuda)
     waveglow_measures = MeasureTime(cuda=args.cuda)
-
+    
     gen_kw = {'pace': args.pace,
               'speaker': args.speaker,
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
-              'mean_f0_tgt': torch.FloatTensor(list(fields['mean_f0']))} #----------------------changed
+              'mean_f0_tgt': torch.FloatTensor([float(x) for x in list(fields['mean_f0'])])} #----------------------changed
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')
