@@ -34,7 +34,7 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
 #export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
-export OUTPUT_DIR=$SCRATCH/final_whole_add_first_with_norm
+export OUTPUT_DIR=$SCRATCH/slope_without_norm
 
 export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # export DATASET_PATH=$FP/test_folder
@@ -50,7 +50,7 @@ export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 # export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
-export PROJECT=final_whole_add_first_with_norm #----------------------------------------------------changed
+export PROJECT=slope_without_norm #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
@@ -90,12 +90,12 @@ export PITCH_ONLINE_DIR=
 export DISTRIBUTED=' '
 
 #------added be me------
-export NORMALISE=true
+export NORMALISE=false
 export INTERPOLATE=true
 #-----------------------
-export MEAN_DELTA=true
+export MEAN_DELTA=false
 export NORMAL=false
-export SLOPE=false
+export SLOPE=true
 #-----------------------
 
 cd $FP
