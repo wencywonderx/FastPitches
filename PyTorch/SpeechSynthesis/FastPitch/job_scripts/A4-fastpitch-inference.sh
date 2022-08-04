@@ -51,7 +51,7 @@ export SPEAKER=0  # select speaker by index
 # allocation was off. Running on CPU works, but is quite slow (~15 minutes for
 # 10 utterances) and still needs a lot of RAM (16 GB is not enough, 32 GB is,
 # don't know in between)
-export CPU=false  # false => run on GPU
+export CPU=true  # false => run on GPU
 export AMP=false
 
 #------added be me------
