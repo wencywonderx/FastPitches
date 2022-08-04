@@ -254,8 +254,8 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
             if type(batch[f]) is torch.Tensor:
                 batch[f] = batch[f].to(device)
         batches.append(batch)
-    print(f'fields: {fields}')
-    print(f'batches: {batches.shape}')
+    # print(f'fields: {fields}')
+    # print(f'batches: {batches.shape}')
     return batches
 
 
