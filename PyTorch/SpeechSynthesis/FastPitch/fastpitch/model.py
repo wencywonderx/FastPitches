@@ -503,39 +503,7 @@ class FastPitch(nn.Module):
         log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration)
 
-        # Pitch over chars
-        if self.raw_f0:
-            print("inferencing pitch")
-            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1) # without ground truth
 
-            if pitch_transform is not None:
-                if self.pitch_std[0] == 0.0:
-                # XXX LJSpeech-1.1 defaults
-                    mean, std = 218.14, 67.24
-                else:
-                    mean, std = self.pitch_mean[0], self.pitch_std[0]
-                pitch_pred = pitch_transform(pitch_pred, enc_mask.sum(dim=(1,2)), mean, std)
-            if pitch_tgt is None:
-                pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
-            else:
-                pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
-            enc_out = enc_out + pitch_emb
-        else:
-            pitch_pred = None
-
-        # Predict energy
-        if self.energy_conditioning:
-            print("inferencing energy")
-            if energy_tgt is None:
-                energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
-                energy_emb = self.energy_emb(energy_pred.unsqueeze(1)).transpose(1, 2)
-            else:
-                energy_emb = self.energy_emb(energy_tgt).transpose(1, 2)
-
-            enc_out = enc_out + energy_emb
-        else:
-            energy_pred = None
-        
         # predict mean and delta f0:
         if self.mean_and_delta_f0:
             print("inferencing delta and mean f0")
@@ -575,6 +543,39 @@ class FastPitch(nn.Module):
             delta_f0_pred = None
             mean_f0_pred = None
 
+        # Pitch over chars
+        if self.raw_f0:
+            print("inferencing pitch")
+            pitch_pred = self.pitch_predictor(enc_out, enc_mask).permute(0, 2, 1) # without ground truth
+
+            if pitch_transform is not None:
+                if self.pitch_std[0] == 0.0:
+                # XXX LJSpeech-1.1 defaults
+                    mean, std = 218.14, 67.24
+                else:
+                    mean, std = self.pitch_mean[0], self.pitch_std[0]
+                pitch_pred = pitch_transform(pitch_pred, enc_mask.sum(dim=(1,2)), mean, std)
+            if pitch_tgt is None:
+                pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
+            else:
+                pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
+            enc_out = enc_out + pitch_emb
+        else:
+            pitch_pred = None
+
+        # Predict energy
+        if self.energy_conditioning:
+            print("inferencing energy")
+            if energy_tgt is None:
+                energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
+                energy_emb = self.energy_emb(energy_pred.unsqueeze(1)).transpose(1, 2)
+            else:
+                energy_emb = self.energy_emb(energy_tgt).transpose(1, 2)
+
+            enc_out = enc_out + energy_emb
+        else:
+            energy_pred = None
+        
         len_regulated, dec_lens = regulate_len(
             dur_pred if dur_tgt is None else dur_tgt,
             enc_out, pace, mel_max_len=None)

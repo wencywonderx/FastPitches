@@ -42,8 +42,8 @@ def estimate_pitch(wav, mel_len, method='pyin', normalize_mean=None,
 
 def normalize_pitch(pitch, mean, std):
     zeros = (pitch == 0.0)
-    pitch -= mean[:, None]
-    pitch /= std[:, None]
+    pitch -= mean[:, None] # set to 0
+    pitch /= std[:, None] # scale down
     pitch[zeros] = 0.0
     return pitch
 
