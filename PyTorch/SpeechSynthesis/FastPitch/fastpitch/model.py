@@ -364,16 +364,18 @@ class FastPitch(nn.Module):
         #------------added by me----------
         # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
-            print("-------predicting delta f0")           
+            # print("-------predicting delta f0")           
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
-            print("-------predicting mean f0")                      
+            # print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
             mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             
             # Average delta f0 over charachtors, to predict for each input phone one value 
             # but not couple of frame values which is meaningless
+            print(f'delta f0 tgt before {delta_f0_tgt}')
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # e.g. [16, 1, 148]
+            print(f'delta f0 tgt after {delta_f0_tgt}')
             mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             # print(f"mean and delta f0 tgt {mean_and_delta_f0_tgt}")
             
@@ -381,7 +383,7 @@ class FastPitch(nn.Module):
             if use_gt_delta_f0 and delta_f0_tgt is not None:
                 assert use_gt_mean_f0 and mean_f0_tgt is not None
                 delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) 
-                print(f"this is shape of delta_and_mean_f0_emb: {delta_and_mean_f0_emb.shape}")
+                # print(f"this is shape of delta_and_mean_f0_emb: {delta_and_mean_f0_emb.shape}")
             else:
                 delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred)
 
