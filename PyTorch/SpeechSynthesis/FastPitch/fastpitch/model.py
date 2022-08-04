@@ -515,7 +515,7 @@ class FastPitch(nn.Module):
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
                 # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) #---------------------------------changed
-            else:
+            if mean_f0_tgt is not None and delta_f0_tgt is None:
                 print("-----------------using target !!!!!!!!!")
                 delta_f0_emb = self.delta_f0_emb(delta_f0_tgt)
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt)
