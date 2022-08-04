@@ -255,7 +255,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
                 batch[f] = batch[f].to(device)
         batches.append(batch)
     print(f'fields: {fields}')
-    print(f'batches: {batches}')
+    print(f'batches: {batches.shape}')
     return batches
 
 
