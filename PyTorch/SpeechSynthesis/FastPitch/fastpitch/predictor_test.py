@@ -73,12 +73,12 @@ class MeanPredictor(nn.Module):
 # # print(enc_mask)
 # outputs = model.forward(enc_out, enc_mask)
 
-model = MeanPredictor(384, 256)
-enc_out = rand(16, 148, 384) # input size: [batch_size, max_input_length, hidden]
-enc_mask = rand(16, 148, 1) 
-input = enc_out * enc_mask
-outputs = model.forward(input)
-print(outputs)
+# model = MeanPredictor(384, 256)
+# enc_out = rand(16, 148, 384) # input size: [batch_size, max_input_length, hidden]
+# enc_mask = rand(16, 148, 1) 
+# input = enc_out * enc_mask
+# outputs = model.forward(input)
+# print(outputs)
 # reshape = outputs.unsqueeze(1) # expected [batch_size]
 
 
@@ -100,4 +100,7 @@ print(outputs)
 # print(mean_f0_pred)
 # mean_and_delta_pred = delta_f0_pred + mean_f0_pred.view(16, 1, 1)
 # print(mean_and_delta_pred.shape)
+
+i = rand(1, 20).view(20,1)
+print(i.shape)
 
