@@ -364,7 +364,7 @@ def main():
               'speaker': args.speaker,
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
-              'mean_f0_tgt': None} # fields['mean_f0']
+              'mean_f0_tgt': fields['mean_f0']} # fields['mean_f0']
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')
