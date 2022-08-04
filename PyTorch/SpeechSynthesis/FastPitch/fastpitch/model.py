@@ -316,7 +316,7 @@ class FastPitch(nn.Module):
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
-        # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
+        print("mean_f0_tgt ground", mean_f0_tgt, mean_f0_tgt.shape) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
 
 
@@ -518,6 +518,7 @@ class FastPitch(nn.Module):
             if mean_f0_tgt is not None and delta_f0_tgt is None:
                 print("-----------------using target !!!!!!!!!")
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+                print(f'mean f0 given {mean_f0_tgt}, {mean_f0_tgt.shape}')
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt[0].to(inputs.device))
                 # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) #-----------------------------------changed
             enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
