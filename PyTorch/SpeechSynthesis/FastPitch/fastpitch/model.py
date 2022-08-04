@@ -315,7 +315,7 @@ class FastPitch(nn.Module):
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
-        # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
+        print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
 
@@ -366,6 +366,7 @@ class FastPitch(nn.Module):
         if self.mean_and_delta_f0:
             # print("-------predicting delta f0")           
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
+            print(f'this is predicted delta f0 {delta_f0_pred}')
             # print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
