@@ -225,6 +225,8 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
     if 'output' in fields:
         fields['output'] = [fields['output'][i] for i in order]
 
+    if 'mean_f0' in fields:
+        fields['mean_f0'] = torch.FloatTensor([[float(x) for x in list(fields['mean_f0'])]])
     # cut into batches & pad
     batches = []
     for b in range(0, len(order), batch_size):
@@ -236,7 +238,9 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
                 batch[f] = pad_sequence(batch[f], batch_first=True).permute(0, 2, 1)
             elif f == 'pitch' and load_pitch:
                 batch[f] = pad_sequence(batch[f], batch_first=True)
-
+            elif f == 'mean_f0':
+                print("triggered!")
+                batch[f] = pad_sequence(batch[f], batch_first=True)
             if type(batch[f]) is torch.Tensor:
                 batch[f] = batch[f].to(device)
         batches.append(batch)
@@ -359,7 +363,8 @@ def main():
     gen_kw = {'pace': args.pace,
               'speaker': args.speaker,
               'pitch_tgt': None,
-              'pitch_transform': build_pitch_transformation(args)}
+              'pitch_transform': build_pitch_transformation(args),
+              'mean_f0_tgt': None} # fields['mean_f0']
 
     if args.torchscript:
         gen_kw.pop('pitch_transform')
