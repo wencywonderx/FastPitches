@@ -100,6 +100,12 @@ def f0_slope(pitch):
     fit = np.polyfit(x, y, 1)
     # fit_fn = np.poly1d(fit)
     slope, intercept = fit
+    delta= []
+    print(pitch)
+    for i in range(len(pitch)):    
+        y = slope * i + intercept
+        delta_slope = pitch[i] - y
+        delta.append(delta_slope)
     # print("slope: ",s," intercept: ",i)
     # for i in range(len(y)):
     #     plt.plot(x[i], y[i], markersize=3, marker='o')
@@ -111,21 +117,25 @@ def f0_slope(pitch):
     # plt.plot(x, fit_fn(x))
     # plt.show()
     f0_slope = torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)[0]
-    return f0_slope
+    delta_slope = torch.from_numpy(np.array(delta))
+    # print(delta_slope.shape)
+    return f0_slope, delta_slope
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
 # pitch = pitch.numpy()[0]
 # pitch = interpolate_f0(pitch)
 # pitch = torch.from_numpy(pitch).unsqueeze(0)
 # # print(mean_delta_f0(pitch))
-# print(f0_slope(pitch))
-# print(f0_slope(pitch).shape)
+# slope, delta = f0_slope(pitch)
+# print(slope.shape)
+# print(delta.shape)
 
-def spectral_tilt():
-    pass
 
-def h_n_r():
-    pass
+# def spectral_tilt():
+#     pass
+
+# def h_n_r():
+#     pass
 
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")

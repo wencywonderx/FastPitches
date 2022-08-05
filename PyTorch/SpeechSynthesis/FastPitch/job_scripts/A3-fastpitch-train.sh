@@ -94,7 +94,7 @@ export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
 export MEAN_DELTA=false
-export NORMAL=true
+export NORMAL=false
 export SLOPE=true
 #-----------------------
 

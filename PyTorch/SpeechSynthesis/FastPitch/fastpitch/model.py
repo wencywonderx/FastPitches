@@ -246,6 +246,19 @@ class FastPitch(nn.Module):
                 slope_f0_predictor_hidden_size,
                 n_predictions=2)
             self.slope_f0_emb = nn.Linear(2, 384)
+
+            self.slope_delta_predictor = TemporalPredictor(
+                in_fft_output_size,
+                filter_size=delta_f0_predictor_filter_size,
+                kernel_size=delta_f0_predictor_kernel_size,
+                dropout=p_delta_f0_predictor_dropout, 
+                n_layers=delta_f0_predictor_n_layers,
+                n_predictions=1)
+            self.slope_delta_emb = nn.Conv1d(
+                1,
+                symbols_embedding_dim,
+                kernel_size=delta_f0_embedding_kernel_size,
+                padding=int((delta_f0_embedding_kernel_size - 1) / 2))            
         #--------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -304,7 +317,7 @@ class FastPitch(nn.Module):
     def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, pace=1.0, max_duration=75): 
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt) = inputs # data_function.py, TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt, slope_delta_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
@@ -315,9 +328,10 @@ class FastPitch(nn.Module):
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
-        print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
+        # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
+        print("slope_delta_tgt", slope_delta_tgt.shape)
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -420,6 +434,7 @@ class FastPitch(nn.Module):
         else:
             slope_f0_pred = None
             slope_f0_emb = None
+            slope_and_delta = None
         #---------------------------
 
         #------------modified and moved by me----------
@@ -481,7 +496,7 @@ class FastPitch(nn.Module):
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, 
-                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt) 
+                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt) 
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
