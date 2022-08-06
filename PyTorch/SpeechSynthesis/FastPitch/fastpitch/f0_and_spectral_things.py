@@ -118,7 +118,7 @@ def f0_slope(pitch):
     # plt.show()
     f0_slope = torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)[0]
     delta_slope = torch.from_numpy(np.array(delta))
-    # print(delta_slope.shape)
+    print(delta_slope.shape)
     return f0_slope, delta_slope
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
