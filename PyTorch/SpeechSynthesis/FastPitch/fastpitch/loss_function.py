@@ -130,7 +130,7 @@ class FastPitchLoss(nn.Module):
             # print(f'this is ldiff slope f0 {ldiff}')
             slope_f0_pred = F.pad(slope_f0_pred, (0, ldiff), value=0.0)
             slope_f0_loss = F.mse_loss(slope_f0_tgt, slope_f0_pred, reduction='mean')
-            print(f'this is slope f0 loss {slope_f0_loss}')           
+            # print(f'this is slope f0 loss {slope_f0_loss}')           
         else:
             slope_f0_loss = 0
         
