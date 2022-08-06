@@ -403,7 +403,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 delta_f0_padded = None,
                 mean_f0 = None
             if batch[0][11] is not None and batch[0][10] is not None:
-                slope_f0[i, :] = batch[ids_sorted_decreasing[i]][11]
+                slope_f0[i, :] = batch[ids_sorted_decreasing[i]][10]
                 slope_delta = batch[ids_sorted_decreasing[i]][11]
                 slope_delta_padded[i, :, :slope_delta.shape[1]] = slope_delta
             else:
