@@ -101,7 +101,7 @@ def f0_slope(pitch):
     # fit_fn = np.poly1d(fit)
     slope, intercept = fit
     delta= []
-    print(pitch)
+    # print(pitch)
     for i in range(len(pitch)):    
         y = slope * i + intercept
         delta_slope = pitch[i] - y
