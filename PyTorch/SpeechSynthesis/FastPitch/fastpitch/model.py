@@ -451,7 +451,7 @@ class FastPitch(nn.Module):
                 f0_emb = self.slope_delta_emb(f0_tgt)
             else:
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-                f0_emb = self.dslope_delta_emb(f0_pred)
+                f0_emb = self.slope_delta_emb(f0_pred)
             # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
             enc_out = enc_out + f0_emb.transpose(1, 2)         
         else:
