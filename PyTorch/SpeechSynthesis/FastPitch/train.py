@@ -414,7 +414,7 @@ def plot_batch_mels(pred_tgt_lists, rank):
             new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
             new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
             new_slope_f0 = mel_pitch_energy[3]
-            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2)], new_slope_f0)
+            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_slope_f0])
             # print("this is regulated features", regulated_features)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
