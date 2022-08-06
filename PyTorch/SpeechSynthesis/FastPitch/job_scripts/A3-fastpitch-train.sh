@@ -50,7 +50,7 @@ export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 # export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
-export PROJECT=test #----------------------------------------------------changed
+export PROJECT=slope_add_first #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
