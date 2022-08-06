@@ -430,12 +430,12 @@ class FastPitch(nn.Module):
             print(f'slope_f0_pred: {slope_f0_pred.shape}')
             #------------------------------------------------------------------
             def add_line_with_points(slope_f0_pred, delta_slope_pred):
-                x = torch.tensor([i for i in range(slope_delta_pred.shape(2))])
-                x = x.view(1, 1, slope_delta_pred.shape(2))
+                x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
+                x = x.view(1, 1, slope_delta_pred.size(2))
                 print(f'x axis {x}')
-                slope = slope_f0_pred[:, 0].view(slope_f0_pred.shape(0),1,1)
+                slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1)
                 print(f'shape of slope {slope.shape}')
-                intercept = slope_f0_pred[:, 1].view(slope_f0_pred.shape(0),1,1)
+                intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)
                 f0_pred = slope * x + intercept
                 return f0_pred
             f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred)
