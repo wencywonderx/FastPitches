@@ -1,5 +1,5 @@
 import torch
-from torch import rand
+from torch import rand, xlogy_
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -73,12 +73,12 @@ class MeanPredictor(nn.Module):
 # # print(enc_mask)
 # outputs = model.forward(enc_out, enc_mask)
 
-model = MeanPredictor(384, 256)
-enc_out = rand(16, 148, 384) # input size: [batch_size, max_input_length, hidden]
-enc_mask = rand(16, 148, 1) 
-input = enc_out * enc_mask
-outputs = model.forward(input)
-print(outputs)
+# model = MeanPredictor(384, 256)
+# enc_out = rand(16, 148, 384) # input size: [batch_size, max_input_length, hidden]
+# enc_mask = rand(16, 148, 1) 
+# input = enc_out * enc_mask
+# outputs = model.forward(input)
+# print(outputs)
 # reshape = outputs.unsqueeze(1) # expected [batch_size]
 
 
@@ -102,5 +102,13 @@ print(outputs)
 # print(mean_and_delta_pred.shape)
 
 
-# d = rand(16, 1, 148)
-
+d = rand(2, 1, 5)
+s = rand(2,2)
+x = torch.tensor([i for i in range(5)]).view(1, 1, 5)
+print(x)
+slope = s[:, 0].view(2,1,1)
+print(slope)
+intercept = s[:, 1].view(2,1,1)
+print(intercept)
+f = slope * x + intercept
+print(f)

@@ -428,14 +428,21 @@ class FastPitch(nn.Module):
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
             print(f'slope_f0_pred: {slope_f0_pred.shape}')
-            #-----------------------------------------------------------------------------
-            f0_pred = slope_delta_pred + slope_f0_pred.view(slope_f0_pred.size(0), 2, 1) #-----------------------to be changed
+            #------------------------------------------------------------------
+            def add_line_with_points(slope_f0_pred, delta_slope_pred):
+                x = torch.tensor([i for i in range(slope_delta_pred.shape(2))])
+                x = x.view(1, 1, slope_delta_pred.shape(2))
+                print(f'x axis {x}')
+                slope = slope_f0_pred[:, 0].view(slope_f0_pred.shape(0),1,1)
+                print(f'shape of slope {slope.shape}')
+                intercept = slope_f0_pred[:, 1].view(slope_f0_pred.shape(0),1,1)
+                f0_pred = slope * x + intercept
+                return f0_pred
+            f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred)
             print(f'added f0 pred: {f0_pred.shape}')
-            #-----------------------------------------------------------------------------
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
-            #--------------------------------------------------------------------------
-            f0_tgt = slope_delta_tgt + slope_f0_tgt.view(slope_f0_pred.size(0), 2, 1) #-------------------to be changed
-            #--------------------------------------------------------------------------
+            f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_tgt)
+            #------------------------------------------------------------------
             if use_gt_slope_f0 and slope_f0_tgt is not None:
                 assert use_gt_slope_delta and slope_delta_tgt is not None
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
