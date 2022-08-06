@@ -181,7 +181,7 @@ class FastPitchLoss(nn.Module):
         if slope_f0_pred is not None:
             meta['slope_f0_loss'] = slope_f0_loss.clone().detach()    
         if slope_delta_pred is not None:
-            meta['slope_delta_loss'] = slope_delta_loss.clone().detech()        
+            meta['slope_delta_loss'] = slope_delta_loss.clone().detach()        
         #-----------------------------------------------------------
 
         assert meta_agg in ('sum', 'mean')
