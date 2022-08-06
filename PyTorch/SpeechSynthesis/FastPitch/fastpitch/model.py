@@ -423,7 +423,7 @@ class FastPitch(nn.Module):
         
         if self.slope_f0:
             print("-------predicting f0 slope and delta")                      
-            slope_delta_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+            slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1)
             print(f'slope_delta_pred: {slope_delta_pred.shape}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]

@@ -102,13 +102,13 @@ class MeanPredictor(nn.Module):
 # print(mean_and_delta_pred.shape)
 
 
-d = rand(2, 1, 5)
-s = rand(2,2)
-x = torch.tensor([i for i in range(5)]).view(1, 1, 5)
-print(x)
-slope = s[:, 0].view(2,1,1)
-print(slope)
-intercept = s[:, 1].view(2,1,1)
-print(intercept)
-f = slope * x + intercept
-print(f)
+# d = rand(2, 1, 5)
+# s = rand(2,2)
+# x = torch.tensor([i for i in range(5)]).view(1, 1, 5)
+# print(x)
+# slope = s[:, 0].view(2,1,1)
+# print(slope)
+# intercept = s[:, 1].view(2,1,1)
+# print(intercept)
+# f = slope * x + intercept
+# print(f)
