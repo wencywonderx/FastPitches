@@ -321,7 +321,7 @@ def plot_mels(pred_tgt_lists):
                                labelleft=False)
         axes[i][0].set_anchor("W")
 
-        if len(local_prep_tgts[i]) == 3:
+        if len(local_prep_tgts[i]) == 4:
             ax1 = add_axis(fig, axes[i][0])
             ax1.plot(pitch, color="tomato")
             ax1.set_xlim(0, mel.shape[1])
