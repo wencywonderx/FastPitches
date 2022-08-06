@@ -61,7 +61,7 @@ def mean_delta_f0(pitch):
         return a-b
     vfunc = np.vectorize(func)
     delta = vfunc(pitch, mean)
-    # print(delta)  
+    # print(torch.from_numpy(delta).shape)  
     return torch.from_numpy(mean), torch.from_numpy(delta)
 
 # form merlin, original trying see desktop
@@ -117,16 +117,16 @@ def f0_slope(pitch):
     # plt.plot(x, fit_fn(x))
     # plt.show()
     f0_slope = torch.stack((torch.from_numpy(np.array([slope])), torch.from_numpy(np.array([intercept]))), 1)[0]
-    delta_slope = torch.from_numpy(np.array(delta))
-    print(delta_slope.shape)
+    delta_slope = torch.from_numpy(np.array([delta]))
+    # print(delta_slope.shape)
     return f0_slope, delta_slope
 
-# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
-# pitch = pitch.numpy()[0]
-# pitch = interpolate_f0(pitch)
-# pitch = torch.from_numpy(pitch).unsqueeze(0)
-# # print(mean_delta_f0(pitch))
-# slope, delta = f0_slope(pitch)
+pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+pitch = pitch.numpy()[0]
+pitch = interpolate_f0(pitch)
+pitch = torch.from_numpy(pitch).unsqueeze(0)
+# print(mean_delta_f0(pitch))
+slope, delta = f0_slope(pitch)
 # print(slope.shape)
 # print(delta.shape)
 
