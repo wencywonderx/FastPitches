@@ -651,7 +651,7 @@ def main():
     attention_kl_loss = AttentionBinarizationLoss()
 
     if args.local_rank == 0:
-        wandb.init(settings=wandb.Settings(start_method="fork")) # ----------------------------------------added
+        # wandb.init(settings=wandb.Settings(start_method="fork")) # ----------------------------------------added
         wandb.init(project=args.project,
                    config=vars(args),
                    notes=args.experiment_desc,
