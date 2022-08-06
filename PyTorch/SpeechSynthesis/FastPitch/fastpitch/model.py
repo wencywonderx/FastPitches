@@ -327,11 +327,11 @@ class FastPitch(nn.Module):
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
-        print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
+        # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
-        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
-        print("slope_delta_tgt", slope_delta_tgt)
+        # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
+        # print("slope_delta_tgt", slope_delta_tgt)
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -434,32 +434,39 @@ class FastPitch(nn.Module):
                 x = x.view(1, 1, slope_delta_pred.size(2)).to(slope_delta_pred.device) # [0, 1, 2, ..., 147]
                 # print(f'x axis {x}') 
                 slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1) # [16, 1, 1]
-                print(f'slope {slope}')
+                # print(f'slope {slope}')
                 intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)     
-                print(f'intercept {intercept}')           
+                # print(f'intercept {intercept}')           
                 line = slope * x + intercept
-                print(f'delta slope {slope_delta_pred}')
+                # print(f'delta slope {slope_delta_pred}')
                 f0_pred = line + slope_delta_pred
-                print(f'added f0 {f0_pred}')
+                # print(f'added f0 {f0_pred}')
                 return f0_pred
-            f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
+            # f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
+            print(f'slope_delta_tgt {slope_delta_tgt}')
+            print(f'slope_f0_tgt {slope_f0_tgt}')
             f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_tgt)
+            print(f'f0_tgt {f0_tgt}')
             #------------------------------------------------------------------
             if use_gt_slope_f0 and slope_f0_tgt is not None:
                 assert use_gt_slope_delta and slope_delta_tgt is not None
-                # slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
+                slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
                 # print(f'this is f0 slope embedding: {slope_f0_emb}') [16, 2, 384]
-                f0_emb = self.slope_delta_emb(f0_tgt)
+                # f0_emb = self.slope_delta_emb(f0_tgt)
+                slope_delta_emb = slope_delta_emb(slope_delta_tgt)
             else:
-                # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-                f0_emb = self.dslope_delta_emb(f0_pred)
-            # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
-            enc_out = enc_out + f0_emb.transpose(1, 2)         
+                slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
+                # f0_emb = self.slope_delta_emb(f0_pred)
+                slope_delta_emb = slope_delta_emb(slope_delta_pred)
+            enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384) + slope_delta_emb.transpose(1, 2)
+            # enc_out = enc_out + f0_emb.transpose(1, 2)
         else:
             slope_f0_pred = None
             slope_delta_pred = None
-            f0_emb = None
+            # f0_emb = None
+            slope_delta_emb = None
+            slope_f0_emb = None
         #---------------------------
 
         #------------modified and moved by me----------
