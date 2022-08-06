@@ -381,7 +381,7 @@ def plot_mels(pred_tgt_lists):
             ax5 = add_axis(fig, axes[i][0])
             fit_fn = np.poly1d(slope_f0)
             ax5.plot(fit_fn(range(mel.shape[1])), color="red")  
-            ax5.set_xlim(0, range(mel.shape[1]))
+            ax5.set_xlim(0, mel.shape[1])
             ax5.set_ylabel("slope f0", color="red")
             ax5.tick_params(labelsize="x-small",
                         colors="red",
