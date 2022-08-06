@@ -27,7 +27,7 @@ YOUR_NAME=Xi_Wang
 
 SCRATCH=/exports/eddie/scratch/$UUN
 DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAME}
-FP=$DS_HOME/FastPitches_slope_only_and_pitch/PyTorch/SpeechSynthesis/FastPitch #-------------------------changed
+FP=$DS_HOME/FastPitches_mean_and_pitch/PyTorch/SpeechSynthesis/FastPitch #-------------------------changed
 
 # set up train script options using environment variables
 # some values are set by the queuing software, e.g. $JOB_ID
@@ -44,13 +44,13 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # which point to saved pitch contours. If extracting pitches from audio
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
-export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
-export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
-# export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
-# export VAL_FILELIST=$FP/filelists/val_file_10.txt
+# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
+# export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
+export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
+export VAL_FILELIST=$FP/filelists/val_file_10.txt
 
 # metadata for wandb logging
-export PROJECT=slope_and_pitch #----------------------------------------------------changed
+export PROJECT=mean_and_pitch #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
@@ -74,8 +74,8 @@ export GRAD_ACCUMULATION=1
 # set random seed for ~reproducible runs
 export SEED=
 
-export EPOCHS=60 #---------------------------------------------------------------------------------------------changed
-export EPOCHS_PER_CHECKPOINT=5 #------------------------------------------------------------------------------changed
+export EPOCHS=2 #---------------------------------------------------------------------------------------------changed
+export EPOCHS_PER_CHECKPOINT=2 #------------------------------------------------------------------------------changed
 export WARMUP_STEPS=1000
 export KL_LOSS_WARMUP=100
 
@@ -93,9 +93,9 @@ export DISTRIBUTED=' '
 export NORMALISE=true
 export INTERPOLATE=true
 #-----------------------
-export MEAN_DELTA=false
+export MEAN_DELTA=true
 export NORMAL=true
-export SLOPE=true
+export SLOPE=false
 #-----------------------
 
 cd $FP
