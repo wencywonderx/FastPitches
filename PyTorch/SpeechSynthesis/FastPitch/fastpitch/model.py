@@ -438,8 +438,8 @@ class FastPitch(nn.Module):
                 intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)                
                 f0_pred = slope * x + intercept
                 return f0_pred
-            f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred)
-            print(f'added f0 pred: {f0_pred.shape}')
+            f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
+            # print(f'added f0 pred: {f0_pred.shape}')
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
             f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_tgt)
             #------------------------------------------------------------------
@@ -447,10 +447,10 @@ class FastPitch(nn.Module):
                 assert use_gt_slope_delta and slope_delta_tgt is not None
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
                 # print(f'this is f0 slope embedding: {slope_f0_emb}') [16, 2, 384]
-                f0_emb = self.delta_f0_emb(f0_tgt)
+                f0_emb = self.slope_delta_emb(f0_tgt)
             else:
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-                f0_emb = self.delta_f0_emb(f0_pred)
+                f0_emb = self.dslope_delta_emb(f0_pred)
             # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
             enc_out = enc_out + f0_emb.transpose(1, 2)         
         else:
