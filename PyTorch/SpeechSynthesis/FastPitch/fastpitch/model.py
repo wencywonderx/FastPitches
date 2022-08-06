@@ -424,10 +424,10 @@ class FastPitch(nn.Module):
         if self.slope_f0:
             print("-------predicting f0 slope and delta")                      
             slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1) # [16, 1, 148]
-            # print(f'slope_delta_pred: {slope_delta_pred.shape}')
+            print(f'slope_delta_pred: {slope_delta_pred}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
-            # print(f'slope_f0_pred: {slope_f0_pred.shape}')
+            print(f'slope_f0_pred: {slope_f0_pred}')
             #------------------------------------------------------------------
             def add_line_with_points(slope_f0_pred, slope_delta_pred):
                 x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
@@ -439,7 +439,7 @@ class FastPitch(nn.Module):
                 f0_pred = slope * x + intercept
                 return f0_pred
             f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
-            # print(f'added f0 pred: {f0_pred.shape}')
+            print(f'added f0 pred: {f0_pred}')
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
             f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_tgt)
             #------------------------------------------------------------------
