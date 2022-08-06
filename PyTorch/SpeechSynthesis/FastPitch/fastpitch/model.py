@@ -331,7 +331,7 @@ class FastPitch(nn.Module):
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
-        print("slope_delta_tgt", slope_delta_tgt.shape)
+        # print("slope_delta_tgt", slope_delta_tgt)
 
 
         mel_max_len = mel_tgt.size(2) 

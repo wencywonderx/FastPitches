@@ -415,8 +415,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         # print("n\ this is energy_padded:", energy_padded.size, energy_padded)
         # print("n\ this is delta_f0_padded:", delta_f0_padded.shape)
         # print("padded mean f0: ", mean_f0) # tesor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
-        print(f'this is slope f0 {slope_f0}')
-        print(f'this is slope delta padded: {slope_delta_padded}')
+        # print(f'this is slope f0 {slope_f0}')
+        # print(f'this is slope delta padded: {slope_delta_padded}')
 
 
 
