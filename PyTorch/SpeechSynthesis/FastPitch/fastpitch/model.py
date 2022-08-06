@@ -423,19 +423,19 @@ class FastPitch(nn.Module):
         
         if self.slope_f0:
             print("-------predicting f0 slope and delta")                      
-            slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1)
-            print(f'slope_delta_pred: {slope_delta_pred.shape}')
+            slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1) # [16, 1, 148]
+            # print(f'slope_delta_pred: {slope_delta_pred.shape}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
-            print(f'slope_f0_pred: {slope_f0_pred.shape}')
+            # print(f'slope_f0_pred: {slope_f0_pred.shape}')
             #------------------------------------------------------------------
-            def add_line_with_points(slope_f0_pred, delta_slope_pred):
+            def add_line_with_points(slope_f0_pred, slope_delta_pred):
                 x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
-                x = x.view(1, 1, slope_delta_pred.size(2))
-                print(f'x axis {x}')
-                slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1)
-                print(f'shape of slope {slope.shape}')
-                intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)
+                x = x.view(1, 1, slope_delta_pred.size(2)).to(slope_delta_pred.device) # [0, 1, 2, ..., 147]
+                # print(f'x axis {x}') 
+                slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1) # [16, 1, 1]
+                # print(f'shape of slope {slope.shape}')
+                intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)                
                 f0_pred = slope * x + intercept
                 return f0_pred
             f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred)
