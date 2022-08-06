@@ -76,8 +76,8 @@ export SEED=
 
 export EPOCHS=100 #---------------------------------------------------------------------------------------------changed
 export EPOCHS_PER_CHECKPOINT=2 #------------------------------------------------------------------------------changed
-export WARMUP_STEPS=10 #--------------changed from 1000
-export KL_LOSS_WARMUP=10 #---------------changed from 100
+export WARMUP_STEPS=1000 
+export KL_LOSS_WARMUP=100 
 
 # load saved pitch contours from disk after running prepare_dataset.py
 export LOAD_PITCH_FROM_DISK=true
