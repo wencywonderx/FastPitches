@@ -327,11 +327,11 @@ class FastPitch(nn.Module):
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
-        print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
+        # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
-        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
-        print("slope_delta_tgt", slope_delta_tgt)
+        # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
+        # print("slope_delta_tgt", slope_delta_tgt)
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -424,10 +424,10 @@ class FastPitch(nn.Module):
         if self.slope_f0:
             print("-------predicting f0 slope and delta")                      
             slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1) # [16, 1, 148]
-            print(f'slope_delta_pred: {slope_delta_pred}')
+            # print(f'slope_delta_pred: {slope_delta_pred}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
-            print(f'slope_f0_pred: {slope_f0_pred}')
+            # print(f'slope_f0_pred: {slope_f0_pred}')
             #------------------------------------------------------------------
             def add_line_with_points(slope_f0_pred, slope_delta_pred):
                 x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
@@ -440,7 +440,7 @@ class FastPitch(nn.Module):
                 f0_pred = line + slope_delta_pred
                 return f0_pred
             f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
-            print(f'f0_pred: {f0_pred}')
+            # print(f'f0_pred: {f0_pred}')
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
             f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_tgt)
             #------------------------------------------------------------------
