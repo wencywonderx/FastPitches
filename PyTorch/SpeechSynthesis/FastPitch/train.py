@@ -332,6 +332,20 @@ def plot_mels(pred_tgt_lists):
                             colors="tomato",
                             bottom=False,
                             labelbottom=False)
+            ax2 = add_axis(fig, axes[i][0])
+            fit_fn = np.poly1d(slope_f0)
+            ax2.plot(fit_fn(range(mel.shape[1])), color="blue")  
+            ax2.set_xlim(0, mel.shape[1])
+            ax2.set_ylim(-1, 1)
+            ax2.set_ylabel("slope f0", color="blue")
+            ax2.tick_params(labelsize="x-small",
+                        colors="blue",
+                        bottom=False,
+                        labelbottom=False,
+                        left=False,
+                        labelleft=False,
+                        right=True,
+                        labelright=True,)   
 
             # ax2 = add_axis(fig, axes[i][0])
             # ax2.plot(energy, color="darkviolet")
@@ -373,17 +387,7 @@ def plot_mels(pred_tgt_lists):
         #                 left=False,
         #                 labelleft=False,
         #                 right=True,
-        #                 labelright=True,)     
-            ax2 = add_axis(fig, axes[i][0])
-            fit_fn = np.poly1d(slope_f0)
-            ax2.plot(fit_fn(range(mel.shape[1])), color="blue")  
-            ax2.set_xlim(0, mel.shape[1])
-            ax2.set_ylim(-1, 1)
-            ax2.set_ylabel("slope f0", color="blue")
-            ax2.tick_params(labelsize="x-small",
-                        colors="blue",
-                        bottom=False,
-                        labelbottom=False) 
+        #                 labelright=True,)      
         #-----------------------------------------------
     return fig
 
