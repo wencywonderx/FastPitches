@@ -454,11 +454,11 @@ class FastPitch(nn.Module):
                 slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
                 # print(f'this is f0 slope embedding: {slope_f0_emb}') [16, 2, 384]
                 # f0_emb = self.slope_delta_emb(f0_tgt)
-                slope_delta_emb = slope_delta_emb(slope_delta_tgt)
+                slope_delta_emb = self.slope_delta_emb(slope_delta_tgt)
             else:
                 slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
                 # f0_emb = self.slope_delta_emb(f0_pred)
-                slope_delta_emb = slope_delta_emb(slope_delta_pred)
+                slope_delta_emb = self.slope_delta_emb(slope_delta_pred)
             enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384) + slope_delta_emb.transpose(1, 2)
             # enc_out = enc_out + f0_emb.transpose(1, 2)
         else:
