@@ -283,7 +283,7 @@ class TTSDataset(torch.utils.data.Dataset):
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
             if interpolate:
-                # print("interpolating f0")
+                print("interpolating f0")
                 pitch = pitch.numpy()[0]
                 # print("\n converted to pitch array \n", pitch)
                 pitch = interpolate_f0(pitch)
@@ -307,7 +307,7 @@ class TTSDataset(torch.utils.data.Dataset):
                     return pitch, mean_f0, delta_f0
             else:
                 if slope_f0:
-                    # print("extracting f0 slope without mean and delta f0")
+                    print("extracting f0 slope without mean and delta f0")
                     slope_f0, slope_delta = f0_slope(pitch)
                     return pitch, slope_f0, slope_delta
             return pitch
