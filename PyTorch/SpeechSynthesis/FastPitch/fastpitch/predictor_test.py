@@ -101,3 +101,6 @@ print(outputs)
 # mean_and_delta_pred = delta_f0_pred + mean_f0_pred.view(16, 1, 1)
 # print(mean_and_delta_pred.shape)
 
+
+# d = rand(16, 1, 148)
+

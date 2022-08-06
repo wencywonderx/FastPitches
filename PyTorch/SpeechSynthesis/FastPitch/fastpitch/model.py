@@ -314,7 +314,7 @@ class FastPitch(nn.Module):
                              out_lens.cpu().numpy(), width=1)
         return torch.from_numpy(attn_out).to(attn.get_device())
 
-    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, pace=1.0, max_duration=75): 
+    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, use_gt_slope_delta=True, pace=1.0, max_duration=75): 
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
          speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt, slope_delta_tgt) = inputs # data_function.py, TTSCollate Class
@@ -375,7 +375,7 @@ class FastPitch(nn.Module):
         log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #----------------------------------------- Q: why log?
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
 
-        #------------added by me----------
+        #--------------added-------------
         # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
             # print("-------predicting delta f0")           
@@ -422,19 +422,36 @@ class FastPitch(nn.Module):
             # mean_f0_emb = None
         
         if self.slope_f0:
-            print("-------predicting f0 slope")                      
+            print("-------predicting f0 slope and delta")                      
+            slope_delta_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+            print(f'slope_delta_pred: {slope_delta_pred}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
+            print(f'slope_f0_pred: {slope_f0_pred}')
+            #-----------------------------------------------------------------------------
+            def func(a, b):
+                return 
+            f0_pred = slope_delta_pred + slope_f0_pred.view(slope_f0_pred.size(0), 2, 1) #-----------------------to be changed
+            print(f'added f0 pred: {f0_pred}')
+            #-----------------------------------------------------------------------------
+            slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
+            #--------------------------------------------------------------------------
+            f0_tgt = slope_delta_tgt + slope_f0_tgt.view(slope_f0_pred.size(0), 1, 1) #-------------------to be changed
+            #--------------------------------------------------------------------------
             if use_gt_slope_f0 and slope_f0_tgt is not None:
-                slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
+                assert use_gt_slope_delta and slope_delta_tgt is not None
+                # slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
                 # print(f'this is f0 slope embedding: {slope_f0_emb}') [16, 2, 384]
+                f0_emb = self.delta_f0_emb(f0_tgt)
             else:
-                slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-            enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)            
+                # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
+                f0_emb = self.delta_f0_emb(f0_pred)
+            # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
+            enc_out = enc_out + f0_emb.transpose(1, 2)         
         else:
             slope_f0_pred = None
-            slope_f0_emb = None
-            slope_and_delta = None
+            slope_delta_pred = None
+            f0_emb = None
         #---------------------------
 
         #------------modified and moved by me----------
