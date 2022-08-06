@@ -327,11 +327,11 @@ class FastPitch(nn.Module):
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
         # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
-        # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
+        print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
-        # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
-        # print("slope_delta_tgt", slope_delta_tgt)
+        print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
+        print("slope_delta_tgt", slope_delta_tgt)
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -380,7 +380,7 @@ class FastPitch(nn.Module):
         if self.mean_and_delta_f0:
             # print("-------predicting delta f0")           
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
-            print(f'this is predicted delta f0 {delta_f0_pred}')
+            # print(f'this is predicted delta f0 {delta_f0_pred}')
             # print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
@@ -388,9 +388,9 @@ class FastPitch(nn.Module):
             
             # Average delta f0 over charachtors, to predict for each input phone one value 
             # but not couple of frame values which is meaningless
-            print(f'delta f0 tgt before {delta_f0_tgt}')
+            # print(f'delta f0 tgt before {delta_f0_tgt}')
             delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # e.g. [16, 1, 148]
-            print(f'delta f0 tgt after {delta_f0_tgt}')
+            # print(f'delta f0 tgt after {delta_f0_tgt}')
             mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             # print(f"mean and delta f0 tgt {mean_and_delta_f0_tgt}")
             
@@ -436,10 +436,11 @@ class FastPitch(nn.Module):
                 slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1) # [16, 1, 1]
                 # print(f'shape of slope {slope.shape}')
                 intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)                
-                f0_pred = slope * x + intercept
+                line = slope * x + intercept
+                f0_pred = line + slope_delta_pred
                 return f0_pred
             f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
-            print(f'added f0 pred: {f0_pred}')
+            print(f'f0_pred: {f0_pred}')
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
             f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_tgt)
             #------------------------------------------------------------------
