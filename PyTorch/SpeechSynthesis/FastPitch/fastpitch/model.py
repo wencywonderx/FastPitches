@@ -429,14 +429,12 @@ class FastPitch(nn.Module):
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
             print(f'slope_f0_pred: {slope_f0_pred}')
             #-----------------------------------------------------------------------------
-            def func(a, b):
-                return 
             f0_pred = slope_delta_pred + slope_f0_pred.view(slope_f0_pred.size(0), 2, 1) #-----------------------to be changed
             print(f'added f0 pred: {f0_pred}')
             #-----------------------------------------------------------------------------
             slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
             #--------------------------------------------------------------------------
-            f0_tgt = slope_delta_tgt + slope_f0_tgt.view(slope_f0_pred.size(0), 1, 1) #-------------------to be changed
+            f0_tgt = slope_delta_tgt + slope_f0_tgt.view(slope_f0_pred.size(0), 2, 1) #-------------------to be changed
             #--------------------------------------------------------------------------
             if use_gt_slope_f0 and slope_f0_tgt is not None:
                 assert use_gt_slope_delta and slope_delta_tgt is not None
