@@ -121,13 +121,13 @@ def f0_slope(pitch):
     # print(delta_slope.shape)
     return f0_slope, delta_slope
 
-pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
-pitch = pitch.numpy()[0]
-pitch = interpolate_f0(pitch)
-pitch = torch.from_numpy(pitch).unsqueeze(0)
-# print(mean_delta_f0(pitch))
-slope, delta = f0_slope(pitch)
-# print(slope.shape)
+# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+# pitch = pitch.numpy()[0]
+# pitch = interpolate_f0(pitch)
+# pitch = torch.from_numpy(pitch).unsqueeze(0)
+# # print(mean_delta_f0(pitch))
+# slope, delta = f0_slope(pitch)
+# # print(slope.shape)
 # print(delta.shape)
 
 
