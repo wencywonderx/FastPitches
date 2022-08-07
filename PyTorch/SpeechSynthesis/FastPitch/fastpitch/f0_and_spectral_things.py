@@ -141,7 +141,7 @@ def f0_slope(pitch):
 # print(pitch)
 
 
-def range_f0(pitch):
+def f0_range(pitch):
     pitch = pitch.numpy()[0]
     pitch.sort()
     print(pitch)

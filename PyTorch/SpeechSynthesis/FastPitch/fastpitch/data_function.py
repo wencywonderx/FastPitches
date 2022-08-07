@@ -37,7 +37,7 @@ from scipy.stats import betabinom
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-from fastpitch.f0_and_spectral_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope, range_f0
+from fastpitch.f0_and_spectral_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope, f0_range
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -320,7 +320,7 @@ class TTSDataset(torch.utils.data.Dataset):
                     return pitch, slope_f0, slope_delta
             if range_f0:
                 print("extracting range f0 without mean and slope")
-                range_f0 = range_f0(pitch)
+                range_f0 = f0_range(pitch)
                 return pitch, range_f0
             return pitch
 
