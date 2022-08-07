@@ -24,17 +24,17 @@ UUN=s2258422
 YOUR_NAME=Xi_Wang
 
 DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAME}
-FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
+FP=$DS_HOME/FastPitches_pitch_range/PyTorch/SpeechSynthesis/FastPitch
 
 SCRATCH=/exports/eddie/scratch/s2258422
-DATA_DIR="$SCRATCH/LJSpeech-1.1"
-# DATA_DIR="$FP/test_folder" #-------------------------------------------------------------------------C
+# DATA_DIR="$SCRATCH/LJSpeech-1.1"
+DATA_DIR="$FP/test_folder" #-------------------------------------------------------------------------C
 
 cd $FP
-# for FILELIST in test_file.txt \ #-------------------------------------------------------C
-for FILELIST in ljs_audio_text_train_v3.txt \
-                ljs_audio_text_val.txt \
-                ljs_audio_text_test.txt \
+for FILELIST in test_file.txt \ #-------------------------------------------------------C
+# for FILELIST in ljs_audio_text_train_v3.txt \
+#                 ljs_audio_text_val.txt \
+#                 ljs_audio_text_test.txt \
 ; do
     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
     # to work around weird qsub memory consumption
