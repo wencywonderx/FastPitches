@@ -266,7 +266,7 @@ class FastPitch(nn.Module):
             self.range_f0_predictor = MeanPredictor(
                 in_fft_output_size,
                 slope_f0_predictor_hidden_size,
-                n_predictions=2)
+                n_predictions=1)
             self.range_f0_emb = nn.Linear(1, 384)                    
         #--------------------------------------------
 
