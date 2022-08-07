@@ -186,8 +186,8 @@ class TTSDataset(torch.utils.data.Dataset):
             slope_delta = None
             mean_f0 = None
             delta_f0 = None
-            print(f'pitch {pitch}')        
-            print(f'range_f0 {range_f0}')      
+            # print(f'pitch {pitch}')        
+            # print(f'range_f0 {range_f0}')      
         else:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!! not range")
             if self.mean_and_delta_f0:
