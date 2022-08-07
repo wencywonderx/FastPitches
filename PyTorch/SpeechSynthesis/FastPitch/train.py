@@ -320,7 +320,7 @@ def plot_mels(pred_tgt_lists):
         if len(local_prep_tgts[i]) == 4:
             mel, energy, pitch, range_f0 = local_prep_tgts[i]
             print(f'this is plotting range_f0 input {range_f0}')
-            print(f'this is plotting pitch {pitch}')
+            # print(f'this is plotting pitch {pitch}')
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
