@@ -355,23 +355,25 @@ def plot_mels(pred_tgt_lists):
         if len(local_prep_tgts[i]) == 6:
 
             ax3 = add_axis(fig, axes[i][0])
-            ax3.plot(delta_f0, color="yellow")
+            ax3.plot(delta_f0, color="red")
             ax3.set_xlim(0, mel.shape[1])
             # ax3.set_ylim(delta_min, delta_max)
-            ax3.set_ylabel("Delta F0", color="yellow")
+            ax3.set_ylabel("Delta F0", color="red")
+            ax3.set_ylim(-1, 1)
             ax3.tick_params(labelsize="x-small",
-                        colors="yellow",
+                        colors="red",
                         bottom=False,
                         labelbottom=False) 
 
             ax1 = add_axis(fig, axes[i][0])
             mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
-            ax1.plot(mean_f0, color="red")
+            ax1.plot(mean_f0, color="yellow")
             ax1.set_xlim(0, mel.shape[1])
             # ax4.set_ylim(delta_min, delta_max)
-            ax1.set_ylabel("Mean F0", color="red")
+            ax1.set_ylabel("Mean F0", color="yellow")
+            ax1.set_ylim(-1, 1)
             ax1.tick_params(labelsize="x-small",
-                        colors="red",
+                        colors="yellow",
                         bottom=False,
                         labelbottom=False,
                         left=False,
