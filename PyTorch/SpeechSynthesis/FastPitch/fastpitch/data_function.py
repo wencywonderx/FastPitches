@@ -180,7 +180,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         #----------------------changed by me------------------
         if self.range_f0:
-            pitch, range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)  
+            range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)  
         if self.mean_and_delta_f0:
             if self.slope_f0:
                 pitch, mean_f0, delta_f0, slope_f0, slope_delta = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
@@ -282,7 +282,7 @@ class TTSDataset(torch.utils.data.Dataset):
             spk = 0
 
         if self.load_pitch_from_disk:
-            # print("pitch loaded from disk")
+            print("pitch loaded from disk")
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
