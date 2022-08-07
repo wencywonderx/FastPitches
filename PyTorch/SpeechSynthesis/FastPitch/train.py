@@ -313,7 +313,7 @@ def plot_mels(pred_tgt_lists):
         #     mel, energy, pitch = local_prep_tgts[i]
         # if len(local_prep_tgts[i]) == 4:
         #     mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
-        if len(local_prep_tgts[i]) == 5:
+        if len(local_prep_tgts[i]) == 6:
             mel, energy, delta_f0, mean_f0, slope_delta, slope_f0 = local_prep_tgts[i]
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
