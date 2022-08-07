@@ -83,6 +83,7 @@ def parse_args(parser):
     parser.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
     parser.add_argument('--slope-f0', action='store_true', help='extract slope of f0')
     parser.add_argument('--range-f0', action='store_true')
+    parser.add_argument('--load-pitch-from-disk', action='store_true')
     #------------------------------------------------------------------------------------
 
     return parser
