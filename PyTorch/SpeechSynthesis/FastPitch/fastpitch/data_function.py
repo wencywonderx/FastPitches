@@ -286,7 +286,7 @@ class TTSDataset(torch.utils.data.Dataset):
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
-            if interpolate:
+            if self.interpolate:
                 print("interpolating f0")
                 pitch = pitch.numpy()[0]
                 # print("\n converted to pitch array \n", pitch)
@@ -295,29 +295,29 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
                 # print("\n convert to pitch tensor\n", pitch)       
             if self.pitch_mean is not None:
-                # print("doing normalization")
+                print("doing normalization")
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)       
             if self.range_f0:
                 print("extracting range f0 without mean and slope")
                 range_f0 = f0_range(pitch)
                 return pitch, range_f0
-            if mean_delta:
-                if slope_f0:
-                    # print("extracting mean and delta f0, and f0 slope")
-                    mean_f0, delta_f0 = mean_delta_f0(pitch)
-                    slope_f0, slope_delta = f0_slope(pitch)
-                # print("\n mean and delta calculated \n", mean_f0, delta_f0)
-                    return pitch, mean_f0, delta_f0, slope_f0, slope_delta
-                else:
-                    # print("extracting mean and delta f0 without f0 slope")
-                    mean_f0, delta_f0 = mean_delta_f0(pitch)
-                    return pitch, mean_f0, delta_f0
-            else:
-                if slope_f0:
-                    print("extracting f0 slope without mean and delta f0")
-                    slope_f0, slope_delta = f0_slope(pitch)
-                    return pitch, slope_f0, slope_delta
+            # if mean_delta:
+            #     if slope_f0:
+            #         # print("extracting mean and delta f0, and f0 slope")
+            #         mean_f0, delta_f0 = mean_delta_f0(pitch)
+            #         slope_f0, slope_delta = f0_slope(pitch)
+            #     # print("\n mean and delta calculated \n", mean_f0, delta_f0)
+            #         return pitch, mean_f0, delta_f0, slope_f0, slope_delta
+            #     else:
+            #         # print("extracting mean and delta f0 without f0 slope")
+            #         mean_f0, delta_f0 = mean_delta_f0(pitch)
+            #         return pitch, mean_f0, delta_f0
+            # else:
+            #     if slope_f0:
+            #         print("extracting f0 slope without mean and delta f0")
+            #         slope_f0, slope_delta = f0_slope(pitch)
+            #         return pitch, slope_f0, slope_delta
             return pitch
 
         if self.pitch_tmp_dir is not None: # a temperary directory to load pitch file after the frst epoch calculated. to speed up
