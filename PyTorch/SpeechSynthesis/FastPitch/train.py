@@ -344,7 +344,7 @@ def plot_mels(pred_tgt_lists):
                             labelbottom=False)
 
             ax2 = add_axis(fig, axes[i][0])
-            range_f0_min = [range_f0 for m in range(mel.shape[1] + 1)]
+            range_f0 = [range_f0 for m in range(mel.shape[1] + 1)]
             # range_f0_max = [range_f0[1] for m in range(mel.shape[1] + 1)]
             # ax2.plot(range_f0_min, color="blue")
             ax2.plot(range_f0, color="blue")
