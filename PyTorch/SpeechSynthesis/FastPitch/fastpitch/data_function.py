@@ -301,16 +301,16 @@ class TTSDataset(torch.utils.data.Dataset):
                 # print("\n converted to pitch array \n", pitch)
                 pitch = interpolate_f0(pitch)
                 # print("\n interpolated pitch array \n", pitch)
-                pitch = torch.from_numpy(pitch).unsqueeze(0)
+                interpolated_pitch = torch.from_numpy(pitch).unsqueeze(0)
                 # print("\n convert to pitch tensor\n", pitch)       
             if self.pitch_mean is not None:
                 print("doing normalization")
                 assert self.pitch_std is not None
-                pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)       
+                normalised_pitch = normalize_pitch(interpolated_pitch, self.pitch_mean, self.pitch_std)       
             if range_f0:
                 print("extracting range f0 without mean and slope")
-                range_f0 = f0_range(pitch)
-                return pitch, range_f0
+                range_f0 = f0_range(normalised_pitch)
+                return normalised_pitch, range_f0
             if mean_delta:
                 if slope_f0:
                     print("extracting mean and delta f0, and f0 slope")
