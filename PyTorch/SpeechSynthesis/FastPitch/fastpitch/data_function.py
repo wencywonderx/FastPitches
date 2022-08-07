@@ -282,7 +282,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return attn_prior
 
-    def get_pitch(self, index, mel_len=None, interpolate = False, mean_delta = False, slope_f0 = False, range_f0 = False): #------------------------changed
+    def get_pitch(self, index, mel_len=None, interpolate = True, mean_delta = False, slope_f0 = False, range_f0 = False): #------------------------changed
         audiopath, *fields = self.audiopaths_and_text[index]
 
         if self.n_speakers > 1:
