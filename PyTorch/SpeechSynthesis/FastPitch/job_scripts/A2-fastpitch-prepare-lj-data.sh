@@ -43,6 +43,7 @@ for FILELIST in test_file.txt \ #-----------------------------------------------
         --wav-text-filelist filelists/$FILELIST \
         --n-workers 1 \
         --batch-size 1 \
+        --range-f0 \
         --extract-mels #---------------------------------------------------C
         # --extract-pitch \
         # --load-pitch-from-disk \ #-------------------------------------------C
