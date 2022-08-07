@@ -24,18 +24,17 @@ UUN=s2258422
 YOUR_NAME=Xi_Wang
 
 DS_HOME=/exports/chss/eddie/ppls/groups/lel_hcrc_cstr_students/${UUN}_${YOUR_NAME}
-FP=$DS_HOME/FastPitches_pitch_range/PyTorch/SpeechSynthesis/FastPitch
+FP=$DS_HOME/FastPitches_pitch_range/PyTorch/SpeechSynthesis/FastPitch #-------------------------changed
 
 SCRATCH=/exports/eddie/scratch/s2258422
-# DATA_DIR="$SCRATCH/LJSpeech-1.1"
-DATA_DIR="$FP/test_folder" #-------------------------------------------------------------------------C
+DATA_DIR="$SCRATCH/LJSpeech-1.1"
 
 cd $FP
-for FILELIST in test_file.txt \ #-------------------------------------------------------C
+# for FILELIST in  \ #-------------------------------------------------------C
+for FILELIST in ljs_audio_text_train_v3.txt \
+                ljs_audio_text_val.txt \
+                ljs_audio_text_test.txt \
 ; do
-# for FILELIST in ljs_audio_text_train_v3.txt \
-#                 ljs_audio_text_val.txt \
-#                 ljs_audio_text_test.txt \
     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
     # to work around weird qsub memory consumption
     python prepare_dataset.py \
@@ -45,9 +44,9 @@ for FILELIST in test_file.txt \ #-----------------------------------------------
         --batch-size 1 \
         --range-f0 \
         # --extract-mels #---------------------------------------------------C
-        --extract-pitch \
-        # --load-pitch-from-disk \ #-------------------------------------------C
-        # --interpolate-f0 \ #----------------------------------------------------C
+        # --extract-pitch \
+        --load-pitch-from-disk \ #-------------------------------------------C
+        --interpolate-f0  #----------------------------------------------------C
         # --mean-and-delta-f0 #----------------------------------------------------C
     # NB: this has to use `--batch-size 1` otherwise archives get saved with
     # padding and everything ends up the wrong shape!
