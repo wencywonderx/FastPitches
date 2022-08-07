@@ -320,6 +320,7 @@ def plot_mels(pred_tgt_lists):
         if len(local_prep_tgts[i]) == 4:
             mel, energy, pitch, range_f0 = local_prep_tgts[i]
             print(f'this is plotting range_f0 input {range_f0}')
+            print(f'this is plotting pitch {pitch}')
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
@@ -363,7 +364,8 @@ def plot_mels(pred_tgt_lists):
             ax3.plot(range_f0, color="blue")
             ax3.set_xlim(0, mel.shape[1])
             # ax4.set_ylim(delta_min, delta_max)
-            ax3.set_ylabel("max F0", color="blue")
+            ax3.set_ylim(-1, 1)
+            ax3.set_ylabel("max F0", color="blue")           
             ax3.tick_params(labelsize="x-small",
                         colors="blue",
                         bottom=False,
@@ -482,7 +484,7 @@ def plot_batch_mels(pred_tgt_lists, rank):
             new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
             new_range_f0 = mel_pitch_energy[3]
             regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_range_f0])
-            print("this is regulated features", regulated_features)
+            # print("this is regulated features", regulated_features)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
                    for pred_tgt in regulated_features
