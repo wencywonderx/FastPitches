@@ -267,7 +267,7 @@ class FastPitch(nn.Module):
                 in_fft_output_size,
                 slope_f0_predictor_hidden_size,
                 n_predictions=2)
-            self.range_f0_emb = nn.Linear(2, 384)                    
+            self.range_f0_emb = nn.Linear(1, 384)                    
         #--------------------------------------------
 
         self.energy_conditioning = energy_conditioning

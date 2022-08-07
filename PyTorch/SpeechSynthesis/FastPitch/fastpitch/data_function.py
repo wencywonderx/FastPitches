@@ -185,9 +185,25 @@ class TTSDataset(torch.utils.data.Dataset):
             slope_f0 = None
             slope_delta = None
             mean_f0 = None
-            delta_f0 = None
-            # print(f'pitch {pitch}')        
-            # print(f'range_f0 {range_f0}')      
+            delta_f0 = None 
+            if self.mean_and_delta_f0:
+                if self.slope_f0:
+                    pitch, mean_f0, delta_f0, slope_f0, slope_delta = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)
+                else:
+                    pitch, mean_f0, delta_f0= self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)
+                    slope_f0 = None
+                    slope_delta = None
+            else:
+                if self.slope_f0:
+                    pitch, slope_f0, slope_delta = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)
+                    mean_f0 = None
+                    delta_f0 = None
+                else:
+                    pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)  # (num_formants, mel_len)
+                    slope_f0 = None
+                    slope_delta = None
+                    mean_f0 = None
+                    delta_f0 = None  
         else:
             print("!!!!!!!!!!!!!!!!!!!!!!!!!! not range")
             if self.mean_and_delta_f0:
@@ -404,7 +420,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         slope_f0 = torch.zeros(mel_padded.size(0), 2)
         slope_delta_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
-        range_f0 = torch.zeros(mel_padded.size(0), 2)
+        range_f0 = torch.zeros(mel_padded.size(0), 1)
         # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
