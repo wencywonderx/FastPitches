@@ -146,6 +146,10 @@ class TTSDataset(torch.utils.data.Dataset):
         self.mean_and_delta_f0 = mean_and_delta_f0
         self.slope_f0 = slope_f0
         self.range_f0 = range_f0
+        bool(self.interpolate_f0)
+        bool(self.mean_and_delta_f0)
+        bool(self.slope_f0)
+        bool(self.range_f0)
         #-------------------------------------------
 
         if use_betabinomial_interpolator:
