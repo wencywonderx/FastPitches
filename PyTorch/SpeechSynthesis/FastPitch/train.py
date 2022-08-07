@@ -319,6 +319,7 @@ def plot_mels(pred_tgt_lists):
         #     mel, energy, slope_delta, slope_f0 = local_prep_tgts[i]
         if len(local_prep_tgts[i]) == 4:
             mel, energy, pitch, range_f0 = local_prep_tgts[i]
+            print(f'this is plotting range_f0 input {range_f0}')
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
@@ -334,6 +335,7 @@ def plot_mels(pred_tgt_lists):
             ax1.plot(pitch, color="tomato")
             ax1.set_xlim(0, mel.shape[1])
             # ax1.set_ylim(0, pitch_max)
+            ax1.set_ylim(-1, 1)
             ax1.set_ylabel("F0", color="tomato") 
             ax1.tick_params(labelsize="x-small",
                             colors="tomato",
@@ -342,9 +344,10 @@ def plot_mels(pred_tgt_lists):
 
             ax2 = add_axis(fig, axes[i][0])
             range_f0 = [range_f0[0] for m in range(mel.shape[1] + 1)]
-            ax2.plot(range_f0, color="red")
+            ax2.plot(range_f0, color="blue")
             ax2.set_xlim(0, mel.shape[1])
             # ax4.set_ylim(delta_min, delta_max)
+            ax2.set_ylim(-1, 1)
             ax2.set_ylabel("min F0", color="blue")
             ax2.tick_params(labelsize="x-small",
                         colors="blue",
@@ -357,7 +360,7 @@ def plot_mels(pred_tgt_lists):
 
             ax3 = add_axis(fig, axes[i][0])
             range_f0 = [range_f0[1] for m in range(mel.shape[1] + 1)]
-            ax3.plot(range_f0, color="red")
+            ax3.plot(range_f0, color="blue")
             ax3.set_xlim(0, mel.shape[1])
             # ax4.set_ylim(delta_min, delta_max)
             ax3.set_ylabel("max F0", color="blue")
