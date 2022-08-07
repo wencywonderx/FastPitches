@@ -180,7 +180,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         #----------------------changed by me------------------
         if self.range_f0:
-            range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)  
+            pitch, range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)  
         if self.mean_and_delta_f0:
             if self.slope_f0:
                 pitch, mean_f0, delta_f0, slope_f0, slope_delta = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
@@ -298,7 +298,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 # print("doing normalization")
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)       
-            if range_f0:
+            if self.range_f0:
                 print("extracting range f0 without mean and slope")
                 range_f0 = f0_range(pitch)
                 return pitch, range_f0
