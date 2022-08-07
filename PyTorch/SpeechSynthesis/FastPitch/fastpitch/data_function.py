@@ -298,6 +298,10 @@ class TTSDataset(torch.utils.data.Dataset):
                 # print("doing normalization")
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)       
+            if range_f0:
+                print("extracting range f0 without mean and slope")
+                range_f0 = f0_range(pitch)
+                return pitch, range_f0
             if mean_delta:
                 if slope_f0:
                     # print("extracting mean and delta f0, and f0 slope")
@@ -314,10 +318,6 @@ class TTSDataset(torch.utils.data.Dataset):
                     print("extracting f0 slope without mean and delta f0")
                     slope_f0, slope_delta = f0_slope(pitch)
                     return pitch, slope_f0, slope_delta
-            if range_f0:
-                print("extracting range f0 without mean and slope")
-                range_f0 = f0_range(pitch)
-                return pitch, range_f0
             return pitch
 
         if self.pitch_tmp_dir is not None: # a temperary directory to load pitch file after the frst epoch calculated. to speed up
