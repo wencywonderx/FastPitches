@@ -128,7 +128,7 @@ def f0_slope(pitch):
 # # print(mean_delta_f0(pitch))
 # slope, delta = f0_slope(pitch)
 # # print(slope.shape)
-# print(delta.shape)
+# print(slope.shape)
 
 
 # def spectral_tilt():
@@ -137,6 +137,21 @@ def f0_slope(pitch):
 # def h_n_r():
 #     pass
 
-
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
 # print(pitch)
+
+
+def range_f0(pitch):
+    pitch = pitch.numpy()[0]
+    pitch.sort()
+    print(pitch)
+    min = np.percentile(pitch, 5)
+    max = np.percentile(pitch, 95)
+    range_f0 = torch.stack((torch.from_numpy(np.array([min])), torch.from_numpy(np.array([max]))), 1)[0]
+    return range_f0
+
+# pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
+# pitch = pitch.numpy()[0]
+# pitch = interpolate_f0(pitch)
+# pitch = torch.from_numpy(pitch).unsqueeze(0)
+# print(range_f0(pitch))

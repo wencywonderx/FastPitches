@@ -151,7 +151,9 @@ def get_model_config(model_name, args):
             mean_f0_predictor_hidden_size=args.mean_f0_predictor_hidden_size,   
             # f0 slope predictor
             slope_f0 = args.slope_f0,
-            slope_f0_predictor_hidden_size=args.slope_f0_predictor_hidden_size,   
+            slope_f0_predictor_hidden_size=args.slope_f0_predictor_hidden_size,  
+            # range f0 predictor
+            range_f0 = args.range_f0, 
             #-------------------------------------------------------------------         
            
             # speakers parameters

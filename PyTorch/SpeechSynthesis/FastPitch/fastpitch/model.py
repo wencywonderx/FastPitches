@@ -33,6 +33,7 @@ import torch.nn.functional as F
 
 from common.layers import ConvReLUNorm
 from common.utils import mask_from_lens
+from f0_and_spectral_things import range_f0
 from fastpitch.alignment import b_mas, mas_width1
 from fastpitch.attention import ConvAttention
 from fastpitch.transformer import FFTransformer
@@ -148,6 +149,7 @@ class FastPitch(nn.Module):
                  mean_and_delta_f0, #-----added
                  raw_f0, #-----added
                  slope_f0, #-----added
+                 range_f0, #------added
                  delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
                  p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
                  delta_f0_embedding_kernel_size, #-----added
@@ -258,7 +260,15 @@ class FastPitch(nn.Module):
                 1,
                 symbols_embedding_dim,
                 kernel_size=delta_f0_embedding_kernel_size,
-                padding=int((delta_f0_embedding_kernel_size - 1) / 2))            
+                padding=int((delta_f0_embedding_kernel_size - 1) / 2))    
+        
+        self.range_f0 = range_f0
+        if self.range_f0:
+            self.range_f0_predictor = MeanPredictor(
+                in_fft_output_size,
+                slope_f0_predictor_hidden_size,
+                n_predictions=2)
+            self.range_f0_emb = nn.Linear(2, 384)                    
         #--------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -314,10 +324,10 @@ class FastPitch(nn.Module):
                              out_lens.cpu().numpy(), width=1)
         return torch.from_numpy(attn_out).to(attn.get_device())
 
-    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, use_gt_slope_delta=True, pace=1.0, max_duration=75): 
+    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, use_gt_slope_delta=True, use_gt_range_f0=True, pace=1.0, max_duration=75): 
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt, slope_delta_tgt) = inputs # data_function.py, TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt, slope_delta_tgt, range_f0_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
@@ -332,6 +342,7 @@ class FastPitch(nn.Module):
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
         # print("slope_delta_tgt", slope_delta_tgt)
+        print(f'range_f0 {range_f0_tgt}')
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -421,6 +432,7 @@ class FastPitch(nn.Module):
             # delta_f0_emb = None
             # mean_f0_emb = None
         
+
         if self.slope_f0:
             print("-------predicting f0 slope and delta")                      
             slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1) # [16, 1, 148]
@@ -458,6 +470,21 @@ class FastPitch(nn.Module):
             slope_f0_pred = None
             slope_delta_pred = None
             f0_emb = None
+
+        
+        if self.range_f0:
+            print("-------predicting range f0")                      
+            input = enc_out * enc_mask
+            range_f0_pred = self.range_f0_predictor(input) # [16, 2]
+            #------------------------------------------------------------------
+            if use_gt_range_f0 and range_f0_tgt is not None:
+                range_f0_emb = self.range_f0_emb(range_f0_tgt)
+                # print(f'this is range f0 embedding: {slope_f0_emb.shape}') [16, 2, 384]
+            else:
+                range_f0_emb = self.range_f0_emb(range_f0_pred)
+            enc_out = enc_out + range_f0_emb.view(range_f0_emb.size(0), 1, 384)   
+        else:
+            slope_f0_pred = None
         #---------------------------
 
         #------------modified and moved by me----------
@@ -519,7 +546,7 @@ class FastPitch(nn.Module):
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, 
-                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt) 
+                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt, range_f0_pred, range_f0_tgt) 
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,

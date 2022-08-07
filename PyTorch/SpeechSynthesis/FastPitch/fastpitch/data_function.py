@@ -37,7 +37,7 @@ from scipy.stats import betabinom
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-from fastpitch.f0_and_spectral_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope
+from fastpitch.f0_and_spectral_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope, range_f0
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -108,6 +108,7 @@ class TTSDataset(torch.utils.data.Dataset):
                  interpolate_f0 = False, #-------------------------C
                  mean_and_delta_f0 = False, #----------------------C
                  slope_f0 = False, #--------------------------C
+                 range_f0 = False, #--------------------------C
                  **ignored):
 
         # Expect a list of filenames
@@ -144,6 +145,7 @@ class TTSDataset(torch.utils.data.Dataset):
         self.interpolate_f0 = interpolate_f0
         self.mean_and_delta_f0 = mean_and_delta_f0
         self.slope_f0 = slope_f0
+        self.range_f0 = range_f0
         #-------------------------------------------
 
         if use_betabinomial_interpolator:
@@ -194,7 +196,13 @@ class TTSDataset(torch.utils.data.Dataset):
                 slope_f0 = None
                 slope_delta = None
                 mean_f0 = None
-                delta_f0 = None      
+                delta_f0 = None
+        if self.range_f0:
+            pitch, range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)  
+            slope_f0 = None
+            slope_delta = None
+            mean_f0 = None
+            delta_f0 = None            
         # mean_f0, delta_f0 = self.get_mean_and_f0(pitch) 
         #-----------------------------------------------------
 
@@ -208,7 +216,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         #-------------------------------------Changed by me-----------------------------------
         return (text, mel, len(text), pitch, energy, speaker, attn_prior,
-                audiopath, mean_f0, delta_f0, slope_f0, slope_delta) # final return for TTSDataset 
+                audiopath, mean_f0, delta_f0, slope_f0, slope_delta, range_f0) # final return for TTSDataset 
         #-------------------------------------------------------------------------------------
 
     def __len__(self):
@@ -269,7 +277,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         return attn_prior
 
-    def get_pitch(self, index, mel_len=None, interpolate = False, mean_delta = False, slope_f0 = False):
+    def get_pitch(self, index, mel_len=None, interpolate = False, mean_delta = False, slope_f0 = False, range_f0 = False): #------------------------changed
         audiopath, *fields = self.audiopaths_and_text[index]
 
         if self.n_speakers > 1:
@@ -310,6 +318,10 @@ class TTSDataset(torch.utils.data.Dataset):
                     print("extracting f0 slope without mean and delta f0")
                     slope_f0, slope_delta = f0_slope(pitch)
                     return pitch, slope_f0, slope_delta
+            if range_f0:
+                print("extracting range f0 without mean and slope")
+                range_f0 = range_f0(pitch)
+                return pitch, range_f0
             return pitch
 
         if self.pitch_tmp_dir is not None: # a temperary directory to load pitch file after the frst epoch calculated. to speed up
@@ -387,6 +399,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         slope_f0 = torch.zeros(mel_padded.size(0), 2)
         slope_delta_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
+        range_f0 = torch.zeros(mel_padded.size(0), 2)
         # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
@@ -410,6 +423,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 slope_f0 = None
                 slope_delta = None
                 slope_delta_padded = None
+            if batch[0][3] is not None and batch[0][12] is not None:
+                range_f0[i, :] = batch[ids_sorted_decreasing[i]][12]
             #-------------------------------------------------
         # print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
         # print("n\ this is energy_padded:", energy_padded.size, energy_padded)
@@ -448,7 +463,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         #-----------------------------------changed----------------------------------------
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x, 
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded) # change also in prepare_data.py and model.py(245)
+                audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0) # change also in prepare_data.py and model.py(245)
                 # original batch:
                 # mel : [n_mel_channel, mel_len]
                 # text : [text_len]
@@ -463,7 +478,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
 def batch_to_gpu(batch):
     #--------------------Changed--------------------
     (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded) = batch 
+     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0) = batch  #-----changed
     #-----------------------------------------------
 
     text_padded = to_gpu(text_padded).long()
@@ -481,10 +496,12 @@ def batch_to_gpu(batch):
     if slope_f0 is not None:
         slope_f0 = to_gpu(slope_f0).float()
         slope_delta_padded = to_gpu(slope_delta_padded).float()
+    if range_f0 is not None:
+        range_f0 = to_gpu(slope_f0).float()
 
     # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
     x = [text_padded, input_lengths, mel_padded, output_lengths,
-         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded]
+         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0]
     y = [mel_padded, input_lengths, output_lengths]
     len_x = torch.sum(output_lengths) # still input length ------------------------------------------------2 Q: why still input length?
     return (x, y, len_x)

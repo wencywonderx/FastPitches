@@ -41,6 +41,7 @@ export OMP_NUM_THREADS=1
 : ${NORMAL:=false}
 : ${NORMALISE:=false}
 : ${SLOPE:=false}
+: ${RANGE:=false}
 #------------------------------
 
 # Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.  ---------Q
@@ -72,6 +73,7 @@ ARGS+=" --delta-f0-predictor-loss-scale 0.1"
 ARGS+=" --mean-f0-predictor-loss-scale 0.1"
 ARGS+=" --slope-f0-predictor-loss-scale 0.1"
 ARGS+=" --slope-delta-predictor-loss-scale 0.1"
+ARGS+=" --range-f0-predictor-loss-scale 0.1"
 #--------------------------------------------------
 
 # Autoalign & new features
@@ -97,6 +99,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]                && ARGS+=" --slope-f0"
+[ "$RANGE" = true ]                && ARGS+=" --range-f0"
 [ "$NORMALISE" = true ]            && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"
 #-----------------------------------------------------------------
 

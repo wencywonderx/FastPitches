@@ -82,6 +82,7 @@ def parse_args(parser):
     parser.add_argument('--interpolate-f0', action='store_true', help='interpolate f0')
     parser.add_argument('--mean-and-delta-f0', action='store_true', help='calculate mean f0 for the uttr and delta f0 for each frame')
     parser.add_argument('--slope-f0', action='store_true', help='extract slope of f0')
+    parser.add_argument('--range-f0', action='store_true')
     #------------------------------------------------------------------------------------
 
     return parser
@@ -136,7 +137,8 @@ def main():
             pitch_online_method=args.f0_method,
             interpolate_f0=args.interpolate_f0, #--------------------------added
             mean_and_delta_f0=args.mean_and_delta_f0, #------------------------added
-            slope_f0=args.slope_f0) #-------------------------added
+            slope_f0=args.slope_f0, #---------------------------added
+            range_f0=args.range_f0) #-------------------------added
 
 
         data_loader = DataLoader(
@@ -154,7 +156,7 @@ def main():
         for i, batch in enumerate(tqdm.tqdm(data_loader)):
             tik = time.time()
 
-            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _, _, _ = batch  # -------changed
+            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _, _, _, _ = batch  # -------changed
 
             # (text_padded, input_lengths, mel_padded, output_lengths, len_x,
             #     pitch_padded, energy_padded, speaker, attn_prior_padded,

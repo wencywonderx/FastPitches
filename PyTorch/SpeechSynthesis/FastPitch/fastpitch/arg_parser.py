@@ -140,6 +140,9 @@ def parse_fastpitch_args(parent, add_help=False):
     slope_f0_pred = parser.add_argument_group('slope f0 predictor parameters')
     slope_f0_pred.add_argument('--slope-f0', action='store_true')     
     slope_f0_pred.add_argument('--slope-f0-predictor-hidden-size', default=256, type=int)
+    #----------------------------------------------------------------------------------------------
+    range_f0_pred = parser.add_argument_group('range f0 predictor parameters')
+    range_f0_pred.add_argument('--range-f0', action='store_true')
     #-----------------------------------------------------------------------------------------------
 
     cond = parser.add_argument_group('conditioning parameters')
