@@ -295,7 +295,7 @@ class TTSDataset(torch.utils.data.Dataset):
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
-            if self.interpolate_f0:
+            if interpolate:
                 print("interpolating f0")
                 pitch = pitch.numpy()[0]
                 # print("\n converted to pitch array \n", pitch)
