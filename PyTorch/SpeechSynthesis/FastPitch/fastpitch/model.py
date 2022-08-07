@@ -378,10 +378,9 @@ class FastPitch(nn.Module):
         #--------------added-------------
         # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
-            # print("-------predicting delta f0")           
+            print("-------predicting mean and delta f0")           
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
             # print(f'this is predicted delta f0 {delta_f0_pred}')
-            # print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
             mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) #-------------changed
@@ -413,7 +412,7 @@ class FastPitch(nn.Module):
             #     mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
 
             # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384] #---changed
-            enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2)
+            # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2)
         else:
             delta_f0_pred = None
             mean_f0_pred = None
@@ -453,11 +452,13 @@ class FastPitch(nn.Module):
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
                 f0_emb = self.slope_delta_emb(f0_pred)
             # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
-            enc_out = enc_out + f0_emb.transpose(1, 2)         
+            # enc_out = enc_out + f0_emb.transpose(1, 2)         
         else:
             slope_f0_pred = None
             slope_delta_pred = None
             f0_emb = None
+
+        enc_out = delta_and_mean_f0_emb.transpose(1, 2) + f0_emb.transpose(1, 2)
         #---------------------------
 
         #------------modified and moved by me----------

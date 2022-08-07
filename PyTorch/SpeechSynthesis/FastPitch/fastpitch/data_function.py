@@ -179,6 +179,7 @@ class TTSDataset(torch.utils.data.Dataset):
         #----------------------changed by me------------------
         if self.mean_and_delta_f0:
             if self.slope_f0:
+                print("-------getting mean and slope data")
                 pitch, mean_f0, delta_f0, slope_f0, slope_delta = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
             else:
                 pitch, mean_f0, delta_f0= self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0)
