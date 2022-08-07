@@ -33,7 +33,6 @@ import torch.nn.functional as F
 
 from common.layers import ConvReLUNorm
 from common.utils import mask_from_lens
-from f0_and_spectral_things import range_f0
 from fastpitch.alignment import b_mas, mas_width1
 from fastpitch.attention import ConvAttention
 from fastpitch.transformer import FFTransformer
