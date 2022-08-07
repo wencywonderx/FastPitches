@@ -336,7 +336,7 @@ def plot_mels(pred_tgt_lists):
             ax1.plot(pitch, color="tomato")
             ax1.set_xlim(0, mel.shape[1])
             # ax1.set_ylim(0, pitch_max)
-            ax1.set_ylim(-1, 1)
+            ax1.set_ylim(-1.5, 1.5)
             ax1.set_ylabel("F0", color="tomato") 
             ax1.tick_params(labelsize="x-small",
                             colors="tomato",
@@ -345,13 +345,13 @@ def plot_mels(pred_tgt_lists):
 
             ax2 = add_axis(fig, axes[i][0])
             range_f0_min = [range_f0[0] for m in range(mel.shape[1] + 1)]
-            range_f0_max = [range_f0[0] for m in range(mel.shape[1] + 1)]
+            range_f0_max = [range_f0[1] for m in range(mel.shape[1] + 1)]
             ax2.plot(range_f0_min, color="blue")
             ax2.plot(range_f0_max, color="blue")
             ax2.set_xlim(0, mel.shape[1])
             # ax4.set_ylim(delta_min, delta_max)
-            ax2.set_ylim(-1, 1)
-            ax2.set_ylabel("min F0", color="blue")
+            ax2.set_ylim(-1.5, 1.5)
+            ax2.set_ylabel("F0 range", color="blue")
             ax2.tick_params(labelsize="x-small",
                         colors="blue",
                         bottom=False,
