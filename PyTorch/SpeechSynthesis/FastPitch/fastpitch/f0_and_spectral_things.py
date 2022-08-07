@@ -144,7 +144,7 @@ def f0_slope(pitch):
 def f0_range(pitch):
     pitch = pitch.numpy()[0]
     pitch.sort()
-    print(pitch)
+    # print(pitch)
     min = np.percentile(pitch, 5)
     max = np.percentile(pitch, 95)
     range_f0 = torch.stack((torch.from_numpy(np.array([min])), torch.from_numpy(np.array([max]))), 1)[0]
@@ -154,4 +154,4 @@ def f0_range(pitch):
 # pitch = pitch.numpy()[0]
 # pitch = interpolate_f0(pitch)
 # pitch = torch.from_numpy(pitch).unsqueeze(0)
-# print(range_f0(pitch))
+# print(f0_range(pitch))
