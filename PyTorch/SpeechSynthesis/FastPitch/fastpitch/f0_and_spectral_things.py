@@ -150,6 +150,7 @@ def f0_range(pitch):
     max = np.percentile(uniques, 95)
     range_f0 = torch.stack((torch.from_numpy(np.array([min])), torch.from_numpy(np.array([max]))), 1)[0]
     # print(pitch)
+    # print(len(pitch))
     return range_f0
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
