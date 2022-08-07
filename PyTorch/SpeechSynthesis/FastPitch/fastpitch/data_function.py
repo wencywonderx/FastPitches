@@ -279,7 +279,7 @@ class TTSDataset(torch.utils.data.Dataset):
             spk = 0
 
         if self.load_pitch_from_disk:
-            # print("pitch loaded from disk")
+            print("pitch loaded from disk")
             pitchpath = fields[0]
             pitch = torch.load(pitchpath)
             # print("\n pitch tensor loaded from disk \n", pitch)
@@ -292,12 +292,12 @@ class TTSDataset(torch.utils.data.Dataset):
                 pitch = torch.from_numpy(pitch).unsqueeze(0)
                 # print("\n convert to pitch tensor\n", pitch)       
             if self.pitch_mean is not None:
-                # print("doing normalization")
+                print("doing normalization")
                 assert self.pitch_std is not None
                 pitch = normalize_pitch(pitch, self.pitch_mean, self.pitch_std)       
             if mean_delta:
                 if slope_f0:
-                    # print("extracting mean and delta f0, and f0 slope")
+                    print("extracting mean and delta f0, and f0 slope")
                     mean_f0, delta_f0 = mean_delta_f0(pitch)
                     slope_f0, slope_delta = f0_slope(pitch)
                 # print("\n mean and delta calculated \n", mean_f0, delta_f0)
@@ -308,7 +308,7 @@ class TTSDataset(torch.utils.data.Dataset):
                     return pitch, mean_f0, delta_f0
             else:
                 if slope_f0:
-                    print("extracting f0 slope without mean and delta f0")
+                    # print("extracting f0 slope without mean and delta f0")
                     slope_f0, slope_delta = f0_slope(pitch)
                     return pitch, slope_f0, slope_delta
             return pitch

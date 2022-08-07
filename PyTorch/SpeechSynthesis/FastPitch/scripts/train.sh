@@ -94,6 +94,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --prepend-space-to-text"
 [ "$APPEND_SPACES" = true ]        && ARGS+=" --append-space-to-text"
 #-----------------------------added by me-------------------------
+[ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$MEAN_DELTA" = true ]           && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]                && ARGS+=" --slope-f0"
