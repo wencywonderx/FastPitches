@@ -352,23 +352,25 @@ def plot_mels(pred_tgt_lists):
             #     right=True,
             #     labelright=True,)
         #----------------added by me------------------
-        if len(local_prep_tgts[i]) == 5:
-        #     ax3 = add_axis(fig, axes[i][0])
-        #     ax3.plot(delta_f0, color="blue")
-        #     ax3.set_xlim(0, mel.shape[1])
-        #     # ax3.set_ylim(delta_min, delta_max)
-        #     ax3.set_ylabel("Delta F0", color="blue")
-        #     ax3.tick_params(labelsize="x-small",
-        #                 colors="blue",
-        #                 bottom=False,
-        #                 labelbottom=False) 
-            ax4 = add_axis(fig, axes[i][0])
+        if len(local_prep_tgts[i]) == 6:
+
+            ax3 = add_axis(fig, axes[i][0])
+            ax3.plot(delta_f0, color="yellow")
+            ax3.set_xlim(0, mel.shape[1])
+            # ax3.set_ylim(delta_min, delta_max)
+            ax3.set_ylabel("Delta F0", color="yellow")
+            ax3.tick_params(labelsize="x-small",
+                        colors="yellow",
+                        bottom=False,
+                        labelbottom=False) 
+
+            ax1 = add_axis(fig, axes[i][0])
             mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
-            ax4.plot(mean_f0, color="red")
-            ax4.set_xlim(0, mel.shape[1])
+            ax1.plot(mean_f0, color="red")
+            ax1.set_xlim(0, mel.shape[1])
             # ax4.set_ylim(delta_min, delta_max)
-            ax4.set_ylabel("Mean F0", color="red")
-            ax4.tick_params(labelsize="x-small",
+            ax1.set_ylabel("Mean F0", color="red")
+            ax1.tick_params(labelsize="x-small",
                         colors="red",
                         bottom=False,
                         labelbottom=False,
@@ -378,30 +380,30 @@ def plot_mels(pred_tgt_lists):
                         labelright=True,)  
         #    
         # if len(local_prep_tgts[i]) == 4:   
-            ax5 = add_axis(fig, axes[i][0])
+            ax2 = add_axis(fig, axes[i][0])
             fit_fn = np.poly1d(slope_f0)
-            ax5.plot(fit_fn(range(mel.shape[1])), color="red")  
-            ax5.set_xlim(0, mel.shape[1])
-            ax5.set_ylim(-1, 1)
-            ax5.set_ylabel("slope f0", color="red")
-            ax5.tick_params(labelsize="x-small",
-                        colors="red",
+            ax2.plot(fit_fn(range(mel.shape[1])), color="green")  
+            ax2.set_xlim(0, mel.shape[1])
+            ax2.set_ylim(-1, 1)
+            ax2.set_ylabel("slope f0", color="green")
+            ax2.tick_params(labelsize="x-small",
+                        colors="green",
                         bottom=False,
                         labelbottom=False)             
 
-            # ax6 = add_axis(fig, axes[i][0])
-            # ax6.plot(slope_delta, color="blue")
-            # ax6.set_xlim(0, mel.shape[1])
-            # ax6.set_ylim(-1, 1)
-            # ax6.set_ylabel("slope delta", color="blue")
-            # ax6.tick_params(labelsize="x-small",
-            #             colors="blue",
-            #             bottom=False,
-            #             labelbottom=False,     
-            #             left=False,
-            #             labelleft=False,
-            #             right=True,
-            #             labelright=True,)      
+            ax6 = add_axis(fig, axes[i][0])
+            ax6.plot(slope_delta, color="blue")
+            ax6.set_xlim(0, mel.shape[1])
+            ax6.set_ylim(-1, 1)
+            ax6.set_ylabel("slope delta", color="blue")
+            ax6.tick_params(labelsize="x-small",
+                        colors="blue",
+                        bottom=False,
+                        labelbottom=False,     
+                        left=False,
+                        labelleft=False,
+                        right=True,
+                        labelright=True,)      
         #-----------------------------------------------
     return fig
 
