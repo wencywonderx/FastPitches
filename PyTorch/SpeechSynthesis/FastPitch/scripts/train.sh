@@ -100,7 +100,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$NORMAL" = true ]               && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]                && ARGS+=" --slope-f0"
 [ "$RANGE" = true ]                && ARGS+=" --range-f0"
-[ "$INTERPOLATE" = true]           && ARGS+=" --interpolate-f0"
+[ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$NORMALISE" = true ]            && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"
 #-----------------------------------------------------------------
 
