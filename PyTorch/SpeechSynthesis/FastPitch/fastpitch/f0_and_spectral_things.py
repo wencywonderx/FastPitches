@@ -143,9 +143,13 @@ def f0_slope(pitch):
 
 def f0_range(pitch):
     pitch = pitch.numpy()[0]
-    min = np.percentile(pitch, 5)
-    max = np.percentile(pitch, 95)
+    uniques = np.unique(pitch)
+    # print(len(pitch))
+    # print(len(uniques))
+    min = np.percentile(uniques, 5)
+    max = np.percentile(uniques, 95)
     range_f0 = torch.stack((torch.from_numpy(np.array([min])), torch.from_numpy(np.array([max]))), 1)[0]
+    # print(pitch)
     return range_f0
 
 # pitch = torch.load("C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/Dissertation/baseline/baseline_pitch_pt/LJ016-0117.pt")
