@@ -32,10 +32,10 @@ DATA_DIR="$FP/test_folder" #----------------------------------------------------
 
 cd $FP
 for FILELIST in test_file.txt \ #-------------------------------------------------------C
+; do
 # for FILELIST in ljs_audio_text_train_v3.txt \
 #                 ljs_audio_text_val.txt \
 #                 ljs_audio_text_test.txt \
-; do
     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
     # to work around weird qsub memory consumption
     python prepare_dataset.py \
