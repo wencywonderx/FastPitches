@@ -198,11 +198,7 @@ class TTSDataset(torch.utils.data.Dataset):
                 mean_f0 = None
                 delta_f0 = None
         if self.range_f0:
-            pitch, range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)  
-            slope_f0 = None
-            slope_delta = None
-            mean_f0 = None
-            delta_f0 = None            
+            pitch, range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.range_f0)            
         # mean_f0, delta_f0 = self.get_mean_and_f0(pitch) 
         #-----------------------------------------------------
 
