@@ -523,7 +523,8 @@ class FastPitch(nn.Module):
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
-              energy_tgt=None, delta_f0_tgt=None, mean_f0_tgt=None, pitch_transform=None, max_duration=75,
+              energy_tgt=None, delta_f0_tgt=None, mean_f0_tgt=None, 
+              slope_f0_tgt=None, slope_delta_tgt=None, pitch_transform=None, max_duration=75,
               speaker=0):
 
         if self.speaker_emb is None:
@@ -580,6 +581,45 @@ class FastPitch(nn.Module):
         else:
             delta_f0_pred = None
             mean_f0_pred = None
+
+        
+        if self.slope_f0:
+            print("-------inferncing f0 slope and delta")                      
+            slope_delta_pred = self.slope_delta_predictor(enc_out, enc_mask).permute(0, 2, 1) # [16, 1, 148]
+            # print(f'slope_delta_pred: {slope_delta_pred}')
+            input = enc_out * enc_mask
+            slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
+            # print(f'slope_f0_pred: {slope_f0_pred}')
+            #------------------------------------------------------------------
+            def add_line_with_points(slope_f0_pred, slope_delta_pred):
+                x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
+                x = x.view(1, 1, slope_delta_pred.size(2)).to(slope_delta_pred.device) # [0, 1, 2, ..., 147]
+                # print(f'x axis {x}') 
+                slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1) # [16, 1, 1]
+                # print(f'shape of slope {slope.shape}')
+                intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)                
+                line = slope * x + intercept
+                f0_pred = line + slope_delta_pred
+                return f0_pred
+            f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
+            # print(f'f0_pred: {f0_pred}')
+            slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
+            #------------------------------------------------------------------
+            if slope_f0_tgt is None and slope_delta_tgt is None:
+                # slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
+                # print(f'this is f0 slope embedding: {slope_f0_emb}') [16, 2, 384]
+                f0_tgt = f0_pred
+            if slope_f0_tgt is not None and slope_delta_tgt is None:
+                # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
+                f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_pred)
+            f0_emb = self.slope_delta_emb(f0_tgt)
+            # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
+            enc_out = enc_out + f0_emb.transpose(1, 2)         
+        else:
+            slope_f0_pred = None
+            slope_delta_pred = None
+        #---------------------------
+
 
         # Pitch over chars
         if self.raw_f0:

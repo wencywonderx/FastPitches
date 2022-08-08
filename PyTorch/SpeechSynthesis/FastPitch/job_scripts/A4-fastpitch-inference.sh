@@ -38,7 +38,7 @@ export WAVEGLOW="$FP/pretrained_models/waveglow/nvidia_waveglow256pyt_fp16.pt"
 # inference on CPU afterwards!
 
 export PHRASES="$FP/phrases/devset10.tsv"
-export OUTPUT_DIR=$DS_HOME/fastpitch_audio/add_first/$(basename ${PHRASES} .tsv) #-----------------changed
+export OUTPUT_DIR=$DS_HOME/fastpitch_audio/slope_add_first/$(basename ${PHRASES} .tsv) #-----------------changed
 export BATCH_SIZE=20  # this might need to be bigger than #utts in $PHRASES... #-------------------changed
 
 # these affect model architecture => match to settings used during model training!
@@ -55,10 +55,10 @@ export CPU=false  # false => run on GPU
 export AMP=false
 
 #------added be me------
-export MEAN_DELTA=true
+export MEAN_DELTA=false
+export MEAN_F0_TGT=false
 export NORMAL=false
-export SLOPE=false
-export MEAN_F0_TGT=true
+export SLOPE=true
 #-----------------------
 
 cd $FP
