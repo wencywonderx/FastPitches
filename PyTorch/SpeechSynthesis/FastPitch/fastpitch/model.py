@@ -603,7 +603,7 @@ class FastPitch(nn.Module):
                 return f0_pred
             f0_pred = add_line_with_points(slope_f0_pred, slope_delta_pred) # [16, 1, 148]
             # print(f'f0_pred: {f0_pred}')
-            slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
+            # slope_delta_tgt = average_pitch(slope_delta_tgt, dur_tgt)
             #------------------------------------------------------------------
             if slope_f0_tgt is None and slope_delta_tgt is None:
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_tgt)
