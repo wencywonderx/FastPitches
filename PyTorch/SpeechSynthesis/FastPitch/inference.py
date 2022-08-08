@@ -98,6 +98,7 @@ def parse_args(parser):
                         help='Speaker ID for a multi-speaker model')
     #-----------------------------------------added-------------------------------------------
     parser.add_argument('--mean-f0-tgt', action='store_true', default=None)
+    parser.add_argument('--slope-f0-tgt', action='store_true', default=None)
     #-----------------------------------------------------------------------------------------
 
     parser.add_argument('--p-arpabet', type=float, default=0.0, help='')
@@ -233,6 +234,8 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
     if 'mean_f0' in fields:
         fields['mean_f0'] = torch.FloatTensor([[float(x) for x in list(fields['mean_f0'])]])
         # print(fields['mean_f0'])
+    if 'slope_f0' in fields:
+        fields['slope_f0'] = torch.FloatTensor([[float(x) for x in list(fields['slope_f0'])]])
     #-------------------------------------------------
 
     # cut into batches & pad
@@ -248,7 +251,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             #-----------------------added--------------------------
             elif f == 'mean_f0':
-                print("triggered!")
+                # print("triggered!")
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             #------------------------------------------------------
             if type(batch[f]) is torch.Tensor:

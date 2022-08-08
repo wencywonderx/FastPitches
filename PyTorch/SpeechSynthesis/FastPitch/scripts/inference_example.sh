@@ -24,6 +24,7 @@
 : ${NORMAL:=false}
 : ${SLOPE:=false}
 : ${MEAN_F0_TGT:=false}
+: ${SLOPE_F0_TGT:=false}
 #------------------------------
 
 echo -e "\nAMP=$AMP, batch_size=$BATCH_SIZE\n"
@@ -54,6 +55,7 @@ ARGS+=" --n-speakers $NUM_SPEAKERS"
 [ "$NORMAL" = true ]        && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]         && ARGS+=" --slope-f0"
 [ "$MEAN_F0_TGT" = true ]   && ARGS+=" --mean-f0-tgt"
+[ "$SLOPE_F0_TGT" = true ]  && ARGS+=" --slope-f0-tgt"
 #--------------------------------------------------------
 
 mkdir -p "$OUTPUT_DIR"

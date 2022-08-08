@@ -59,6 +59,7 @@ export MEAN_DELTA=false
 export MEAN_F0_TGT=false
 export NORMAL=false
 export SLOPE=true
+export SLOPE_F0_TGT=true
 #-----------------------
 
 cd $FP
