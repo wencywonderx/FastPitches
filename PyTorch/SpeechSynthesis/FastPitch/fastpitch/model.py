@@ -611,7 +611,7 @@ class FastPitch(nn.Module):
                 f0_tgt = f0_pred
             if slope_f0_tgt is not None and slope_delta_tgt is None:
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
-                f0_tgt = add_line_with_points(slope_f0_tgt, slope_delta_pred)
+                f0_tgt = add_line_with_points(slope_f0_tgt.to(inputs.device), slope_delta_pred)
             f0_emb = self.slope_delta_emb(f0_tgt)
             # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
             enc_out = enc_out + f0_emb.transpose(1, 2)         
