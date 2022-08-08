@@ -379,9 +379,12 @@ def main():
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
     #----------------------added------------------------
-              'mean_f0_tgt': None}     
+              'mean_f0_tgt': None,
+              'slope_f0_tgt': None}     
     if args.mean_f0_tgt:
         gen_kw['mean_f0_tgt'] = fields['mean_f0']
+    if args.slope_f0_tgt:
+        gen_kw['slope_f0_tgt'] = fields['slope_f0']    
     #----------------------------------------------------
 
     if args.torchscript:
