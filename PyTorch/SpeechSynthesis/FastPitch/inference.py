@@ -228,18 +228,16 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
         fields['pitch_lens'] = torch.LongTensor([t.size(0) for t in fields['pitch']])
 
     if 'output' in fields:
-        fields['output'] = [fields['output'][i] for i in order]
-    
-    #-------------------added-------------------------
+        fields['output'] = [fields['output'][i] for i in order]    
+    #-----------------------added-------------------------
     if 'mean_f0' in fields:
-        fields['mean_f0'] = [torch.FloatTensor(x) for x in fields['mean_f0']]
+        fields['mean_f0'] = [torch.tensor(float(x)) for x in fields['mean_f0']]
         fields['mean_f0'] = [fields['mean_f0'][i] for i in order]
-
         # print(fields['mean_f0'])
     if 'slope_f0' in fields:
         import ast
-        fields['slope_f0'] = [torch.FloatTensor(ast.literal_eval(x)) for x in fields['slope_f0']]
-    #-------------------------------------------------
+        fields['slope_f0'] = [torch.tensor(ast.literal_eval(x)) for x in fields['slope_f0']]
+    #-----------------------------------------------------
 
     # cut into batches & pad
     batches = []
