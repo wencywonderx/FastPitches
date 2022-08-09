@@ -1,5 +1,5 @@
 mean_f0	output	text
-0	000_mean.wav	during the morning of November twenty-two prior to the motorcade.
+0.0	000_mean.wav	during the morning of November twenty-two prior to the motorcade.
 0.1	001_mean.wav	during the morning of November twenty-two prior to the motorcade.
 0.2	002_mean.wav	during the morning of November twenty-two prior to the motorcade.
 0.3	003_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -9,7 +9,7 @@ mean_f0	output	text
 0.7	007_mean.wav	during the morning of November twenty-two prior to the motorcade.
 0.8	008_mean.wav	during the morning of November twenty-two prior to the motorcade.
 0.9	009_mean.wav	during the morning of November twenty-two prior to the motorcade.
-1	010_mean.wav	during the morning of November twenty-two prior to the motorcade.
+1.0	010_mean.wav	during the morning of November twenty-two prior to the motorcade.
 1.1	011_mean.wav	during the morning of November twenty-two prior to the motorcade.
 1.2	012_mean.wav	during the morning of November twenty-two prior to the motorcade.
 1.3	013_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -19,7 +19,7 @@ mean_f0	output	text
 1.7	017_mean.wav	during the morning of November twenty-two prior to the motorcade.
 1.8	018_mean.wav	during the morning of November twenty-two prior to the motorcade.
 1.9	019_mean.wav	during the morning of November twenty-two prior to the motorcade.
-2	020_mean.wav	during the morning of November twenty-two prior to the motorcade.
+2.0	020_mean.wav	during the morning of November twenty-two prior to the motorcade.
 2.1	021_mean.wav	during the morning of November twenty-two prior to the motorcade.
 2.2	022_mean.wav	during the morning of November twenty-two prior to the motorcade.
 2.3	023_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -29,7 +29,7 @@ mean_f0	output	text
 2.7	027_mean.wav	during the morning of November twenty-two prior to the motorcade.
 2.8	028_mean.wav	during the morning of November twenty-two prior to the motorcade.
 2.9	029_mean.wav	during the morning of November twenty-two prior to the motorcade.
-3	030_mean.wav	during the morning of November twenty-two prior to the motorcade.
+3.0	030_mean.wav	during the morning of November twenty-two prior to the motorcade.
 3.1	031_mean.wav	during the morning of November twenty-two prior to the motorcade.
 3.2	032_mean.wav	during the morning of November twenty-two prior to the motorcade.
 3.3	033_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -39,7 +39,7 @@ mean_f0	output	text
 3.7	037_mean.wav	during the morning of November twenty-two prior to the motorcade.
 3.8	038_mean.wav	during the morning of November twenty-two prior to the motorcade.
 3.9	039_mean.wav	during the morning of November twenty-two prior to the motorcade.
-4	040_mean.wav	during the morning of November twenty-two prior to the motorcade.
+4.0	040_mean.wav	during the morning of November twenty-two prior to the motorcade.
 4.1	041_mean.wav	during the morning of November twenty-two prior to the motorcade.
 4.2	042_mean.wav	during the morning of November twenty-two prior to the motorcade.
 4.3	043_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -49,7 +49,7 @@ mean_f0	output	text
 4.7	047_mean.wav	during the morning of November twenty-two prior to the motorcade.
 4.8	048_mean.wav	during the morning of November twenty-two prior to the motorcade.
 4.9	049_mean.wav	during the morning of November twenty-two prior to the motorcade.
-5	050_mean.wav	during the morning of November twenty-two prior to the motorcade.
+5.0	050_mean.wav	during the morning of November twenty-two prior to the motorcade.
 5.1	051_mean.wav	during the morning of November twenty-two prior to the motorcade.
 5.2	052_mean.wav	during the morning of November twenty-two prior to the motorcade.
 5.3	053_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -59,7 +59,7 @@ mean_f0	output	text
 5.7	057_mean.wav	during the morning of November twenty-two prior to the motorcade.
 5.8	058_mean.wav	during the morning of November twenty-two prior to the motorcade.
 5.9	059_mean.wav	during the morning of November twenty-two prior to the motorcade.
-6	060_mean.wav	during the morning of November twenty-two prior to the motorcade.
+6.0	060_mean.wav	during the morning of November twenty-two prior to the motorcade.
 6.1	061_mean.wav	during the morning of November twenty-two prior to the motorcade.
 6.2	062_mean.wav	during the morning of November twenty-two prior to the motorcade.
 6.3	063_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -69,7 +69,7 @@ mean_f0	output	text
 6.7	067_mean.wav	during the morning of November twenty-two prior to the motorcade.
 6.8	068_mean.wav	during the morning of November twenty-two prior to the motorcade.
 6.9	069_mean.wav	during the morning of November twenty-two prior to the motorcade.
-7	070_mean.wav	during the morning of November twenty-two prior to the motorcade.
+7.0	070_mean.wav	during the morning of November twenty-two prior to the motorcade.
 7.1	071_mean.wav	during the morning of November twenty-two prior to the motorcade.
 7.2	072_mean.wav	during the morning of November twenty-two prior to the motorcade.
 7.3	073_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -79,7 +79,7 @@ mean_f0	output	text
 7.7	077_mean.wav	during the morning of November twenty-two prior to the motorcade.
 7.8	078_mean.wav	during the morning of November twenty-two prior to the motorcade.
 7.9	079_mean.wav	during the morning of November twenty-two prior to the motorcade.
-8	080_mean.wav	during the morning of November twenty-two prior to the motorcade.
+8.0	080_mean.wav	during the morning of November twenty-two prior to the motorcade.
 8.1	081_mean.wav	during the morning of November twenty-two prior to the motorcade.
 8.2	082_mean.wav	during the morning of November twenty-two prior to the motorcade.
 8.3	083_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -89,7 +89,7 @@ mean_f0	output	text
 8.7	087_mean.wav	during the morning of November twenty-two prior to the motorcade.
 8.8	088_mean.wav	during the morning of November twenty-two prior to the motorcade.
 8.9	089_mean.wav	during the morning of November twenty-two prior to the motorcade.
-9	090_mean.wav	during the morning of November twenty-two prior to the motorcade.
+9.0	090_mean.wav	during the morning of November twenty-two prior to the motorcade.
 9.1	091_mean.wav	during the morning of November twenty-two prior to the motorcade.
 9.2	092_mean.wav	during the morning of November twenty-two prior to the motorcade.
 9.3	093_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -99,7 +99,7 @@ mean_f0	output	text
 9.7	097_mean.wav	during the morning of November twenty-two prior to the motorcade.
 9.8	098_mean.wav	during the morning of November twenty-two prior to the motorcade.
 9.9	099_mean.wav	during the morning of November twenty-two prior to the motorcade.
-10	100_mean.wav	during the morning of November twenty-two prior to the motorcade.
+10.0	100_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -0.1	101_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -0.2	102_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -0.3	103_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -109,7 +109,7 @@ mean_f0	output	text
 -0.7	107_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -0.8	108_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -0.9	109_mean.wav	during the morning of November twenty-two prior to the motorcade.
--1	110_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-1.0	110_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -1.1	111_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -1.2	112_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -1.3	113_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -119,7 +119,7 @@ mean_f0	output	text
 -1.7	117_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -1.8	118_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -1.9	119_mean.wav	during the morning of November twenty-two prior to the motorcade.
--2	120_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-2.0	120_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -2.1	121_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -2.2	122_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -2.3	123_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -129,7 +129,7 @@ mean_f0	output	text
 -2.7	127_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -2.8	128_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -2.9	129_mean.wav	during the morning of November twenty-two prior to the motorcade.
--3	130_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-3.0	130_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -3.1	131_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -3.2	132_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -3.3	133_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -139,7 +139,7 @@ mean_f0	output	text
 -3.7	137_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -3.8	138_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -3.9	139_mean.wav	during the morning of November twenty-two prior to the motorcade.
--4	140_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-4.0	140_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -4.1	141_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -4.2	142_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -4.3	143_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -149,7 +149,7 @@ mean_f0	output	text
 -4.7	147_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -4.8	148_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -4.9	149_mean.wav	during the morning of November twenty-two prior to the motorcade.
--5	150_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-5.0	150_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -5.1	151_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -5.2	152_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -5.3	153_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -159,7 +159,7 @@ mean_f0	output	text
 -5.7	157_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -5.8	158_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -5.9	159_mean.wav	during the morning of November twenty-two prior to the motorcade.
--6	160_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-6.0	160_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -6.1	161_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -6.2	162_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -6.3	163_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -169,7 +169,7 @@ mean_f0	output	text
 -6.7	167_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -6.8	168_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -6.9	169_mean.wav	during the morning of November twenty-two prior to the motorcade.
--7	170_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-7.0	170_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -7.1	171_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -7.2	172_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -7.3	173_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -179,7 +179,7 @@ mean_f0	output	text
 -7.7	177_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -7.8	178_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -7.9	179_mean.wav	during the morning of November twenty-two prior to the motorcade.
--8	180_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-8.0	180_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -8.1	181_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -8.2	182_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -8.3	183_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -189,7 +189,7 @@ mean_f0	output	text
 -8.7	187_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -8.8	188_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -8.9	189_mean.wav	during the morning of November twenty-two prior to the motorcade.
--9	190_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-9.0	190_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -9.1	191_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -9.2	192_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -9.3	193_mean.wav	during the morning of November twenty-two prior to the motorcade.
@@ -199,4 +199,4 @@ mean_f0	output	text
 -9.7	197_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -9.8	198_mean.wav	during the morning of November twenty-two prior to the motorcade.
 -9.9	199_mean.wav	during the morning of November twenty-two prior to the motorcade.
--10	200_mean.wav	during the morning of November twenty-two prior to the motorcade.
+-10.0	200_mean.wav	during the morning of November twenty-two prior to the motorcade.
