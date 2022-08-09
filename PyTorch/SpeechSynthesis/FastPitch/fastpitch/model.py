@@ -358,7 +358,7 @@ class FastPitch(nn.Module):
         attn_mask = mask_from_lens(input_lens)[..., None] == 0 # alignment, how many phones need to be aligned
         # attn_mask should be 1 for unused timesteps in the text_enc_w_spkvec tensor
 
-        attn_soft, attn_logprob = self.attention( #---------------------------------------------------------------------Q: log prob?
+        attn_soft, attn_logprob = self.attention( #----------------------------------------------------------------Q: log prob?
             mel_tgt, text_emb.permute(0, 2, 1), mel_lens, attn_mask,
             key_lens=input_lens, keys_encoded=enc_out, attn_prior=attn_prior)
 
@@ -372,7 +372,7 @@ class FastPitch(nn.Module):
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
         # Predict durations
-        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #----------------------------------------- Q: why log?
+        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #---------------------------------- Q: why log?
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
 
         #--------------added-------------
