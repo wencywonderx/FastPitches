@@ -251,9 +251,9 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
             elif f == 'pitch' and load_pitch:
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             # #-----------------------added--------------------------
-            # elif f == 'mean_f0':
-            #     # print("triggered!")
-            #     batch[f] = pad_sequence(batch[f], batch_first=True)
+            elif f == 'mean_f0':
+                # print("triggered!")
+                batch[f] = pad_sequence(batch[f], batch_first=True)
             # #------------------------------------------------------
             if type(batch[f]) is torch.Tensor:
                 batch[f] = batch[f].to(device)
