@@ -1,99 +1,94 @@
-import parselmouth
-
+import librosa
 import numpy as np
+import os
+import math
+from scipy.interpolate import make_interp_spline
 import matplotlib.pyplot as plt
-import seaborn as sns
 
-sns.set() # Use seaborn's default style to make attractive graphs
-plt.rcParams['figure.dpi'] = 100 # Show nicely large images in this notebook
+def interpolate(pitch_mel_array):
+    frames = len(pitch_mel_array)
+    last_value = 0.0
+    pitch_mel = pitch_mel_array
+    for i in range(frames):
+        if pitch_mel_array[i] == 0.0:
+            j = i+1
+            for j in range(i+1, frames):
+                if pitch_mel_array[j] > 0:
+                    break 
+            if j < frames - 1:
+                if last_value > 0.0:
+                    step = (pitch_mel_array[j] - pitch_mel_array[i-1]) / float(j - i)
+                    for k in range(i, j):
+                        pitch_mel[k] = pitch_mel[i-1] + step * (k - i + 1)
+                else:
+                    for k in range(i, j):
+                        pitch_mel[k] = pitch_mel_array[j]
+            else:
+                for k in range(i, j):
+                    pitch_mel[k] = last_value
+        else:
+            pitch_mel[i] = pitch_mel_array[i]
+            last_value = pitch_mel_array[i]
+    return pitch_mel
 
-snd = parselmouth.Sound("C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/Dissertation/pitch-prom-focus1-1.wav")
-
-plt.figure()
-plt.plot(snd.xs(), snd.values.T)
-plt.xlim([snd.xmin, snd.xmax])
-plt.xlabel("time [s]")
-plt.ylabel("amplitude")
-plt.show() # or plt.savefig("sound.png"), or plt.savefig("sound.pdf")
-
-snd_part = snd.extract_part(from_time=0.9, preserve_times=True)
-
-plt.figure()
-plt.plot(snd_part.xs(), snd_part.values.T, linewidth=0.5)
-plt.xlim([snd_part.xmin, snd_part.xmax])
-plt.xlabel("time [s]")
-plt.ylabel("amplitude")
-plt.show()
-
-def draw_spectrogram(spectrogram, dynamic_range=70):
-    X, Y = spectrogram.x_grid(), spectrogram.y_grid()
-    sg_db = 10 * np.log10(spectrogram.values)
-    plt.pcolormesh(X, Y, sg_db, vmin=sg_db.max() - dynamic_range, cmap='afmhot')
-    plt.ylim([spectrogram.ymin, spectrogram.ymax])
-    plt.xlabel("time [s]")
-    plt.ylabel("frequency [Hz]")
-
-# def draw_intensity(intensity):
-#     plt.plot(intensity.xs(), intensity.values.T, linewidth=3, color='w')
-#     plt.plot(intensity.xs(), intensity.values.T, linewidth=1)
-#     plt.grid(False)
-#     plt.ylim(0)
-#     plt.ylabel("intensity [dB]")
+# path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting'
+# for dirpath, dirnames, filenames in os.walk(path):
+#     f0s = []
+#     times = []
+#     for filename in filenames:
+#         print(filename)
+#         wav = os.path.join(dirpath, filename)
+#         # wav = "C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/001_base.wav"
+#         data, sr = librosa.load(wav, sr=8000, mono=True)
+#         print(data.shape)
+#         f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=40, fmax=600, frame_length=1024)
+#         # print(f0.shape)
+#         # print(f0)
+#         f0 = np.nan_to_num(f0)
+#         # print(f0)
+#         f0 = np.array(f0)
+#         f0 = interpolate(f0)
+#         length = len(f0)
+#         seg = math.floor(length/10)
+#         # print(seg)
+#         f0_seg = []
+#         for i, value in enumerate(f0):
+#             if i==seg*1 or i==seg*2 or i==seg*3 or i==seg*4 or i==seg*5 or i==seg*6 or i==seg*7 or i==seg*8 or i==seg*9 or i==seg*10:
+#                 print(i)
+#                 f0_seg.append(value)
+#         print(f0_seg)
+#         f0s.append(f0_seg)
+        # time = librosa.times_like(f0)
+        # times.append(time)
 
 
-# intensity = snd.to_intensity()
-# spectrogram = snd.to_spectrogram()
-# plt.figure()
-# draw_spectrogram(spectrogram)
-# plt.twinx()
-# draw_intensity(intensity)
-# plt.xlim([snd.xmin, snd.xmax])
+# fig, ax = plt.subplots()
+# ax.set(title='PYIN f0 estimation ')
+# ax.set_ylim(150, 400)
+# x = range(1, 11)
+
+# model = make_interp_spline(x, f0s[0])
+# xs = np.linspace(1,10,500)
+# ys = model(xs)
+# ax.plot(xs, ys, label='baseline', color='cyan', linewidth=2)
+# # ax.plot(xs, make_interp_spline(x, f0s[1]), label='O_A', color='red', linewidth=2)
+# # ax.plot(xs, make_interp_spline(x, f0s[2]), label='O_E', color='blue', linewidth=2)
+# # ax.plot(xs, make_interp_spline(x, f0s[3]), label='P_A', color='yellow', linewidth=2)
+# # ax.plot(xs, make_interp_spline(x, f0s[4]), label='P_E', color='green', linewidth=2)
+
+# ax.legend(loc='upper right')
 # plt.show()
 
 
-def draw_pitch(pitch):
-    # Extract selected pitch contour, and
-    # replace unvoiced samples by NaN to not plot
-    pitch_values = pitch.selected_array['frequency']
-    pitch_values[pitch_values==0] = np.nan
-    plt.plot(pitch.xs(), pitch_values, 'o', markersize=5, color='w')
-    plt.plot(pitch.xs(), pitch_values, 'o', markersize=2)
-    plt.grid(False)
-    plt.ylim(0, pitch.ceiling)
-    plt.ylabel("fundamental frequency [Hz]")
-
-pitch = snd.to_pitch()
-
-# If desired, pre-emphasize the sound fragment before calculating the spectrogram
-pre_emphasized_snd = snd.copy()
-pre_emphasized_snd.pre_emphasize()
-spectrogram = pre_emphasized_snd.to_spectrogram(window_length=0.03, maximum_frequency=8000)
-
-plt.figure()
-draw_spectrogram(spectrogram)
-plt.twinx()
-draw_pitch(pitch)
-plt.xlim([snd.xmin, snd.xmax])
-plt.show()
-
-# import pandas as pd
-
-# def facet_util(data, **kwargs):
-#     digit, speaker_id = data[['digit', 'speaker_id']].iloc[0]
-#     sound = parselmouth.Sound("audio/{}_{}.wav".format(digit, speaker_id))
-#     draw_spectrogram(sound.to_spectrogram())
-#     plt.twinx()
-#     draw_pitch(sound.to_pitch())
-#     # If not the rightmost column, then clear the right side axis
-#     if digit != 5:
-#         plt.ylabel("")
-#         plt.yticks([])
-
-# results = pd.read_csv("other/digit_list.csv")
-
-# grid = sns.FacetGrid(results, row='speaker_id', col='digit')
-# grid.map_dataframe(facet_util)
-# grid.set_titles(col_template="{col_name}", row_template="{row_name}")
-# grid.set_axis_labels("time [s]", "frequency [Hz]")
-# grid.set(facecolor='white', xlim=(0, None))
+##################################################### drawing hnr histogram distribution ###########################################
+# hnr_file = 'C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/voice lab/hnr.txt'
+# hnr_list = []
+# with open(hnr_file, 'r') as f:
+#     for line in f:
+#         line = line.split()[1]
+#         hnr_list.append(line)
+# print(len(hnr_list), min(hnr_list), max(hnr_list)) # 13100 0.7398815521997723 9.871653761881996
+# hnrList = [round(float(x)) for x in hnr_list]
+# plt.hist(hnrList, bins=range(0, 10 + 1, 1))
 # plt.show()
+#####################################################################################################################################
