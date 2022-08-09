@@ -1,21 +1,52 @@
-mel	slope_f0	output	text	
-mels/LJ022-0023.pt	[-0.01, 0]	001_slope_N.wav	The overwhelming majority of people in this country know how to sift the wheat from the chaff in what they hear and what they read.
-mels/LJ022-0023.pt	[0.01, 0]	001_slope_P.wav	The overwhelming majority of people in this country know how to sift the wheat from the chaff in what they hear and what they read.
-mels/LJ043-0030.pt	[-0.05, 0]	002_slope_N.wav	If somebody did that to me, a lousy trick like that, to take my wife away, and all the furniture, I would be mad as hell, too.
-mels/LJ043-0030.pt	[0.05, 0]	002_slope_P.wav	If somebody did that to me, a lousy trick like that, to take my wife away, and all the furniture, I would be mad as hell, too.
-mels/LJ005-0201.pt	[-0.08, 0]	003_slope_N.wav	as is shown by the report of the Commissioners to inquire into the state of the municipal corporations in eighteen thirty-five.
-mels/LJ005-0201.pt	[0.08, 0]	003_slope_P.wav	as is shown by the report of the Commissioners to inquire into the state of the municipal corporations in eighteen thirty-five.
-mels/LJ001-0110.pt	[-0.1, 0]	004_slope_N.wav	Even the Caslon type when enlarged shows great shortcomings in this respect:
-mels/LJ001-0110.pt	[0.1, 0]	004_slope_P.wav	Even the Caslon type when enlarged shows great shortcomings in this respect:
-mels/LJ003-0345.pt	[-0.13, 0]	005_slope_N.wav	All the committee could do in this respect was to throw the responsibility on others.
-mels/LJ003-0345.pt	[0.13, 0]	005_slope_P.wav	All the committee could do in this respect was to throw the responsibility on others.
-mels/LJ007-0154.pt	[-0.15, 0]	006_slope_N.wav	These pungent and well-grounded strictures applied with still greater force to the unconvicted prisoner, the man who came to the prison innocent, and still uncontaminated,
-mels/LJ007-0154.pt	[0.15, 0]	006_slope_P.wav	These pungent and well-grounded strictures applied with still greater force to the unconvicted prisoner, the man who came to the prison innocent, and still uncontaminated,
-mels/LJ018-0098.pt	[-0.2, 0]	007_slope_N.wav	and recognized as one of the frequenters of the bogus law-stationers. His arrest led to that of others.
-mels/LJ018-0098.pt	[0.2, 0]	007_slope_P.wav	and recognized as one of the frequenters of the bogus law-stationers. His arrest led to that of others.
-mels/LJ047-0044.pt	[-0.3, 0]	008_slope_N.wav	Oswald was, however, willing to discuss his contacts with Soviet authorities. He denied having any involvement with Soviet intelligence agencies
-mels/LJ047-0044.pt	[0.3, 0]	008_slope_P.wav	Oswald was, however, willing to discuss his contacts with Soviet authorities. He denied having any involvement with Soviet intelligence agencies
-mels/LJ031-0038.pt	[-0.4, 0]	009_slope_N.wav	The first physician to see the President at Parkland Hospital was Dr. Charles J. Carrico, a resident in general surgery.
-mels/LJ031-0038.pt	[0.4, 0]	009_slope_P.wav	The first physician to see the President at Parkland Hospital was Dr. Charles J. Carrico, a resident in general surgery.
-mels/LJ048-0194.pt	[-0.5, 0]	010_slope_N.wav	during the morning of November twenty-two prior to the motorcade.
-mels/LJ048-0194.pt	[0.5, 0]	010_slope_P.wav	during the morning of November twenty-two prior to the motorcade.
+mel	mean_f0	output	text	
+mels/LJ048-0194.pt	0.0	mean_1.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.1	mean_2.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.2	mean_3.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.3	mean_4.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.4	mean_5.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.5	mean_6.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.6	mean_7.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.7	mean_8.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.8	mean_9.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	0.9	mean_10.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.0	mean_11.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.1	mean_12.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.2	mean_13.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.3	mean_14.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.4	mean_15.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.5	mean_16.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.6	mean_17.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.7	mean_18.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.8	mean_19.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	1.9	mean_20.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.0	mean_21.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.1	mean_22.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.2	mean_23.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.3	mean_24.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.4	mean_25.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.5	mean_26.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.6	mean_27.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.7	mean_28.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.8	mean_29.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	2.9	mean_30.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.0	mean_31.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.1	mean_32.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.2	mean_33.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.3	mean_34.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.4	mean_35.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.5	mean_36.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.6	mean_37.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.7	mean_38.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.8	mean_39.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	3.9	mean_40.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.0	mean_41.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.1	mean_42.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.2	mean_43.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.3	mean_44.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.4	mean_45.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.5	mean_46.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.6	mean_47.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.7	mean_48.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.8	mean_49.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	4.9	mean_50.wav	during the morning of November twenty-two prior to the motorcade.
+mels/LJ048-0194.pt	5.0	mean_51.wav	during the morning of November twenty-two prior to the motorcade.

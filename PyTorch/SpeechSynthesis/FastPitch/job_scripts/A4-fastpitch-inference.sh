@@ -55,11 +55,11 @@ export CPU=false  # false => run on GPU
 export AMP=false
 
 #------added be me------
-export MEAN_DELTA=false
+export MEAN_DELTA=true
 export MEAN_F0_TGT=false
 export NORMAL=false
 export SLOPE=true
-export SLOPE_F0_TGT=true
+export SLOPE_F0_TGT=false
 #-----------------------
 
 cd $FP
