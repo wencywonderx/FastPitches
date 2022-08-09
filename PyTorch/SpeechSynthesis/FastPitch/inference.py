@@ -233,10 +233,12 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
     #-------------------added-------------------------
     if 'mean_f0' in fields:
         fields['mean_f0'] = torch.FloatTensor([[float(x) for x in list(fields['mean_f0'])]])
+        fields['mean_f0'] = [fields['mean_f0'][i] for i in order]
         # print(fields['mean_f0'])
     if 'slope_f0' in fields:
         import ast
         fields['slope_f0'] = torch.FloatTensor([ast.literal_eval(x) for x in fields['slope_f0']])
+        fields['slope_f0'] = [fields['slope_f0'][i] for i in order]
     #-------------------------------------------------
 
     # cut into batches & pad
