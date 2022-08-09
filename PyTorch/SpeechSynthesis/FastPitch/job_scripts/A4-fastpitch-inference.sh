@@ -56,9 +56,9 @@ export AMP=false
 
 #------added be me------
 export MEAN_DELTA=true
-export MEAN_F0_TGT=false
+export MEAN_F0_TGT=true
 export NORMAL=false
-export SLOPE=true
+export SLOPE=false
 export SLOPE_F0_TGT=false
 #-----------------------
 

@@ -549,14 +549,14 @@ class FastPitch(nn.Module):
             delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
-            print(f'this is predicted mean f0 {mean_f0_pred.shape}')
-            print(f'this is predicted delta f0 {delta_f0_pred.shape}')
+            print(f'this is predicted mean f0 {mean_f0_pred}')
+            # print(f'this is predicted delta f0 {delta_f0_pred.shape}')
             mean_and_delta_f0_pred = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1)
             print(f'this is predicted mean and delta f0 {mean_and_delta_f0_pred}')
             if mean_f0_tgt is None and delta_f0_tgt is None:
                 print("-----------------without target")
                 print(f'this is mean f0 tgt {mean_f0_tgt}') 
-                print(f'this is delta f0 tgt {delta_f0_tgt}') 
+                # print(f'this is delta f0 tgt {delta_f0_tgt}') 
                 mean_and_delta_f0_tgt = delta_f0_pred + mean_f0_pred.view(mean_f0_pred.size(0), 1, 1) 
             if mean_f0_tgt is not None and delta_f0_tgt is None:
                 print("-----------------with mean f0 target only")
