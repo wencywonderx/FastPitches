@@ -232,7 +232,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
     
     #-------------------added-------------------------
     if 'mean_f0' in fields:
-        fields['mean_f0'] = [torch.FloatTensor(float(x)) for x in list(fields['mean_f0'])]
+        fields['mean_f0'] = [torch.FloatTensor(float(x)) for x in fields['mean_f0']]
         fields['mean_f0'] = [fields['mean_f0'][i] for i in order]
 
         # print(fields['mean_f0'])
@@ -334,7 +334,7 @@ def main():
     device = torch.device('cuda' if args.cuda else 'cpu')
 
     if args.fastpitch != 'SKIP':
-        print("here's the generator!")
+        # print("here's the generator!")
         generator = load_and_setup_model(
             'FastPitch', parser, args.fastpitch, args.amp, device,
             unk_args=unk_args, forward_is_infer=True, ema=args.ema,
