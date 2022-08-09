@@ -566,7 +566,7 @@ class FastPitch(nn.Module):
                 # print(f'mean_f0_pred: {mean_f0_pred.get_device()}')
                 # print(f'mean_f0_tgt: {mean_f0_tgt.cpu().get_device()}')
                 import numpy as np
-                mean_and_delta_f0_tgt = delta_f0_pred + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1)
+                mean_and_delta_f0_tgt = delta_f0_pred + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1).to(inputs.device)
             if mean_f0_tgt is None and delta_f0_tgt is not None:
                 print("-----------------with delta f0 target only")
                 print(f'this is mean f0 tgt {mean_f0_tgt}') 
