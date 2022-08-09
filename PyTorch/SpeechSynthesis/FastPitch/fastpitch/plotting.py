@@ -1,9 +1,11 @@
 import librosa
 import numpy as np
 import os
-import math
 from scipy.interpolate import make_interp_spline
 import matplotlib.pyplot as plt
+import torch
+import torch.nn as nn
+
 
 def interpolate(pitch_mel_array):
     frames = len(pitch_mel_array)
@@ -31,56 +33,50 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-# path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting'
-# for dirpath, dirnames, filenames in os.walk(path):
-#     f0s = []
-#     times = []
-#     for filename in filenames:
-#         print(filename)
-#         wav = os.path.join(dirpath, filename)
-#         # wav = "C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/001_base.wav"
-#         data, sr = librosa.load(wav, sr=8000, mono=True)
-#         print(data.shape)
-#         f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=40, fmax=600, frame_length=1024)
-#         # print(f0.shape)
-#         # print(f0)
-#         f0 = np.nan_to_num(f0)
-#         # print(f0)
-#         f0 = np.array(f0)
-#         f0 = interpolate(f0)
-#         length = len(f0)
-#         seg = math.floor(length/10)
-#         # print(seg)
-#         f0_seg = []
-#         for i, value in enumerate(f0):
-#             if i==seg*1 or i==seg*2 or i==seg*3 or i==seg*4 or i==seg*5 or i==seg*6 or i==seg*7 or i==seg*8 or i==seg*9 or i==seg*10:
-#                 print(i)
-#                 f0_seg.append(value)
-#         print(f0_seg)
-#         f0s.append(f0_seg)
-        # time = librosa.times_like(f0)
-        # times.append(time)
+path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting'
+for dirpath, dirnames, filenames in os.walk(path):
+    f0s = []
+    times = []
+    means = []
+    for filename in filenames:
+        wav = os.path.join(dirpath, filename)
+        print(wav)
+        data, sr = librosa.load(wav, sr=8000, mono=True)
+        print(data.shape)
+        f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=40, fmax=600, frame_length=1024)
+        # print(f0.shape)
+        f0 = np.nan_to_num(f0)
+        f0 = np.array(f0)
+        f0 = interpolate(f0)
+        mean = np.true_divide(f0.sum(1),(f0!=0).sum(1))
+        means.append(mean)
+        f0s.append(f0)
+        time = librosa.times_like(f0)
+        times.append(time)
+
+criterion = nn.MSELoss()
+loss_base_gt = torch.sqrt(criterion(f0s[0], f0s[1]))
+loss_base_add_O = torch.sqrt(criterion(f0s[1], f0s[2]))
+loss_base_emb_O = torch.sqrt(criterion(f0s[1], f0s[3]))
+print(loss_base_gt, loss_base_add_O, loss_base_emb_O)
+print(means)
+
+fig, ax = plt.subplots()
+ax.set(title='PYIN f0 estimation ')
+ax.set_ylim(100, 450)
+ax.plot(times[0], f0s[0], label='groundtruth', color='black', linewidth=2)
+ax.plot(times[1], f0s[1], label='baseline', color='grey', linewidth=2)
+ax.plot(times[2], f0s[2], label='O_A', color='red', linewidth=2)
+ax.plot(times[3], f0s[3], label='O_E', color='blue', linewidth=2)
+ax.plot(times[4], f0s[4], label='P_A', color='yellow', linewidth=2)
+ax.plot(times[5], f0s[5], label='P_E', color='green', linewidth=2)
+ax.legend(loc='upper right')
+plt.show()
 
 
-# fig, ax = plt.subplots()
-# ax.set(title='PYIN f0 estimation ')
-# ax.set_ylim(150, 400)
-# x = range(1, 11)
-
-# model = make_interp_spline(x, f0s[0])
-# xs = np.linspace(1,10,500)
-# ys = model(xs)
-# ax.plot(xs, ys, label='baseline', color='cyan', linewidth=2)
-# # ax.plot(xs, make_interp_spline(x, f0s[1]), label='O_A', color='red', linewidth=2)
-# # ax.plot(xs, make_interp_spline(x, f0s[2]), label='O_E', color='blue', linewidth=2)
-# # ax.plot(xs, make_interp_spline(x, f0s[3]), label='P_A', color='yellow', linewidth=2)
-# # ax.plot(xs, make_interp_spline(x, f0s[4]), label='P_E', color='green', linewidth=2)
-
-# ax.legend(loc='upper right')
-# plt.show()
 
 
-##################################################### drawing hnr histogram distribution ###########################################
+############################### drawing hnr histogram distribution ###############################
 # hnr_file = 'C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/voice lab/hnr.txt'
 # hnr_list = []
 # with open(hnr_file, 'r') as f:
@@ -91,4 +87,4 @@ def interpolate(pitch_mel_array):
 # hnrList = [round(float(x)) for x in hnr_list]
 # plt.hist(hnrList, bins=range(0, 10 + 1, 1))
 # plt.show()
-#####################################################################################################################################
+##################################################################################################
