@@ -39,7 +39,7 @@ export WAVEGLOW="$FP/pretrained_models/waveglow/nvidia_waveglow256pyt_fp16.pt"
 
 export PHRASES="$FP/phrases/devset10.tsv"
 export OUTPUT_DIR=$DS_HOME/fastpitch_audio/slope_add_first/$(basename ${PHRASES} .tsv) #-----------------changed
-export BATCH_SIZE=20  # this might need to be bigger than #utts in $PHRASES... #-------------------changed
+export BATCH_SIZE=51  # this might need to be bigger than #utts in $PHRASES... #-------------------changed
 
 # these affect model architecture => match to settings used during model training!
 export PHONE=true  # PHONE=true seems not to respect --p-arpabet?
