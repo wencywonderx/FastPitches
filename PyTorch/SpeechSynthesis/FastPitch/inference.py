@@ -226,7 +226,8 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
         fields['output'] = [fields['output'][i] for i in order]
 
     if 'mean_f0' in fields:
-        fields['mean_f0'] = torch.FloatTensor([[float(x) for x in list(fields['mean_f0'])]])
+        fields['mean_f0'] = torch.from_numpy(np.array([[float(fields['mean_f0'][i])] for i in order])).float()
+
     # cut into batches & pad
     batches = []
     for b in range(0, len(order), batch_size):
@@ -239,7 +240,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
             elif f == 'pitch' and load_pitch:
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             elif f == 'mean_f0':
-                print("triggered!")
+                # print("triggered!")
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             if type(batch[f]) is torch.Tensor:
                 batch[f] = batch[f].to(device)
