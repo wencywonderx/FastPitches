@@ -41,7 +41,7 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/mean_controlling'
+path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/mean_controlling/-2.9-5.8'
 for dirpath, dirnames, filenames in os.walk(path):
     f0s = []
     times = []
@@ -51,7 +51,7 @@ for dirpath, dirnames, filenames in os.walk(path):
         print(wav)
         data, sr = librosa.load(wav, sr=8000, mono=True)
         print(data.shape)
-        f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=40, fmax=600, frame_length=1024)
+        f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=20, fmax=600, frame_length=1024)
         print(f0.shape)
         f0 = np.nan_to_num(f0)
         f0 = np.array(f0)
@@ -70,17 +70,33 @@ for dirpath, dirnames, filenames in os.walk(path):
 # print(loss_base_gt, loss_base_add_O, loss_base_emb_O)
 
 expected = []
-for i in range(101):
+n_expected=[]
+for i in range(59):
     pitch = 65.72038*i*0.1 + 186.1783
     expected.append(pitch)
-print(means)
+for i in range(30):
+    pitch = 65.72038*(-i)*0.1 + 186.1783
+    n_expected.append(pitch)
+print(expected)
+print(n_expected)
 print(len(means))
+p_m = means[0:59]
+print(p_m, len(p_m))
+n_m = means[59:89]
+n_m.insert(0, 222.10661373435622)
+print(n_m, len(n_m))
 fig, ax = plt.subplots()
 ax.set(title='mean f0 controlling')
-ax.set_ylabel('what we got in Hz')
-ax.set_xlabel('what we asked in Hz')
-ax.plot(range(101), means, label='controlling')
-ax.plot(range(101), expected, label='expected')
+ax.set_ylabel('mean f0 got (Hz)')
+ax.set_xlabel('mean f0 asked for (Hz)')
+ax.set_xlim(0, 600)
+ax.set_ylim(0, 600)
+ax.plot(expected, p_m, color='blue', label='higher-controlled')
+ax.plot(n_expected, n_m, color='tomato', label='lower-controlled')
+ax.plot(expected, expected, color='grey', label='expected mean f0')
+ax.plot(n_expected, n_expected, color='grey')
+ax.vlines(214.72203, 20, 600, colors = 'lightgrey', linestyles = "dotted", label='global mean')
+ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
 # ax.plot(range(51), [186.1783629 for i in range(51)], label='add_first')
 # ax.plot(range(51), [196.8518806 for i in range(51)], label='baseline')
 # ax.plot(range(51), [200.641918 for i in range(51)], label='groundtruth')
