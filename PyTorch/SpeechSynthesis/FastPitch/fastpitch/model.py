@@ -395,8 +395,8 @@ class FastPitch(nn.Module):
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt) # [16, 1, 384]/ [16, 384]]
             else:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
-
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
+            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384)
+            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
             # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) #-----------------------------------------changed
         else:
             delta_f0_pred = None
