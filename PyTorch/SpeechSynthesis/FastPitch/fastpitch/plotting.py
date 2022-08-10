@@ -41,7 +41,7 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/mean_51'
+path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/mean_controlling'
 for dirpath, dirnames, filenames in os.walk(path):
     f0s = []
     times = []
@@ -70,17 +70,17 @@ for dirpath, dirnames, filenames in os.walk(path):
 # print(loss_base_gt, loss_base_add_O, loss_base_emb_O)
 
 expected = []
-for i in range(51):
+for i in range(101):
     pitch = 65.72038*i*0.1 + 186.1783
     expected.append(pitch)
 print(means)
 print(len(means))
 fig, ax = plt.subplots()
-# ax.set(title='mean f0')
-ax.set_ylabel('mean f0 (Hz)')
-ax.set_xlabel('controlling step (normalised)')
-ax.plot(range(51), means, label='controlling')
-ax.plot(range(51), expected, label='expected')
+ax.set(title='mean f0 controlling')
+ax.set_ylabel('what we got in Hz')
+ax.set_xlabel('what we asked in Hz')
+ax.plot(range(101), means, label='controlling')
+ax.plot(range(101), expected, label='expected')
 # ax.plot(range(51), [186.1783629 for i in range(51)], label='add_first')
 # ax.plot(range(51), [196.8518806 for i in range(51)], label='baseline')
 # ax.plot(range(51), [200.641918 for i in range(51)], label='groundtruth')
