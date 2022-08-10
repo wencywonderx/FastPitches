@@ -41,8 +41,8 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/plotting/mean_controlling/-2.9-5.8'
-for dirpath, dirnames, filenames in os.walk(path):
+add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_add/-2.9-5.8'
+for dirpath, dirnames, filenames in os.walk(add_path):
     f0s = []
     times = []
     means = []
@@ -62,6 +62,29 @@ for dirpath, dirnames, filenames in os.walk(path):
         f0s.append(f0)
         time = librosa.times_like(f0)
         times.append(time)
+
+emb_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_emb/-2.9-5.8'
+for dirpath, dirnames, filenames in os.walk(add_path):
+    f0s = []
+    times = []
+    means = []
+    for filename in filenames:
+        wav = os.path.join(dirpath, filename)
+        print(wav)
+        data, sr = librosa.load(wav, sr=8000, mono=True)
+        print(data.shape)
+        f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=20, fmax=600, frame_length=1024)
+        print(f0.shape)
+        f0 = np.nan_to_num(f0)
+        f0 = np.array(f0)
+        f0 = interpolate(f0)
+        mean = np.true_divide(f0.sum(0),(f0!=0).sum(0))
+        print(mean)
+        means.append(mean)
+        f0s.append(f0)
+        time = librosa.times_like(f0)
+        times.append(time)
+
 
 # criterion = nn.MSELoss()
 # loss_base_gt = torch.sqrt(criterion(f0s[0], f0s[1]))
