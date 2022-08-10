@@ -136,10 +136,13 @@ def main():
             betabinomial_online_dir=None,
             pitch_online_dir=None,
             pitch_online_method=args.f0_method,
-            interpolate_f0=args.interpolate_f0, #--------------------------added
-            mean_and_delta_f0=args.mean_and_delta_f0, #------------------------added
-            slope_f0=args.slope_f0, #---------------------------added
-            range_f0=args.range_f0) #-------------------------added
+            #---------------added------------------
+            interpolate_f0=args.interpolate_f0,
+            mean_and_delta_f0=args.mean_and_delta_f0, 
+            slope_f0=args.slope_f0, 
+            range_f0=args.range_f0,
+            hnr=args.hnr)
+            #---------------------------------------
 
 
         data_loader = DataLoader(
@@ -157,7 +160,7 @@ def main():
         for i, batch in enumerate(tqdm.tqdm(data_loader)):
             tik = time.time()
 
-            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _, _, _, _ = batch  # -------changed
+            _, input_lens, mels, mel_lens, _, pitch, _, _, attn_prior, fpaths, _, _, _, _, _, _ = batch  # -------changed
 
             # (text_padded, input_lengths, mel_padded, output_lengths, len_x,
             #     pitch_padded, energy_padded, speaker, attn_prior_padded,

@@ -143,6 +143,9 @@ def parse_fastpitch_args(parent, add_help=False):
     #----------------------------------------------------------------------------------------------
     range_f0_pred = parser.add_argument_group('range f0 predictor parameters')
     range_f0_pred.add_argument('--range-f0', action='store_true')
+    #---------------------------------------------------------------------------------------------
+    hnr_pred = parser.add_argument_group('hnr predictor parameters')
+    hnr_pred.add_argument('--hnr', action='store_true')
     #-----------------------------------------------------------------------------------------------
 
     cond = parser.add_argument_group('conditioning parameters')

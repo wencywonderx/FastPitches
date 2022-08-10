@@ -158,3 +158,7 @@ def f0_range(pitch):
 # pitch = interpolate_f0(pitch)
 # pitch = torch.from_numpy(pitch).unsqueeze(0)
 # print(f0_range(pitch))
+
+def hnr_fetch(filename):    
+    hnr = 0.0
+    return hnr

@@ -37,7 +37,7 @@ from scipy.stats import betabinom
 import common.layers as layers
 from common.text.text_processing import TextProcessing
 from common.utils import load_wav_to_torch, load_filepaths_and_text, to_gpu
-from fastpitch.f0_and_spectral_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope, f0_range
+from fastpitch.f0_and_spectral_things import interpolate_f0, estimate_pitch, normalize_pitch, mean_delta_f0, f0_slope, f0_range, hnr_fetch
 
 class BetaBinomialInterpolator:
     """Interpolates alignment prior matrices to save computation.
@@ -105,10 +105,13 @@ class TTSDataset(torch.utils.data.Dataset):
                  betabinomial_online_dir=None,
                  use_betabinomial_interpolator=True,
                  pitch_online_method='pyin',
-                 interpolate_f0 = False, #-------------------------C
-                 mean_and_delta_f0 = False, #----------------------C
-                 slope_f0 = False, #--------------------------C
-                 range_f0 = False, #--------------------------C
+                 #----------added-----------
+                 interpolate_f0 = False, 
+                 mean_and_delta_f0 = False, 
+                 slope_f0 = False, 
+                 range_f0 = False,
+                 hnr = False,
+                 #-------------------------
                  **ignored):
 
         # Expect a list of filenames
@@ -146,6 +149,7 @@ class TTSDataset(torch.utils.data.Dataset):
         self.mean_and_delta_f0 = mean_and_delta_f0
         self.slope_f0 = slope_f0
         self.range_f0 = range_f0
+        self.hnr = hnr
         #-------------------------------------------
 
         if use_betabinomial_interpolator:
@@ -180,14 +184,14 @@ class TTSDataset(torch.utils.data.Dataset):
 
         #----------------------changed by me------------------
         if self.range_f0:
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!! range")
+            # print("!!!!!!!!!!!!!!!!!!!!!!!!!!!! range")
             pitch, range_f0 = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)  
             slope_f0 = None
             slope_delta = None
             mean_f0 = None
             delta_f0 = None 
         else:
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!! not range")
+            # print("!!!!!!!!!!!!!!!!!!!!!!!!!! not range")
             if self.mean_and_delta_f0:
                 if self.slope_f0:
                     pitch, mean_f0, delta_f0, slope_f0, slope_delta = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)
@@ -201,11 +205,14 @@ class TTSDataset(torch.utils.data.Dataset):
                     mean_f0 = None
                     delta_f0 = None
                 else:
-                    pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)  # (num_formants, mel_len)
-                    slope_f0 = None
-                    slope_delta = None
-                    mean_f0 = None
-                    delta_f0 = None          
+                    if self.nhr:
+                        hnr = self.get_hnr(self.hnr_file)
+                        pitch = self.get_pitch(index, mel.size(-1), self.interpolate_f0, self.mean_and_delta_f0, self.slope_f0, self.range_f0)  # (num_formants, mel_len)
+                        slope_f0 = None
+                        slope_delta = None
+                        mean_f0 = None
+                        delta_f0 = None    
+                        range_f0 = None      
         # mean_f0, delta_f0 = self.get_mean_and_f0(pitch) 
         #-----------------------------------------------------
 
@@ -219,7 +226,7 @@ class TTSDataset(torch.utils.data.Dataset):
 
         #-------------------------------------Changed by me-----------------------------------
         return (text, mel, len(text), pitch, energy, speaker, attn_prior,
-                audiopath, mean_f0, delta_f0, slope_f0, slope_delta, range_f0) # final return for TTSDataset 
+                audiopath, mean_f0, delta_f0, slope_f0, slope_delta, range_f0, hnr) # final return for TTSDataset 
         #-------------------------------------------------------------------------------------
 
     def __len__(self):
@@ -348,7 +355,10 @@ class TTSDataset(torch.utils.data.Dataset):
             torch.save(pitch_mel, cached_fpath)
 
         return pitch_mel
-    
+
+    def get_hnr(self, filename):
+        hnr = hnr_fetch(filename)
+        return hnr   
 
 class TTSCollate: #padding, make it rectangular, because tensor cannot accept different length
     """Zero-pads model inputs and targets based on number of frames per step"""
@@ -403,6 +413,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         slope_delta_padded = torch.zeros(mel_padded.size(0), n_formants,
                                    mel_padded.size(2), dtype=batch[0][3].dtype)
         range_f0 = torch.zeros(mel_padded.size(0), 1)
+        hnr = torch.zeros(mel_padded.size(0), 1)        
         # ----------------------------------------------------------------------
         for i in range(len(ids_sorted_decreasing)):
             pitch = batch[ids_sorted_decreasing[i]][3]
@@ -428,6 +439,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
                 slope_delta_padded = None
             if batch[0][3] is not None and batch[0][12] is not None:
                 range_f0[i, :] = batch[ids_sorted_decreasing[i]][12]
+            if batch[0][3] is not None and batch[0][13] is not None:
+                hnr[i, :] = batch[ids_sorted_decreasing[i]][13]            
             #-------------------------------------------------
         # print("n\ this is pitch_padded:", pitch_padded.size, pitch_padded)
         # print("n\ this is energy_padded:", energy_padded.size, energy_padded)
@@ -435,8 +448,6 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         # print("padded mean f0: ", mean_f0) # tesor([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
         # print(f'this is slope f0 {slope_f0}')
         # print(f'this is slope delta padded: {slope_delta_padded}')
-
-
 
         if batch[0][5] is not None:
             speaker = torch.zeros_like(input_lengths)
@@ -466,7 +477,7 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
         #-----------------------------------changed----------------------------------------
         return (text_padded, input_lengths, mel_padded, output_lengths, len_x, 
                 pitch_padded, energy_padded, speaker, attn_prior_padded,
-                audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0) # change also in prepare_data.py and model.py(245)
+                audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0, hnr) # change also in prepare_data.py and model.py(245)
                 # original batch:
                 # mel : [n_mel_channel, mel_len]
                 # text : [text_len]
@@ -481,7 +492,8 @@ class TTSCollate: #padding, make it rectangular, because tensor cannot accept di
 def batch_to_gpu(batch):
     #--------------------Changed--------------------
     (text_padded, input_lengths, mel_padded, output_lengths, len_x,
-     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0) = batch  #-----changed
+     pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, 
+     delta_f0_padded, slope_f0, slope_delta_padded, range_f0, hnr) = batch  #-----changed
     #-----------------------------------------------
 
     text_padded = to_gpu(text_padded).long()
@@ -501,10 +513,13 @@ def batch_to_gpu(batch):
         slope_delta_padded = to_gpu(slope_delta_padded).float()
     if range_f0 is not None:
         range_f0 = to_gpu(range_f0).float()
+    if hnr is not None:
+        hnr = to_gpu(hnr).float()
 
     # Alignments act as both inputs and targets - pass shallow copies ------------------------------------Q
     x = [text_padded, input_lengths, mel_padded, output_lengths,
-         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0]
+         pitch_padded, energy_padded, speaker, attn_prior, audiopaths, 
+         mean_f0, delta_f0_padded, slope_f0, slope_delta_padded, range_f0, hnr]
     y = [mel_padded, input_lengths, output_lengths]
     len_x = torch.sum(output_lengths) # still input length ------------------------------------------------2 Q: why still input length?
     return (x, y, len_x)

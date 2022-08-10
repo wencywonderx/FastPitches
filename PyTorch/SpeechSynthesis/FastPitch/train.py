@@ -295,14 +295,14 @@ def plot_mels(pred_tgt_lists):
         local_prep_tgts.append([tenzor.cpu().numpy() for tenzor in lizt])
 
     # # this is just for the axes limits
-    # pitch_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
-    # energy_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
-    # energy_min = min([feature_list[1].min() for feature_list in local_prep_tgts])
+    pitch_max = max([feature_list[2].max() for feature_list in local_prep_tgts])
+    energy_max = max([feature_list[1].max() for feature_list in local_prep_tgts])
+    energy_min = min([feature_list[1].min() for feature_list in local_prep_tgts])
     # delta_max = max([feature_list[2].max() for feature_list in local_prep_tgts])
     # delta_min = min([feature_list[2].min() for feature_list in local_prep_tgts])    
-    # pitch_std = max([feature_list[2].std() for feature_list in local_prep_tgts])
-    # pitch_mean = max([feature_list[2].mean() for feature_list in local_prep_tgts])
-    # pitch_max = pitch_max * pitch_std + pitch_mean
+    pitch_std = max([feature_list[2].std() for feature_list in local_prep_tgts])
+    pitch_mean = max([feature_list[2].mean() for feature_list in local_prep_tgts])
+    pitch_max = pitch_max * pitch_std + pitch_mean
 
     def add_axis(fig, old_ax):
         ax = fig.add_axes(old_ax.get_position(), anchor="W")
@@ -311,18 +311,18 @@ def plot_mels(pred_tgt_lists):
 
     for i in range(2):  # we always only expect 2: pred and tgt
         #-------------------changed by me----------------------
-        # if len(local_prep_tgts[i]) == 3:
-        #     mel, energy, pitch = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 3:
+            mel, energy, pitch = local_prep_tgts[i]
         # if len(local_prep_tgts[i]) == 4:
         #     mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
         # if len(local_prep_tgts[i]) == 4:
         #     mel, energy, slope_delta, slope_f0 = local_prep_tgts[i]
-        if len(local_prep_tgts[i]) == 4:
-            mel, energy, pitch, range_f0 = local_prep_tgts[i]
-            print(f'this is plotting range_f0 input {range_f0}')
+        # if len(local_prep_tgts[i]) == 4:
+        #     mel, energy, pitch, range_f0 = local_prep_tgts[i]
+        #     print(f'this is plotting range_f0 input {range_f0}')
             # print(f'this is plotting pitch {pitch}')
         #------------------------------------------------------
-        # pitch = pitch * pitch_std + pitch_mean
+        pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
         axes[i][0].set_aspect(2.5, adjustable="box")
         axes[i][0].set_ylim(0, mel.shape[0])
@@ -343,39 +343,39 @@ def plot_mels(pred_tgt_lists):
                             bottom=False,
                             labelbottom=False)
 
-            ax2 = add_axis(fig, axes[i][0])
-            range_f0 = [range_f0 for m in range(mel.shape[1] + 1)]
-            # range_f0_max = [range_f0[1] for m in range(mel.shape[1] + 1)]
-            # ax2.plot(range_f0_min, color="blue")
-            ax2.plot(range_f0, color="blue")
-            ax2.set_xlim(0, mel.shape[1])
-            # ax4.set_ylim(delta_min, delta_max)
-            ax2.set_ylim(-1, 2)
-            ax2.set_ylabel("F0 range", color="blue")
-            ax2.tick_params(labelsize="x-small",
-                        colors="blue",
-                        bottom=False,
-                        labelbottom=False,
-                        left=False,
-                        labelleft=False,
-                        right=True,
-                        labelright=True,)  
-
             # ax2 = add_axis(fig, axes[i][0])
-            # ax2.plot(energy, color="darkviolet")
+            # range_f0 = [range_f0 for m in range(mel.shape[1] + 1)]
+            # # range_f0_max = [range_f0[1] for m in range(mel.shape[1] + 1)]
+            # # ax2.plot(range_f0_min, color="blue")
+            # ax2.plot(range_f0, color="blue")
             # ax2.set_xlim(0, mel.shape[1])
-            # ax2.set_ylim(energy_min, energy_max)
-            # ax2.set_ylabel("Energy", color="darkviolet")
-            # ax2.yaxis.set_label_position("right")
-            # ax2.tick_params(
-            #     labelsize="x-small",
-            #     colors="darkviolet",
-            #     bottom=False,
-            #     labelbottom=False,
-            #     left=False,
-            #     labelleft=False,
-            #     right=True,
-            #     labelright=True,)
+            # # ax4.set_ylim(delta_min, delta_max)
+            # ax2.set_ylim(-1, 2)
+            # ax2.set_ylabel("F0 range", color="blue")
+            # ax2.tick_params(labelsize="x-small",
+            #             colors="blue",
+            #             bottom=False,
+            #             labelbottom=False,
+            #             left=False,
+            #             labelleft=False,
+            #             right=True,
+            #             labelright=True,)  
+
+            ax2 = add_axis(fig, axes[i][0])
+            ax2.plot(energy, color="darkviolet")
+            ax2.set_xlim(0, mel.shape[1])
+            ax2.set_ylim(energy_min, energy_max)
+            ax2.set_ylabel("Energy", color="darkviolet")
+            ax2.yaxis.set_label_position("right")
+            ax2.tick_params(
+                labelsize="x-small",
+                colors="darkviolet",
+                bottom=False,
+                labelbottom=False,
+                left=False,
+                labelleft=False,
+                right=True,
+                labelright=True,)
         #----------------added by me------------------
         # if len(local_prep_tgts[i]) == 4:
         #     ax3 = add_axis(fig, axes[i][0])
@@ -458,18 +458,18 @@ def plot_batch_mels(pred_tgt_lists, rank):
         #     new_slope_delta = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
         #     new_slope_f0 = mel_pitch_energy[3]
         #     regulated_features.append([mels, new_energy.squeeze(axis=2), new_slope_delta.squeeze(axis=2), new_slope_f0])
-        # if len(mel_pitch_energy) == 4:
-        #     print("------for normal f0")
-        #     new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
-        #     new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-        #     regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2)])
-            # print("this is regulated features", regulated_features)
-        if len(mel_pitch_energy) == 5:
-            print("------for range and f0")
+        if len(mel_pitch_energy) == 4:
+            print("------for normal f0")
             new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
             new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-            new_range_f0 = mel_pitch_energy[3]
-            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_range_f0])
+            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2)])
+            # print("this is regulated features", regulated_features)
+        # if len(mel_pitch_energy) == 5:
+        #     print("------for range and f0")
+        #     new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
+        #     new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+        #     new_range_f0 = mel_pitch_energy[3]
+        #     regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_range_f0])
             # print("this is regulated features", regulated_features)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
@@ -492,13 +492,14 @@ def log_validation_batch(x, y_pred, rank):
     x_fields = ['text_padded', 'input_lengths', 'mel_padded',
                 'output_lengths', 'pitch_padded', 'energy_padded',
                 'speaker', 'attn_prior', 'audiopaths', 
-                'mean_f0', 'delta_f0_padded', 'slope_f0', 'delta_slope_padded', 'range_f0']
+                'mean_f0', 'delta_f0_padded', 'slope_f0', 'delta_slope_padded', 'range_f0', 'hnr']
     y_pred_fields = ['mel_out', 'dec_mask', 'dur_pred', 'log_dur_pred',
                      'pitch_pred', 'pitch_tgt', 'energy_pred',
                      'energy_tgt', 'attn_soft', 'attn_hard',
                      'attn_hard_dur', 'attn_logprob', 
                      'delta_f0_pred', 'delta_f0_tgt', 'mean_f0_pred', 'mean_f0_tgt', 
-                     'slope_f0_pred', 'slope_f0_tgt', 'slope_delta_pred', 'slope_delta_tgt', 'range_f0_pred', 'range_f0_tgt']
+                     'slope_f0_pred', 'slope_f0_tgt', 'slope_delta_pred', 'slope_delta_tgt', 
+                     'range_f0_pred', 'range_f0_tgt', 'hnr_pred', 'hnr_tgt']
 
     validation_dict = dict(zip(x_fields + y_pred_fields,
                                list(x) + list(y_pred)))
@@ -507,8 +508,8 @@ def log_validation_batch(x, y_pred, rank):
     log(validation_dict, rank)  # something in here returns a warning
 
     #-------------------------------------changed by me----------------------------------------
-    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred', 'slope_f0_pred', 'slope_delta_pred', 'range_f0_pred', 'attn_hard_dur']
-    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'slope_f0_tgt', 'slope_delta_tgt', 'range_f0_tgt', 'attn_hard_dur']
+    pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred', 'slope_f0_pred', 'slope_delta_pred', 'range_f0_pred', 'hnr_pred', 'attn_hard_dur']
+    tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'slope_f0_tgt', 'slope_delta_tgt', 'range_f0_tgt', 'hnr_tgt', 'attn_hard_dur']
     # if y_pred[12] is not None and y_pred[14] is not None:
     #     if y_pred[16] is None and y_pred[4] is None:
     #         print("--------preparing delta mean plot data")
@@ -519,11 +520,16 @@ def log_validation_batch(x, y_pred, rank):
     #         print("--------preparing slope and delta plot data")
     #         pred_specs_keys = ['mel_out', 'energy_pred', 'slope_delta_pred', 'slope_f0_pred','attn_hard_dur']
     #         tgt_specs_keys = ['mel_padded', 'energy_tgt', 'slope_delta_tgt', 'slope_f0_tgt', 'attn_hard_dur']  
-    if y_pred[12] is None and y_pred[14] is None and y_pred[16] is None and y_pred[18] is None:
-        if y_pred[4] is not None and y_pred[20] is not None:
+    # if y_pred[12] is None and y_pred[14] is None and y_pred[16] is None and y_pred[18] is None:
+    #     if y_pred[4] is not None and y_pred[20] is not None:
+    #         print("--------preparing range and pitch plot data")
+    #         pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'range_f0', 'attn_hard_dur']
+    #         tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'range_f0', 'attn_hard_dur']     
+    if y_pred[12] is None and y_pred[14] is None and y_pred[16] is None and y_pred[18] is None  and y_pred[20] is None:
+        if y_pred[4] is not None and y_pred[6] is not None:
             print("--------preparing range and pitch plot data")
-            pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'range_f0', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'range_f0', 'attn_hard_dur']                          
+            pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'attn_hard_dur']                        
     #-------------------------------------------------------------------------------------------------
     plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
                      [validation_dict[key] for key in tgt_specs_keys]], rank)
@@ -595,6 +601,8 @@ def validate(model, criterion, valset, batch_size, collate_fn, distributed_run,
         loss_log['slope-delta-loss/validation-slope-delta-loss'] = val_meta['slope_delta_loss'].item() 
     if y_pred[20] is not None:
         loss_log['range-f0-loss/validation-range-f0-loss'] = val_meta['range_f0_loss'].item()
+    if y_pred[22] is not None:
+        loss_log['hnr-loss/validation-hnr-loss'] = val_meta['hnr_loss'].item()    
 #--------------------------------------------------------------------------------------------
     log(loss_log, rank)
     
@@ -796,6 +804,7 @@ def main():
         epoch_slope_f0_loss = 0.0   
         epoch_slope_delta_loss = 0.0
         epoch_range_f0_loss = 0.0
+        epoch_hnr_loss = 0.0
         #------------------------
 
         if distributed_run:
@@ -836,7 +845,7 @@ def main():
                         and epoch >= args.kl_loss_start_epoch):
                     if args.kl_loss_start_epoch == epoch and epoch_iter == 1:
                         print('Begin hard_attn loss')
-                    _, _, _, _, pitch_pred, _, _, energy_pred, attn_soft, attn_hard, _, _, delta_f0_pred, _, mean_f0_pred, _, slope_f0_pred, _, slope_delta_pred, _, range_f0_pred, _= y_pred #-----changed
+                    _, _, _, _, pitch_pred, _, _, energy_pred, attn_soft, attn_hard, _, _, delta_f0_pred, _, mean_f0_pred, _, slope_f0_pred, _, slope_delta_pred, _, range_f0_pred, _, hnr_pred, _= y_pred #-----changed
                     binarization_loss = attention_kl_loss(attn_hard, attn_soft)
                     kl_weight = min((epoch - args.kl_loss_start_epoch) / args.kl_loss_warmup_epochs, 1.0) * args.kl_loss_weight
                     meta['kl_loss'] = binarization_loss.clone().detach() * kl_weight
@@ -920,7 +929,11 @@ def main():
                 if range_f0_pred is not None:
                     iter_range_f0_loss = iter_meta['range_f0_loss'].item()
                 else:
-                    iter_range_f0_loss = 0.0                    
+                    iter_range_f0_loss = 0.0   
+                if hnr_pred is not None:   
+                    iter_hnr_loss = iter_meta['hnr_loss'].item()
+                else:
+                    iter_hnr_loss = 0.0                                   
                 #----------------------------------------------------------
                 iter_time = time.perf_counter() - iter_start_time
                 epoch_frames_per_sec += iter_num_frames / iter_time
@@ -944,7 +957,9 @@ def main():
                 if slope_delta_pred is not None:
                     epoch_slope_delta_loss += iter_slope_delta_loss    
                 if range_f0_pred is not None:
-                    epoch_range_f0_loss += iter_range_f0_loss                 
+                    epoch_range_f0_loss += iter_range_f0_loss    
+                if hnr_pred is not None:
+                    epoch_hnr_loss += iter_hnr_loss                                 
                 #----------------------------------------
 
                 if epoch_iter % 5 == 0:
@@ -966,6 +981,7 @@ def main():
                         'slope_f0_loss/slope_f0_loss': iter_slope_f0_loss,   
                         'slope_delta_loss/slope_delta_loss': iter_slope_delta_loss,  
                         'range_f0_loss/range_f0_loss': iter_range_f0_loss,
+                        'hnr_loss/hnr_loss': iter_hnr_loss,
                         #-------------------------------------------------
                         'frames per s': iter_num_frames / iter_time,
                         'took': iter_time,
@@ -996,6 +1012,7 @@ def main():
             'slope_f0_loss/epoch_slope_f0_loss': epoch_slope_f0_loss,
             'slope_delta_loss/epoch_slope_delta_loss': epoch_slope_delta_loss,
             'range_f0_loss/epoch_range_f0_loss': epoch_range_f0_loss,
+            'hnr_loss/epoch_hnr_loss': epoch_hnr_loss,
             # -----------------------------------------------------
             'epoch_frames per s': epoch_num_frames / epoch_time,
             'epoch_took': epoch_time,

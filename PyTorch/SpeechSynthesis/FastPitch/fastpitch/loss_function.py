@@ -39,7 +39,8 @@ class FastPitchLoss(nn.Module):
                  pitch_predictor_loss_scale=1.0, attn_loss_scale=1.0,
                  energy_predictor_loss_scale=0.1, delta_f0_predictor_loss_scale=1.0, 
                  mean_f0_predictor_loss_scale=1.0, slope_f0_predictor_loss_scale=1.0, 
-                 slope_delta_predictor_loss_scale=1.0, range_f0_predictor_loss_scale=1.0):
+                 slope_delta_predictor_loss_scale=1.0, range_f0_predictor_loss_scale=1.0,
+                 hnr_loss_predictot_loss_scale=1.0):
         super(FastPitchLoss, self).__init__()
         self.dur_predictor_loss_scale = dur_predictor_loss_scale
         self.pitch_predictor_loss_scale = pitch_predictor_loss_scale
@@ -50,6 +51,7 @@ class FastPitchLoss(nn.Module):
         self.slope_f0_predictor_loss_scale = slope_f0_predictor_loss_scale
         self.slope_delta_predictor_loss_scale = slope_delta_predictor_loss_scale
         self.range_f0_predictor_loss_scale = range_f0_predictor_loss_scale
+        self.hnr_loss_predictot_loss_scale = hnr_loss_predictot_loss_scale
         #-------------------------------------------------------------
         self.attn_loss_scale = attn_loss_scale
         self.attn_ctc_loss = AttentionCTCLoss()
@@ -58,7 +60,8 @@ class FastPitchLoss(nn.Module):
         (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred, pitch_tgt, 
         energy_pred, energy_tgt, attn_soft, attn_hard, attn_dur, attn_logprob, 
         delta_f0_pred, delta_f0_tgt, mean_f0_pred, mean_f0_tgt, 
-        slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt, range_f0_pred, range_f0_tgt) = model_out #-------------changed
+        slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt, 
+        range_f0_pred, range_f0_tgt, hnr_pred, hnr_tgt) = model_out #-------------changed
 
         (mel_tgt, in_lens, out_lens) = targets
 
@@ -154,7 +157,19 @@ class FastPitchLoss(nn.Module):
             range_f0_loss = F.mse_loss(range_f0_tgt, range_f0_pred, reduction='mean')
             # print(f'this is range f0 loss {range_f0_loss}')           
         else:
-            range_f0_loss = 0           
+            range_f0_loss = 0     
+
+        if hnr_pred is not None:
+            print("-------calculating hnr loss")
+            # print(f'this is predicted hnr {hnr_pred}')
+            # print(f'this is target hnr {hnr_tgt}')           
+            ldiff = hnr_tgt.size(0) - hnr_pred.size(0)
+            # print(f'this is ldiff hnr {ldiff}')
+            hnr_pred = F.pad(hnr_pred, (0, ldiff), value=0.0)
+            hnr_loss = F.mse_loss(hnr_tgt, hnr_pred, reduction='mean')
+            # print(f'this is hnr loss {hnr_loss}')           
+        else:
+            hnr_loss = 0               
         #----------------------------------
 
         # Attention loss
@@ -169,6 +184,7 @@ class FastPitchLoss(nn.Module):
                 + slope_f0_loss * self.slope_f0_predictor_loss_scale
                 + slope_delta_loss * self.slope_delta_predictor_loss_scale
                 + range_f0_loss * self.range_f0_predictor_loss_scale
+                + hnr_loss * self.hnr_loss_predictot_loss_scale
                 #----------------------------------------------------
                 + energy_loss * self.energy_predictor_loss_scale
                 + attn_loss * self.attn_loss_scale)
@@ -197,7 +213,9 @@ class FastPitchLoss(nn.Module):
         if slope_delta_pred is not None:
             meta['slope_delta_loss'] = slope_delta_loss.clone().detach()    
         if range_f0_pred is not None:
-            meta['range_f0_loss'] = range_f0_loss.clone().detach()              
+            meta['range_f0_loss'] = range_f0_loss.clone().detach()  
+        if hnr_pred is not None:
+            meta['hnr_loss'] = hnr_loss.clone().detach()                          
         #-----------------------------------------------------------
 
         assert meta_agg in ('sum', 'mean')

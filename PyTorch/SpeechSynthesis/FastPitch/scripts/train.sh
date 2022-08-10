@@ -42,6 +42,7 @@ export OMP_NUM_THREADS=1
 : ${NORMALISE:=false}
 : ${SLOPE:=false}
 : ${RANGE:=false}
+: ${HNR:=false}
 #------------------------------
 
 # Adjust env variables to maintain the global batch size: NUM_GPUS x BATCH_SIZE x GRAD_ACCUMULATION = 256.  ---------Q
@@ -102,6 +103,7 @@ ARGS+=" --n-speakers $NSPEAKERS"
 [ "$RANGE" = true ]                && ARGS+=" --range-f0"
 [ "$INTERPOLATE" = true ]          && ARGS+=" --interpolate-f0"
 [ "$NORMALISE" = true ]            && ARGS+=" --pitch-mean 214.72203 --pitch-std 65.72038"
+[ "$HNR" = true ]                  && ARGS+=" --hnr"
 #-----------------------------------------------------------------
 
 if [ "$SAMPLING_RATE" == "44100" ]; then

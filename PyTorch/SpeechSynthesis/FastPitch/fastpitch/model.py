@@ -145,15 +145,18 @@ class FastPitch(nn.Module):
                  energy_predictor_kernel_size, energy_predictor_filter_size,
                  p_energy_predictor_dropout, energy_predictor_n_layers,
                  energy_embedding_kernel_size,
-                 mean_and_delta_f0, #-----added
-                 raw_f0, #-----added
-                 slope_f0, #-----added
-                 range_f0, #------added
-                 delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, #-----added
-                 p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, #-----added
-                 delta_f0_embedding_kernel_size, #-----added
-                 mean_f0_predictor_hidden_size, #-----added
-                 slope_f0_predictor_hidden_size, #-----added                 
+                 #---------------added------------------
+                 mean_and_delta_f0, 
+                 raw_f0, 
+                 slope_f0, 
+                 range_f0, 
+                 hnr,
+                 delta_f0_predictor_kernel_size, delta_f0_predictor_filter_size, 
+                 p_delta_f0_predictor_dropout,delta_f0_predictor_n_layers, 
+                 delta_f0_embedding_kernel_size,
+                 mean_f0_predictor_hidden_size, 
+                 slope_f0_predictor_hidden_size,
+                 #----------------------------------------             
                  n_speakers, speaker_emb_weight, pitch_conditioning_formants=1
                  ):
         super(FastPitch, self).__init__()
@@ -267,7 +270,15 @@ class FastPitch(nn.Module):
                 in_fft_output_size,
                 slope_f0_predictor_hidden_size,
                 n_predictions=1)
-            self.range_f0_emb = nn.Linear(1, 384)                    
+            self.range_f0_emb = nn.Linear(1, 384)    
+
+        self.hnr = hnr
+        if self.hnr:
+            self.hnr_predictor = MeanPredictor(
+                in_fft_output_size,
+                slope_f0_predictor_hidden_size,
+                n_predictions=1)
+            self.hnr_emb = nn.Linear(1, 384)                         
         #--------------------------------------------
 
         self.energy_conditioning = energy_conditioning
@@ -323,10 +334,12 @@ class FastPitch(nn.Module):
                              out_lens.cpu().numpy(), width=1)
         return torch.from_numpy(attn_out).to(attn.get_device())
 
-    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, use_gt_slope_delta=True, use_gt_range_f0=True, pace=1.0, max_duration=75): 
+    def forward(self, inputs, use_gt_pitch=True, use_gt_delta_f0=True, use_gt_mean_f0=True, use_gt_slope_f0=True, 
+    use_gt_slope_delta=True, use_gt_range_f0=True, use_gt_hnr=True, pace=1.0, max_duration=75): 
 
         (inputs, input_lens, mel_tgt, mel_lens, pitch_dense, energy_dense,
-         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt, slope_delta_tgt, range_f0_tgt) = inputs # data_function.py, TTSCollate Class
+         speaker, attn_prior, audiopaths, mean_f0_tgt, delta_f0_tgt, slope_f0_tgt, 
+         slope_delta_tgt, range_f0_tgt, hnr_tgt) = inputs # data_function.py, TTSCollate Class
         # x = [text_padded, input_lengths, mel_padded, output_lengths,
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
@@ -341,7 +354,8 @@ class FastPitch(nn.Module):
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
         # print("slope_delta_tgt", slope_delta_tgt)
-        print(f'range_f0 {range_f0_tgt}')
+        # print(f'range_f0 {range_f0_tgt}')
+        print(f'hnr {hnr_tgt}')        
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -510,6 +524,23 @@ class FastPitch(nn.Module):
             pitch_tgt = None
         #--------------------------------------------
 
+        #-----------------------added------------------------
+        if self.hnr:
+            print("-------predicting hnr")                      
+            input = enc_out * enc_mask
+            hnr_pred = self.hnr_predictor(input) # [16, 1]
+            #------------------------------------------------------------------
+            if use_gt_hnr and hnr_tgt is not None:
+                hnr_emb = self.hnr_emb(hnr_tgt)
+                # print(f'this is hnr embedding: {hnr_emb.shape}') [16, 2, 384]
+            else:
+                hnr_emb = self.hnr_emb(hnr_pred)
+            enc_out = enc_out + hnr_emb.view(hnr_emb.size(0), 1, 384)   
+        else:
+            hnr_pred = None
+        #-------------------------------------------------------
+
+
         # Predict energy
         if self.energy_conditioning:
             energy_pred = self.energy_predictor(enc_out, enc_mask).squeeze(-1)
@@ -545,7 +576,9 @@ class FastPitch(nn.Module):
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, 
-                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt, range_f0_pred, range_f0_tgt) 
+                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, 
+                slope_delta_pred, slope_delta_tgt, range_f0_pred, range_f0_tgt,
+                hnr_pred, hnr_tgt) 
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
