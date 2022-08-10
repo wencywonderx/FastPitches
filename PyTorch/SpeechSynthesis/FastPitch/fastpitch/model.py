@@ -519,7 +519,7 @@ class FastPitch(nn.Module):
                 print("-----------------using target !!!!!!!!!")
                 delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
                 print(f'mean f0 given {mean_f0_tgt}, {mean_f0_tgt.shape}')
-                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt[0].view(20, 1).to(inputs.device))
+                mean_f0_emb = self.mean_f0_emb(mean_f0_tgt).to(inputs.device)
                 # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) #-----------------------------------changed
             enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
             # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) #---------------------------------------------------changed
