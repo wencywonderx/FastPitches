@@ -361,13 +361,16 @@ class FastPitch(nn.Module):
         attn_soft, attn_logprob = self.attention( #----------------------------------------------------------------Q: log prob?
             mel_tgt, text_emb.permute(0, 2, 1), mel_lens, attn_mask,
             key_lens=input_lens, keys_encoded=enc_out, attn_prior=attn_prior)
+        print("!!!!!!!!!!!this is attention soft:", attn_soft, attn_soft.shape)
 
         attn_hard = self.binarize_attention_parallel(
             attn_soft, input_lens, mel_lens)
+        print("!!!!!!!!!!!this is attention hard:", attn_hard, attn_hard.shape)        
 
         # Viterbi --> durations
         attn_hard_dur = attn_hard.sum(2)[:, 0, :]
         dur_tgt = attn_hard_dur
+        print("!!!!!!!!!!!this is duration target:", attn_hard_dur, attn_hard_dur.shape)        
 
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 

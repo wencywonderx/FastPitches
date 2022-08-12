@@ -33,8 +33,8 @@ FP=$DS_HOME/FastPitches/PyTorch/SpeechSynthesis/FastPitch
 # some values are set by the queuing software, e.g. $JOB_ID
 # -- see `man qsub` and search for 'ENVIRONMENT VARIABLES'
 
-export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
-# export OUTPUT_DIR=$SCRATCH/test
+# export OUTPUT_DIR=$SCRATCH/${JOB_NAME}_${JOB_ID} #------------------------------------------------------------changed
+export OUTPUT_DIR=$SCRATCH/thesis
 
 export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # export DATASET_PATH=$FP/test_folder
@@ -44,13 +44,13 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # which point to saved pitch contours. If extracting pitches from audio
 # online with PITCH_ONLINE_DIR set below, use ljs_audio_text_*.txt files
 
-export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
-export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
-# export TRAIN_FILELIST=$FP/filelists/test_file_100.txt
-# export VAL_FILELIST=$FP/filelists/val_file_10.txt
+# export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
+# export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
+export TRAIN_FILELIST=$FP/filelists/train_thesis_6.txt
+export VAL_FILELIST=$FP/filelists/val_thesis_3.txt
 
 # metadata for wandb logging
-export PROJECT=slope_add_first #----------------------------------------------------changed
+export PROJECT=thesis #----------------------------------------------------changed
 export EXPERIMENT_DESC="FastPitch"
 
 # convert input texts to phones using cmudict
@@ -66,7 +66,7 @@ export APPEND_SPACES=false
 
 # match to number of requested GPUs
 export NUM_GPUS=1
-export BATCH_SIZE=16
+export BATCH_SIZE=3
 # run with automatic mixed precision or gradient accumulation over
 # multiple batches (might allow for larger batch sizes)
 export AMP=false
@@ -74,8 +74,8 @@ export GRAD_ACCUMULATION=1
 # set random seed for ~reproducible runs
 export SEED=
 
-export EPOCHS=100 #---------------------------------------------------------------------------------------------changed
-export EPOCHS_PER_CHECKPOINT=5 #------------------------------------------------------------------------------changed
+export EPOCHS=2 #---------------------------------------------------------------------------------------------changed
+export EPOCHS_PER_CHECKPOINT=2 #------------------------------------------------------------------------------changed
 export WARMUP_STEPS=1000 
 export KL_LOSS_WARMUP=100 
 

@@ -1,0 +1,6 @@
+wavs/LJ035-0029.wav|pitch/LJ035-0029.pt|Neither elevator was there.
+wavs/LJ021-0077.wav|pitch/LJ021-0077.pt|There is no magic formula,
+wavs/LJ028-0333.wav|pitch/LJ028-0333.pt|he put them also to the sword.
+wavs/LJ015-0179.wav|pitch/LJ015-0179.pt|The Central Criminal Court, when the trial came on,
+wavs/LJ006-0143.wav|pitch/LJ006-0143.pt|There was no penalty attached to drunkenness.
+wavs/LJ003-0228.wav|pitch/LJ003-0228.pt|and the general insufficiency was such
