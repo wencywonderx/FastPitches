@@ -32,22 +32,29 @@ DATA_DIR="$SCRATCH/LJSpeech-1.1"
 
 cd $FP
 # for FILELIST in test_file.txt \ #-------------------------------------------------------C
-for FILELIST in ljs_audio_text_train_v3.txt \
-                ljs_audio_text_val.txt \
-                ljs_audio_text_test.txt \
-; do
-    # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
-    # to work around weird qsub memory consumption
-    python prepare_dataset.py \
-        --dataset-path $DATA_DIR \
-        --wav-text-filelist filelists/$FILELIST \
-        --n-workers 1 \
-        --batch-size 1 \
-        --extract-mels #---------------------------------------------------C
+# for FILELIST in ljs_audio_text_train_v3.txt \
+#                 ljs_audio_text_val.txt \
+#                 ljs_audio_text_test.txt \
+# ; do
+#     # have to set smaller --n-workers than $FP/scripts/prepare_dataset.sh
+#     # to work around weird qsub memory consumption
+#     python prepare_dataset.py \
+#         --dataset-path $DATA_DIR \
+#         --wav-text-filelist filelists/$FILELIST \
+#         --n-workers 1 \
+#         --batch-size 1 \
+#         --extract-mels #---------------------------------------------------C
         # --extract-pitch \
         # --load-pitch-from-disk \ #-------------------------------------------C
         # --interpolate-f0 \ #----------------------------------------------------C
         # --mean-and-delta-f0 #----------------------------------------------------C
     # NB: this has to use `--batch-size 1` otherwise archives get saved with
     # padding and everything ends up the wrong shape!
+
+python prepare_dataset.py \
+    --dataset-path $DATA_DIR \
+    --wav-text-filelist filelists/for_dur.txt \
+    --save-alignment-priors \
+    --n-workers 1 
+
 done
