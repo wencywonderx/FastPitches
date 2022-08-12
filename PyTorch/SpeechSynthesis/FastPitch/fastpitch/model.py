@@ -519,7 +519,8 @@ class FastPitch(nn.Module):
         return (mel_out, dec_mask, dur_pred, log_dur_pred, pitch_pred,
                 pitch_tgt, energy_pred, energy_tgt, attn_soft, attn_hard,
                 attn_hard_dur, attn_logprob, delta_f0_pred, delta_f0_tgt, 
-                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, slope_delta_pred, slope_delta_tgt) 
+                mean_f0_pred, mean_f0_tgt, slope_f0_pred, slope_f0_tgt, 
+                slope_delta_pred, slope_delta_tgt) 
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
