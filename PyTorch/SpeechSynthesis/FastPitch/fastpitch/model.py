@@ -361,25 +361,34 @@ class FastPitch(nn.Module):
         attn_soft, attn_logprob = self.attention( #----------------------------------------------------------------Q: log prob?
             mel_tgt, text_emb.permute(0, 2, 1), mel_lens, attn_mask,
             key_lens=input_lens, keys_encoded=enc_out, attn_prior=attn_prior)
-        print("!!!!!!!!!!!this is attention soft:", attn_soft, attn_soft.shape)
+        # print("!!!!!!!!!!!this is attention soft:", attn_soft, attn_soft.shape)
 
         attn_hard = self.binarize_attention_parallel(
             attn_soft, input_lens, mel_lens)
-        print("!!!!!!!!!!!this is attention hard:", attn_hard, attn_hard.shape)        
+        # print("!!!!!!!!!!!this is attention hard:", attn_hard, attn_hard.shape)        
 
         # Viterbi --> durations
         attn_hard_dur = attn_hard.sum(2)[:, 0, :]
         dur_tgt = attn_hard_dur
-        print("!!!!!!!!!!!this is duration target:", attn_hard_dur, attn_hard_dur.shape)        
+        # print("!!!!!!!!!!!this is duration target:", attn_hard_dur, attn_hard_dur.shape)   
+        
+        #------------------------------------added-------------------------------------
+        from pathlib import Path
+        Path('/exports/eddie/scratch/s2258422', 'dur_tgt').mkdir(parents=False, exist_ok=True)
+        fname = Path('dur_tgt').with_suffix('.pt').name
+        fpath = Path('/exports/eddie/scratch/s2258422', 'alignment_priors', fname)
+        torch.save(dur_tgt, fpath)
+        print("!!!!!!!!!!!torch saved")
+        #------------------------------------------------------------------------------     
 
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
         # Predict durations
         log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  # [16, 148]   #---------------------------------- Q: why log?
-        print("!!!!!!!!!!!this is log duration predict:", log_dur_pred, log_dur_pred.shape)        
+        # print("!!!!!!!!!!!this is log duration predict:", log_dur_pred, log_dur_pred.shape)        
 
         dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration)  # [16, 148]  
-        print("!!!!!!!!!!!this is duration pred:", dur_pred, dur_pred.shape)     
+        # print("!!!!!!!!!!!this is duration pred:", dur_pred, dur_pred.shape)     
 
         #--------------added-------------
         # Predict delta f0 and mean f0
