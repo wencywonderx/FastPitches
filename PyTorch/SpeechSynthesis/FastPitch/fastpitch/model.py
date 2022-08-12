@@ -375,11 +375,11 @@ class FastPitch(nn.Module):
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
         # Predict durations
-        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  #---------------------------------- Q: why log?
+        log_dur_pred = self.duration_predictor(enc_out, enc_mask).squeeze(-1)  # [16, 148]   #---------------------------------- Q: why log?
         print("!!!!!!!!!!!this is log duration predict:", log_dur_pred, log_dur_pred.shape)        
 
-        dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration) 
-        print("!!!!!!!!!!!this is duration pred:", dur_pred, dur_pred.shape)        
+        dur_pred = torch.clamp(torch.exp(log_dur_pred) - 1, 0, max_duration)  # [16, 148]  
+        print("!!!!!!!!!!!this is duration pred:", dur_pred, dur_pred.shape)     
 
         #--------------added-------------
         # Predict delta f0 and mean f0
