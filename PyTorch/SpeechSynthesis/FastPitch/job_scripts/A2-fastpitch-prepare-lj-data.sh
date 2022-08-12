@@ -53,7 +53,7 @@ cd $FP
 
 python prepare_dataset.py \
     --dataset-path $DATA_DIR \
-    --wav-text-filelist filelists/for_dur.txt \
+    --wav-text-filelist filelists/for_duration.txt \
     --save-alignment-priors \
     --n-workers 1 
 
