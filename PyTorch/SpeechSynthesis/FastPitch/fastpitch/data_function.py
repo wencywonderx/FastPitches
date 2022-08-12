@@ -199,7 +199,7 @@ class TTSDataset(torch.utils.data.Dataset):
         #-----------------------------------------------------
 
         energy = torch.norm(mel.float(), dim=0, p=2) # (mel_len) -------------------------------------Q: why energy norm mel_len?
-        attn_prior = self.get_prior(index, mel.shape[1], text.shape[0])
+        attn_prior = self.get_prior(index, mel.shape[1], text.shape[0]) #[]
         print("!!!!!!!!!! this is attention prior:", attn_prior, attn_prior.shape)
         assert pitch.size(-1) == mel.size(-1) # (mel_len, text_len)
 
