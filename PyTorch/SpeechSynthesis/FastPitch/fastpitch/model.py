@@ -374,12 +374,14 @@ class FastPitch(nn.Module):
         
         #------------------------------------added-------------------------------------
         from pathlib import Path
+        print(f'audiopaths: {audiopaths}')
+        print(f'dur_tgt: {dur_tgt}')
         Path('/exports/eddie/scratch/s2258422', 'dur_tgt').mkdir(parents=False, exist_ok=True)
         for j, dur_tgt in enumerate(dur_tgt):
             fname = Path(audiopaths[j]).with_suffix('.pt').name
             fpath = Path('/exports/eddie/scratch/s2258422', 'dur_target', fname)
             torch.save(dur_tgt[:input_lens[j]], fpath)
-        print("!!!!!!!!!!! duration torch saved")
+        print("!!!!!!!!!!! duration tensor saved")
         #---------------------------------------------------------------------
 
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
