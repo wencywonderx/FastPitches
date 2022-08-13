@@ -47,7 +47,7 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 # export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
 # export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
 export TRAIN_FILELIST=$FP/filelists/devset10.txt
-export VAL_FILELIST=$FP/filelists/val_thesis_3.txt
+export VAL_FILELIST=$FP/filelists/devset10.txt
 
 # metadata for wandb logging
 export PROJECT=thesis #----------------------------------------------------changed
