@@ -41,49 +41,6 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_add/-2.9-5.8'
-for dirpath, dirnames, filenames in os.walk(add_path):
-    f0s = []
-    times = []
-    means = []
-    for filename in filenames:
-        wav = os.path.join(dirpath, filename)
-        print(wav)
-        data, sr = librosa.load(wav, sr=8000, mono=True)
-        print(data.shape)
-        f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=20, fmax=600, frame_length=1024)
-        print(f0.shape)
-        f0 = np.nan_to_num(f0)
-        f0 = np.array(f0)
-        f0 = interpolate(f0)
-        mean = np.true_divide(f0.sum(0),(f0!=0).sum(0))
-        print(mean)
-        means.append(mean)
-        f0s.append(f0)
-        time = librosa.times_like(f0)
-        times.append(time)
-
-emb_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_emb/-2.9-5.8'
-for dirpath, dirnames, filenames in os.walk(emb_path):
-    e_f0s = []
-    imes = []
-    e_means = []
-    for filename in filenames:
-        wav = os.path.join(dirpath, filename)
-        print(wav)
-        data, sr = librosa.load(wav, sr=8000, mono=True)
-        print(data.shape)
-        e_f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=20, fmax=600, frame_length=1024)
-        print(e_f0.shape)
-        e_f0 = np.nan_to_num(e_f0)
-        e_f0 = np.array(e_f0)
-        e_f0 = interpolate(e_f0)
-        e_mean = np.true_divide(e_f0.sum(0),(e_f0!=0).sum(0))
-        print(e_mean)
-        e_means.append(e_mean)
-        e_f0s.append(e_f0)
-        time = librosa.times_like(e_f0)
-        times.append(time)
 
 # criterion = nn.MSELoss()
 # loss_base_gt = torch.sqrt(criterion(f0s[0], f0s[1]))
@@ -91,66 +48,131 @@ for dirpath, dirnames, filenames in os.walk(emb_path):
 # loss_base_emb_O = torch.sqrt(criterion(f0s[1], f0s[3]))
 # print(loss_base_gt, loss_base_add_O, loss_base_emb_O)
 
-expected = []
-n_expected=[]
-for i in range(59):
-    pitch = 65.72038*i*0.1 + 186.1783
-    expected.append(pitch)
-for i in range(30):
-    pitch = 65.72038*(-i)*0.1 + 186.1783
-    n_expected.append(pitch)
-print(expected)
-print(n_expected)
-
-print(len(means))
-print(len(e_means))
-
-p_m = means[0:59]
-print(p_m, len(p_m))
-n_m = means[59:89]
-n_m.insert(0, 222.10661373435622)
-print(n_m, len(n_m))
-
-e_p_m = e_means[0:59]
-print(e_p_m, len(e_p_m))
-e_n_m = e_means[59:89]
-e_n_m.insert(0, 213.78685099479188) # to be changed
-print(e_n_m, len(e_n_m))
+##################################### contours ######################################
+path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/contours'
+for dirpath, dirnames, filenames in os.walk(path):
+    f0s = []
+    times = []
+    for filename in filenames:
+        wav = os.path.join(dirpath, filename)
+        print(wav)
+        data, sr = librosa.load(wav, sr=22050, mono=True)
+        print(data.shape)
+        f0, vid, vpd = librosa.pyin(data, sr=22050, fmin = librosa.note_to_hz('C2'), fmax= librosa.note_to_hz('C7'), frame_length=1024)
+        print(f0.shape)
+        f0 = np.nan_to_num(f0)
+        f0 = np.array(f0)
+        f0 = interpolate(f0)
+        f0s.append(f0)
+        time = librosa.times_like(f0)
+        times.append(time)
 
 fig, ax = plt.subplots()
-ax.set(title='mean f0 controlling')
-ax.set_ylabel('mean f0 got (Hz)')
-ax.set_xlabel('mean f0 asked for (Hz)')
-ax.set_xlim(0, 600)
-ax.set_ylim(0, 600)
-ax.plot(expected, p_m, color='blue', label='add-first higher-controlled')
-ax.plot(n_expected, n_m, color='tomato', label='add-first lower-controlled')
-ax.plot(expected, e_p_m, color='green', label='emb-first higher-controlled')
-ax.plot(n_expected, e_n_m, color='pink', label='emb-first lower-controlled')
-ax.plot(expected, expected, color='grey', label='expected mean f0')
-ax.plot(n_expected, n_expected, color='grey')
-ax.vlines(214.72203, 20, 600, colors = 'lightgrey', linestyles = "dotted", label='global mean')
-ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
-# ax.plot(range(51), [186.1783629 for i in range(51)], label='add_first')
-# ax.plot(range(51), [196.8518806 for i in range(51)], label='baseline')
-# ax.plot(range(51), [200.641918 for i in range(51)], label='groundtruth')
-ax.legend(loc='upper left')
+ax.set(title='PYIN f0 estimation')
+# ax.set_ylim(100, 500)
+ax.set_ylabel('f0 (Hz)')
+ax.set_xlabel('time')
+ax.plot(times[0], f0s[0], label='groundtruth', color='black', linewidth=2)
+ax.plot(times[1], f0s[1], label='baseline', color='grey', linewidth=2)
+ax.plot(times[2], f0s[2], label='add_first_O', color='red', linewidth=2)
+ax.plot(times[3], f0s[3], label='emb_first_O', color='blue', linewidth=2)
+ax.plot(times[4], f0s[4], label='add_first_P', color='yellow', linewidth=2)
+ax.plot(times[5], f0s[5], label='emb_first_P', color='green', linewidth=2)
+ax.plot(times[6], f0s[6], label='add_first_N', color='pink', linewidth=2)
+ax.plot(times[7], f0s[7], label='emb_first_N', color='purple', linewidth=2)
+ax.legend(loc='upper right')
 plt.show()
 
+################################# controllability ################################
+
+# add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_add/-2.9-5.8'
+# for dirpath, dirnames, filenames in os.walk(add_path):
+#     f0s = []
+#     times = []
+#     means = []
+#     for filename in filenames:
+#         wav = os.path.join(dirpath, filename)
+#         print(wav)
+#         data, sr = librosa.load(wav, sr=8000, mono=True)
+#         print(data.shape)
+#         f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=20, fmax=600, frame_length=1024)
+#         print(f0.shape)
+#         f0 = np.nan_to_num(f0)
+#         f0 = np.array(f0)
+#         f0 = interpolate(f0)
+#         mean = np.true_divide(f0.sum(0),(f0!=0).sum(0))
+#         print(mean)
+#         means.append(mean)
+#         f0s.append(f0)
+#         time = librosa.times_like(f0)
+#         times.append(time)
+
+# emb_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_emb/-2.9-5.8'
+# for dirpath, dirnames, filenames in os.walk(emb_path):
+#     e_f0s = []
+#     imes = []
+#     e_means = []
+#     for filename in filenames:
+#         wav = os.path.join(dirpath, filename)
+#         print(wav)
+#         data, sr = librosa.load(wav, sr=8000, mono=True)
+#         print(data.shape)
+#         e_f0, vid, vpd = librosa.pyin(data, sr=8000, fmin=20, fmax=600, frame_length=1024)
+#         print(e_f0.shape)
+#         e_f0 = np.nan_to_num(e_f0)
+#         e_f0 = np.array(e_f0)
+#         e_f0 = interpolate(e_f0)
+#         e_mean = np.true_divide(e_f0.sum(0),(e_f0!=0).sum(0))
+#         print(e_mean)
+#         e_means.append(e_mean)
+#         e_f0s.append(e_f0)
+#         time = librosa.times_like(e_f0)
+#         times.append(time)
+
+# expected = []
+# n_expected=[]
+# for i in range(59):
+#     pitch = 65.72038*i*0.1 + 186.1783
+#     expected.append(pitch)
+# for i in range(30):
+#     pitch = 65.72038*(-i)*0.1 + 186.1783
+#     n_expected.append(pitch)
+# print(expected)
+# print(n_expected)
+
+# print(len(means))
+# print(len(e_means))
+
+# p_m = means[0:59]
+# print(p_m, len(p_m))
+# n_m = means[59:89]
+# n_m.insert(0, 222.10661373435622)
+# print(n_m, len(n_m))
+
+# e_p_m = e_means[0:59]
+# print(e_p_m, len(e_p_m))
+# e_n_m = e_means[59:89]
+# e_n_m.insert(0, 213.78685099479188)
+# print(e_n_m, len(e_n_m))
 
 # fig, ax = plt.subplots()
-# ax.set(title='PYIN f0 estimation ')
-# ax.set_ylim(100, 450)
-# ax.plot(times[0], f0s[0], label='groundtruth', color='black', linewidth=2)
-# ax.plot(times[1], f0s[1], label='baseline', color='grey', linewidth=2)
-# ax.plot(times[2], f0s[2], label='O_A', color='red', linewidth=2)
-# ax.plot(times[3], f0s[3], label='O_E', color='blue', linewidth=2)
-# ax.plot(times[4], f0s[4], label='P_A', color='yellow', linewidth=2)
-# ax.plot(times[5], f0s[5], label='P_E', color='green', linewidth=2)
+# ax.set(title='mean f0 controlling')
+# ax.set_ylabel('mean f0 got (Hz)')
+# ax.set_xlabel('mean f0 asked for (Hz)')
+# ax.set_xlim(0, 600)
+# ax.set_ylim(0, 600)
+# ax.plot(expected, p_m, color='blue', label='add-first higher-controlled')
+# ax.plot(n_expected, n_m, color='tomato', label='add-first lower-controlled')
+# ax.plot(expected, e_p_m, color='green', label='emb-first higher-controlled')
+# ax.plot(n_expected, e_n_m, color='pink', label='emb-first lower-controlled')
+# ax.plot(expected, expected, color='grey', label='expected mean f0')
+# ax.plot(n_expected, n_expected, color='grey')
+# ax.vlines(214.72203, 20, 600, colors = 'lightgrey', linestyles = "dotted", label='global mean')
+# ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
+# ax.legend(loc='upper left')
 # plt.show()
 
-
-############################### drawing hnr histogram distribution ###############################
+################################### hnr histogram distribution ###################################
 # hnr_file = 'C:/Users/wx_Ca\OneDrive - University of Edinburgh/Desktop/voice lab/hnr.txt'
 # hnr_list = []
 # with open(hnr_file, 'r') as f:
