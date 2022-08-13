@@ -46,7 +46,7 @@ export DATASET_PATH=$SCRATCH/LJSpeech-1.1
 
 # export TRAIN_FILELIST=$FP/filelists/ljs_audio_pitch_text_train_v3.txt #----------------------------------------changed
 # export VAL_FILELIST=$FP/filelists/ljs_audio_pitch_text_val.txt
-export TRAIN_FILELIST=$FP/filelists/train_thesis_6.txt
+export TRAIN_FILELIST=$FP/filelists/devset10.txt
 export VAL_FILELIST=$FP/filelists/val_thesis_3.txt
 
 # metadata for wandb logging
@@ -66,7 +66,7 @@ export APPEND_SPACES=false
 
 # match to number of requested GPUs
 export NUM_GPUS=1
-export BATCH_SIZE=3
+export BATCH_SIZE=10
 # run with automatic mixed precision or gradient accumulation over
 # multiple batches (might allow for larger batch sizes)
 export AMP=false
@@ -74,8 +74,8 @@ export GRAD_ACCUMULATION=1
 # set random seed for ~reproducible runs
 export SEED=
 
-export EPOCHS=2 #---------------------------------------------------------------------------------------------changed
-export EPOCHS_PER_CHECKPOINT=2 #------------------------------------------------------------------------------changed
+export EPOCHS=1 #---------------------------------------------------------------------------------------------changed
+export EPOCHS_PER_CHECKPOINT=1 #------------------------------------------------------------------------------changed
 export WARMUP_STEPS=1000 
 export KL_LOSS_WARMUP=100 
 

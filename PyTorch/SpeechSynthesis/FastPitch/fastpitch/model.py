@@ -369,17 +369,18 @@ class FastPitch(nn.Module):
 
         # Viterbi --> durations
         attn_hard_dur = attn_hard.sum(2)[:, 0, :]
-        dur_tgt = attn_hard_dur
+        dur_tgt = attn_hard_dur # [16, 148]
         # print("!!!!!!!!!!!this is duration target:", attn_hard_dur, attn_hard_dur.shape)   
         
         #------------------------------------added-------------------------------------
         from pathlib import Path
         Path('/exports/eddie/scratch/s2258422', 'dur_tgt').mkdir(parents=False, exist_ok=True)
-        fname = Path('dur_tgt').with_suffix('.pt').name
-        fpath = Path('/exports/eddie/scratch/s2258422', 'alignment_priors', fname)
-        torch.save(dur_tgt, fpath)
-        print("!!!!!!!!!!!torch saved")
-        #------------------------------------------------------------------------------     
+        for j, dur_tgt in enumerate(dur_tgt):
+            fname = Path(audiopaths[j]).with_suffix('.pt').name
+            fpath = Path('/exports/eddie/scratch/s2258422', 'dur_target', fname)
+            torch.save(dur_tgt[:input_lens[j]], fpath)
+        print("!!!!!!!!!!! duration torch saved")
+        #---------------------------------------------------------------------
 
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
