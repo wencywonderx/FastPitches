@@ -591,13 +591,12 @@ class FastPitch(nn.Module):
             # print(f'slope_delta_pred: {slope_delta_pred}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
-            print(f'slope_f0_pred: {slope_f0_pred.shape}')
             #------------------------------------------------------------------
             def add_line_with_points(slope_f0_pred, slope_delta_pred):
                 x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
                 x = x.view(1, 1, slope_delta_pred.size(2)).to(slope_delta_pred.device) # [0, 1, 2, ..., 147]
                 # print(f'x axis {x}') 
-                print(slope_f0_pred[:, 0])
+                # print(slope_f0_pred[:, 0])
                 slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1) # [16, 1, 1]
                 # print(f'shape of slope {slope.shape}')
                 intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)                
@@ -614,6 +613,7 @@ class FastPitch(nn.Module):
                 f0_tgt = f0_pred
             if slope_f0_tgt is not None and slope_delta_tgt is None:
                 # slope_f0_emb = self.slope_f0_emb(slope_f0_pred)
+                print(slope_f0_tgt)
                 f0_tgt = add_line_with_points(slope_f0_tgt.to(inputs.device), slope_delta_pred)
             f0_emb = self.slope_delta_emb(f0_tgt)
             # enc_out = enc_out + slope_f0_emb.view(slope_f0_emb.size(0), 1, 384)   
