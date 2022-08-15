@@ -597,6 +597,7 @@ class FastPitch(nn.Module):
                 x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
                 x = x.view(1, 1, slope_delta_pred.size(2)).to(slope_delta_pred.device) # [0, 1, 2, ..., 147]
                 # print(f'x axis {x}') 
+                print(slope_f0_pred[:, 0])
                 slope = slope_f0_pred[:, 0].view(slope_f0_pred.size(0),1,1) # [16, 1, 1]
                 # print(f'shape of slope {slope.shape}')
                 intercept = slope_f0_pred[:, 1].view(slope_f0_pred.size(0),1,1)                
