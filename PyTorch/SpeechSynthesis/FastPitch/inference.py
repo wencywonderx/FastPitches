@@ -235,7 +235,8 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
         # print(fields['mean_f0'])
     if 'slope_f0' in fields:
         import ast
-        fields['slope_f0'] = [torch.tensor(ast.literal_eval(x)) for x in fields['slope_f0']]
+        fields['slope_f0'] = torch.from_numpy(np.array([[ast.literal_eval(fields['slope_f0'])] for i in order])).float()
+            # [torch.tensor(ast.literal_eval(x)) for x in fields['slope_f0']]
     #-----------------------------------------------------
 
     # cut into batches & pad
@@ -252,6 +253,8 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
             # #-----------------------added--------------------------
             elif f == 'mean_f0':
                 batch[f] = pad_sequence(batch[f], batch_first=True)
+            elif f == 'slope_f0':
+                batch[f] = pad_sequence(batch[f], batch_first=True)                
             # #------------------------------------------------------
             if type(batch[f]) is torch.Tensor:
                 batch[f] = batch[f].to(device)
