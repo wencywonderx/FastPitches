@@ -235,7 +235,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
         # print(fields['mean_f0'])
     if 'slope_f0' in fields:
         import ast
-        fields['slope_f0'] = torch.from_numpy(np.array([[ast.literal_eval(fields['slope_f0'][i])] for i in order])).float()
+        fields['slope_f0'] = torch.from_numpy(np.array([ast.literal_eval(fields['slope_f0'][i]) for i in order])).float()
             # [torch.tensor(ast.literal_eval(x)) for x in fields['slope_f0']]
     #-----------------------------------------------------
 
