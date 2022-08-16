@@ -617,6 +617,7 @@ class FastPitch(nn.Module):
                 range_f0_emb = self.range_f0_emb(range_f0_pred)
                 # print(f'this is range f0 embedding: {slope_f0_emb.shape}') [16, 2, 384]
             else:
+                print(f"this is range f0 tgt {range_f0_tgt}")
                 range_f0_emb = self.range_f0_emb(range_f0_tgt)
             enc_out = enc_out + range_f0_emb.view(range_f0_emb.size(0), 1, 384)   
         else:
