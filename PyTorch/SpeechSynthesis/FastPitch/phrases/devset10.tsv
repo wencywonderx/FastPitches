@@ -1,21 +1,40 @@
-mel	mean_f0	output	text	
-mels/LJ022-0023.pt	-1.0	001_mean_N.wav	The overwhelming majority of people in this country know how to sift the wheat from the chaff in what they hear and what they read.
-mels/LJ022-0023.pt	1.0	001_mean_P.wav	The overwhelming majority of people in this country know how to sift the wheat from the chaff in what they hear and what they read.
-mels/LJ043-0030.pt	-1.0	002_mean_N.wav	If somebody did that to me, a lousy trick like that, to take my wife away, and all the furniture, I would be mad as hell, too.
-mels/LJ043-0030.pt	1.0	002_mean_P.wav	If somebody did that to me, a lousy trick like that, to take my wife away, and all the furniture, I would be mad as hell, too.
-mels/LJ005-0201.pt	-1.0	003_mean_N.wav	as is shown by the report of the Commissioners to inquire into the state of the municipal corporations in eighteen thirty-five.
-mels/LJ005-0201.pt	1.0	003_mean_P.wav	as is shown by the report of the Commissioners to inquire into the state of the municipal corporations in eighteen thirty-five.
-mels/LJ001-0110.pt	-1.0	004_mean_N.wav	Even the Caslon type when enlarged shows great shortcomings in this respect:
-mels/LJ001-0110.pt	1.0	004_mean_P.wav	Even the Caslon type when enlarged shows great shortcomings in this respect:
-mels/LJ003-0345.pt	-1.0	005_mean_N.wav	All the committee could do in this respect was to throw the responsibility on others.
-mels/LJ003-0345.pt	1.0	005_mean_P.wav	All the committee could do in this respect was to throw the responsibility on others.
-mels/LJ007-0154.pt	-1.0	006_mean_N.wav	These pungent and well-grounded strictures applied with still greater force to the unconvicted prisoner, the man who came to the prison innocent, and still uncontaminated,
-mels/LJ007-0154.pt	1.0	006_mean_P.wav	These pungent and well-grounded strictures applied with still greater force to the unconvicted prisoner, the man who came to the prison innocent, and still uncontaminated,
-mels/LJ018-0098.pt	-1.0	007_mean_N.wav	and recognized as one of the frequenters of the bogus law-stationers. His arrest led to that of others.
-mels/LJ018-0098.pt	1.0	007_mean_P.wav	and recognized as one of the frequenters of the bogus law-stationers. His arrest led to that of others.
-mels/LJ047-0044.pt	-1.0	008_mean_N.wav	Oswald was, however, willing to discuss his contacts with Soviet authorities. He denied having any involvement with Soviet intelligence agencies
-mels/LJ047-0044.pt	1.0	008_mean_P.wav	Oswald was, however, willing to discuss his contacts with Soviet authorities. He denied having any involvement with Soviet intelligence agencies
-mels/LJ031-0038.pt	-1.0	009_mean_N.wav	The first physician to see the President at Parkland Hospital was Dr. Charles J. Carrico, a resident in general surgery.
-mels/LJ031-0038.pt	1.0	009_mean_P.wav	The first physician to see the President at Parkland Hospital was Dr. Charles J. Carrico, a resident in general surgery.
-mels/LJ048-0194.pt	-1.0	010_mean_N.wav	during the morning of November twenty-two prior to the motorcade.
-mels/LJ048-0194.pt	1.0	010_mean_P.wav	during the morning of November twenty-two prior to the motorcade.
+range_f0	output	text	
+0.0	000_range.wav	during the morning of November twenty-two prior to the motorcade.
+1.0	001_range.wav	during the morning of November twenty-two prior to the motorcade.
+1.5	002_range.wav	during the morning of November twenty-two prior to the motorcade.
+2.0	003_range.wav	during the morning of November twenty-two prior to the motorcade.
+2.5	004_range.wav	during the morning of November twenty-two prior to the motorcade.
+3.0	005_range.wav	during the morning of November twenty-two prior to the motorcade.
+3.5	006_range.wav	during the morning of November twenty-two prior to the motorcade.
+4.0	007_range.wav	during the morning of November twenty-two prior to the motorcade.
+4.5	008_range.wav	during the morning of November twenty-two prior to the motorcade.
+5.0	009_range.wav	during the morning of November twenty-two prior to the motorcade.
+5.5	010_range.wav	during the morning of November twenty-two prior to the motorcade.
+6.0	011_range.wav	during the morning of November twenty-two prior to the motorcade.
+6.5	012_range.wav	during the morning of November twenty-two prior to the motorcade.
+7.0	013_range.wav	during the morning of November twenty-two prior to the motorcade.
+7.5	014_range.wav	during the morning of November twenty-two prior to the motorcade.
+8.0	015_range.wav	during the morning of November twenty-two prior to the motorcade.
+8.5	016_range.wav	during the morning of November twenty-two prior to the motorcade.
+9.0	017_range.wav	during the morning of November twenty-two prior to the motorcade.
+9.5	018_range.wav	during the morning of November twenty-two prior to the motorcade.
+10.0	019_range.wav	during the morning of November twenty-two prior to the motorcade.
+11.0	020_range.wav	during the morning of November twenty-two prior to the motorcade.
+11.5	021_range.wav	during the morning of November twenty-two prior to the motorcade.
+12.0	022_range.wav	during the morning of November twenty-two prior to the motorcade.
+12.5	023_range.wav	during the morning of November twenty-two prior to the motorcade.
+13.0	024_range.wav	during the morning of November twenty-two prior to the motorcade.
+13.5	025_range.wav	during the morning of November twenty-two prior to the motorcade.
+14.0	026_range.wav	during the morning of November twenty-two prior to the motorcade.
+14.5	027_range.wav	during the morning of November twenty-two prior to the motorcade.
+15.0	028_range.wav	during the morning of November twenty-two prior to the motorcade.
+15.5	029_range.wav	during the morning of November twenty-two prior to the motorcade.
+16.0	030_range.wav	during the morning of November twenty-two prior to the motorcade.
+16.5	031_range.wav	during the morning of November twenty-two prior to the motorcade.
+17.0	032_range.wav	during the morning of November twenty-two prior to the motorcade.
+17.5	033_range.wav	during the morning of November twenty-two prior to the motorcade.
+18.0	034_range.wav	during the morning of November twenty-two prior to the motorcade.
+18.5	035_range.wav	during the morning of November twenty-two prior to the motorcade.
+19.0	036_range.wav	during the morning of November twenty-two prior to the motorcade.
+19.5	037_range.wav	during the morning of November twenty-two prior to the motorcade.
+20.0	038_range.wav	during the morning of November twenty-two prior to the motorcade.

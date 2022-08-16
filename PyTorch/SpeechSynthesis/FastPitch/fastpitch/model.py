@@ -483,7 +483,7 @@ class FastPitch(nn.Module):
                 range_f0_emb = self.range_f0_emb(range_f0_pred)
             enc_out = enc_out + range_f0_emb.view(range_f0_emb.size(0), 1, 384)   
         else:
-            slope_f0_pred = None
+            range_f0_pred = None
         #---------------------------
 
         #------------modified and moved by me----------
@@ -549,7 +549,8 @@ class FastPitch(nn.Module):
         #----------------------------------------------------------------
 
     def infer(self, inputs, pace=1.0, dur_tgt=None, pitch_tgt=None,
-              energy_tgt=None, delta_f0_tgt=None, mean_f0_tgt=None, pitch_transform=None, max_duration=75,
+              energy_tgt=None, delta_f0_tgt=None, mean_f0_tgt=None, 
+              range_f0_tgt=None, pitch_transform=None, max_duration=75,
               speaker=0):
 
         if self.speaker_emb is None:
@@ -607,6 +608,20 @@ class FastPitch(nn.Module):
             delta_f0_pred = None
             mean_f0_pred = None
 
+        if self.range_f0:
+            print("inferencing range f0")                      
+            input = enc_out * enc_mask
+            range_f0_pred = self.range_f0_predictor(input) # [16, 2]
+            #------------------------------------------------------------------
+            if range_f0_tgt is None:
+                range_f0_emb = self.range_f0_emb(range_f0_pred)
+                # print(f'this is range f0 embedding: {slope_f0_emb.shape}') [16, 2, 384]
+            else:
+                range_f0_emb = self.range_f0_emb(range_f0_tgt)
+            enc_out = enc_out + range_f0_emb.view(range_f0_emb.size(0), 1, 384)   
+        else:
+            range_f0_pred = None
+
         # Pitch over chars
         if self.raw_f0:
             print("inferencing pitch")
@@ -622,7 +637,7 @@ class FastPitch(nn.Module):
             if pitch_tgt is None:
                 pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
             else:
-                pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
+                pitch_emb = self.pitch_emb(pitch_tgt.to(inputs.device)).transpose(1, 2)
             enc_out = enc_out + pitch_emb
         else:
             pitch_pred = None

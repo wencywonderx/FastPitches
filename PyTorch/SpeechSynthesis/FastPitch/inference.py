@@ -230,9 +230,9 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
         fields['output'] = [fields['output'][i] for i in order]
     
     #-------------------added-------------------------
-    if 'mean_f0' in fields:
-        fields['mean_f0'] = torch.FloatTensor([[float(x) for x in list(fields['mean_f0'])]])
-        # print(fields['mean_f0'])
+    if 'range_f0' in fields:
+        fields['range_f0'] = torch.FloatTensor([[float(x) for x in list(fields['range_f0'])]])
+        # print(fields['range_f0'])
     #-------------------------------------------------
 
     # cut into batches & pad
@@ -247,7 +247,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
             elif f == 'pitch' and load_pitch:
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             #-----------------------added--------------------------
-            elif f == 'mean_f0':
+            elif f == 'range_f0':
                 print("triggered!")
                 batch[f] = pad_sequence(batch[f], batch_first=True)
             #------------------------------------------------------
@@ -376,9 +376,9 @@ def main():
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
     #----------------------added------------------------
-              'mean_f0_tgt': None}     
-    if args.mean_f0_tgt:
-        gen_kw['mean_f0_tgt'] = fields['mean_f0']
+              'range_f0_tgt': None}     
+    if args.range_f0_tgt:
+        gen_kw['range_f0_tgt'] = fields['range_f0']
     #----------------------------------------------------
 
     if args.torchscript:
