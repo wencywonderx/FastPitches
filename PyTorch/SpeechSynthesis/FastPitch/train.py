@@ -307,10 +307,10 @@ def plot_mels(pred_tgt_lists):
 
     for i in range(2):  # we always only expect 2: pred and tgt
         #-------------------changed by me----------------------
-        if len(local_prep_tgts[i]) == 4:
-            mel, energy, pitch, slope_f0 = local_prep_tgts[i]
         # if len(local_prep_tgts[i]) == 4:
-        #     mel, energy, delta_f0, mean_f0 = local_prep_tgts[i]
+        #     mel, energy, pitch, slope_f0 = local_prep_tgts[i]
+        if len(local_prep_tgts[i]) == 3:
+            mel, energy, mean_f0 = local_prep_tgts[i]
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
         axes[i][0].imshow(mel, origin="lower")
@@ -332,20 +332,36 @@ def plot_mels(pred_tgt_lists):
                             colors="tomato",
                             bottom=False,
                             labelbottom=False)
-            ax2 = add_axis(fig, axes[i][0])
-            fit_fn = np.poly1d(slope_f0)
-            ax2.plot(fit_fn(range(mel.shape[1])), color="blue")  
-            ax2.set_xlim(0, mel.shape[1])
-            ax2.set_ylim(-1, 1)
-            ax2.set_ylabel("slope f0", color="blue")
-            ax2.tick_params(labelsize="x-small",
-                        colors="blue",
+
+            ax4 = add_axis(fig, axes[i][0])
+            mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
+            ax4.plot(mean_f0, color="red")
+            ax4.set_xlim(0, mel.shape[1])
+            ax4.set_ylim(-1, 1)
+            ax4.set_ylabel("Mean F0", color="red")
+            ax4.tick_params(labelsize="x-small",
+                        colors="red",
                         bottom=False,
                         labelbottom=False,
                         left=False,
                         labelleft=False,
                         right=True,
-                        labelright=True,)   
+                        labelright=True,)      
+        #----------------------------------
+            # ax2 = add_axis(fig, axes[i][0])
+            # fit_fn = np.poly1d(slope_f0)
+            # ax2.plot(fit_fn(range(mel.shape[1])), color="blue")  
+            # ax2.set_xlim(0, mel.shape[1])
+            # ax2.set_ylim(-1, 1)
+            # ax2.set_ylabel("slope f0", color="blue")
+            # ax2.tick_params(labelsize="x-small",
+            #             colors="blue",
+            #             bottom=False,
+            #             labelbottom=False,
+            #             left=False,
+            #             labelleft=False,
+            #             right=True,
+            #             labelright=True,)   
 
             # ax2 = add_axis(fig, axes[i][0])
             # ax2.plot(energy, color="darkviolet")
@@ -373,22 +389,6 @@ def plot_mels(pred_tgt_lists):
         #                 colors="blue",
         #                 bottom=False,
         #                 labelbottom=False) 
-
-        #     ax4 = add_axis(fig, axes[i][0])
-        #     mean_f0 = [mean_f0 for m in range(mel.shape[1] + 1)]
-        #     ax4.plot(mean_f0, color="red")
-        #     ax4.set_xlim(0, mel.shape[1])
-        #     # ax4.set_ylim(delta_min, delta_max)
-        #     ax4.set_ylabel("Mean F0", color="red")
-        #     ax4.tick_params(labelsize="x-small",
-        #                 colors="red",
-        #                 bottom=False,
-        #                 labelbottom=False,
-        #                 left=False,
-        #                 labelleft=False,
-        #                 right=True,
-        #                 labelright=True,)      
-        #-----------------------------------------------
     return fig
 
 
@@ -407,18 +407,18 @@ def plot_batch_mels(pred_tgt_lists, rank):
         mel_lens = mel_pitch_energy[-1]
         # reverse regulation for plotting: for every mel frame get pitch+energy
         #--------------------------------------changed by me------------------------------------------
-        # if len(mel_pitch_energy) == 5:
-        #     print("-------for mean and delta")
-        #     new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
-        #     new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-        #     new_mean_f0 = mel_pitch_energy[3]
-        #     regulated_features.append([mels, new_energy.squeeze(axis=2), new_delta_f0.squeeze(axis=2), new_mean_f0])
-        if len(mel_pitch_energy) == 5:
-            print("------for slope and pitch")
+        if len(mel_pitch_energy) == 4:
+            print("-------for mean and delta")
             new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
-            new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-            new_slope_f0 = mel_pitch_energy[3]
-            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_slope_f0])
+            # new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+            new_mean_f0 = mel_pitch_energy[3]
+            regulated_features.append([mels, new_energy.squeeze(axis=2), new_mean_f0])
+        # if len(mel_pitch_energy) == 5:
+        #     print("------for slope and pitch")
+        #     new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
+        #     new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+        #     new_slope_f0 = mel_pitch_energy[3]
+        #     regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_slope_f0])
             # print("this is regulated features", regulated_features)
         #-----------------------------------------------------------------------------------------------
     batch_sizes = [feature.size(dim=0)
@@ -456,16 +456,16 @@ def log_validation_batch(x, y_pred, rank):
     #-------------------------------------changed by me----------------------------------------
     # pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred', 'slope_f0_pred', 'attn_hard_dur']
     # tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'slope_f0_tgt', 'attn_hard_dur']
-    # if y_pred[12] is not None and y_pred[14] is not None:
-    #     if y_pred[16] is None and y_pred[4] is None:
-    #         print("--------preparing delta mean plot data")
-    #         pred_specs_keys = ['mel_out', 'energy_pred', 'delta_f0_pred', 'mean_f0_pred','attn_hard_dur']
-    #         tgt_specs_keys = ['mel_padded', 'energy_tgt', 'delta_f0_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
-    if y_pred[12] is None and y_pred[14] is None:
-        if y_pred[16] is not None and y_pred[4] is not None:
-            print("--------preparing normal f0 plot data")
-            pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'slope_f0_pred', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'slope_f0_tgt', 'attn_hard_dur']                          
+    if y_pred[12] is None and y_pred[14] is not None:
+        if y_pred[16] is None and y_pred[4] is None:
+            print("--------preparing delta mean plot data")
+            pred_specs_keys = ['mel_out', 'energy_pred', 'mean_f0_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'energy_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
+    # if y_pred[12] is None and y_pred[14] is None:
+    #     if y_pred[16] is not None and y_pred[4] is not None:
+    #         print("--------preparing normal f0 plot data")
+    #         pred_specs_keys = ['mel_out', 'energy_pred', 'pitch_pred', 'slope_f0_pred', 'attn_hard_dur']
+    #         tgt_specs_keys = ['mel_padded', 'energy_tgt', 'pitch_tgt', 'slope_f0_tgt', 'attn_hard_dur']                          
     #-------------------------------------------------------------------------------------------------
     plot_batch_mels([[validation_dict[key] for key in pred_specs_keys],
                      [validation_dict[key] for key in tgt_specs_keys]], rank)

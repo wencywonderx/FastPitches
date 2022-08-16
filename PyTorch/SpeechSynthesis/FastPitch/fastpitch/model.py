@@ -364,8 +364,8 @@ class FastPitch(nn.Module):
         #------------added by me----------
         # Predict delta f0 and mean f0
         if self.mean_and_delta_f0:
-            print("-------predicting delta f0")           
-            delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
+            # print("-------predicting delta f0")           
+            # delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1) # e.g. [16, 1, 148]  
             print("-------predicting mean f0")                      
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input) # [16, 1] 
@@ -373,7 +373,7 @@ class FastPitch(nn.Module):
             
             # Average delta f0 over charachtors, to predict for each input phone one value 
             # but not couple of frame values which is meaningless
-            delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # e.g. [16, 1, 148]
+            # delta_f0_tgt = average_pitch(delta_f0_tgt, dur_tgt) # e.g. [16, 1, 148]
             # mean_and_delta_f0_tgt = delta_f0_tgt + mean_f0_tgt.view(mean_f0_pred.size(0), 1, 1) #-------------changed
             # print(f"mean and delta f0 tgt {mean_and_delta_f0_tgt}")
             
@@ -386,16 +386,17 @@ class FastPitch(nn.Module):
             # else:
             #     delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred)
 
-            if use_gt_delta_f0 and delta_f0_tgt is not None:
-                delta_f0_emb = self.delta_f0_emb(delta_f0_tgt) # e.g. [16, 384, 148]
-            else:
-                delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+            # if use_gt_delta_f0 and delta_f0_tgt is not None:
+            #     delta_f0_emb = self.delta_f0_emb(delta_f0_tgt) # e.g. [16, 384, 148]
+            # else:
+            #     delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
 
             if use_gt_mean_f0 and mean_f0_tgt is not None:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt) # [16, 1, 384]/ [16, 384]]
             else:
                 mean_f0_emb = self.mean_f0_emb(mean_f0_pred)
             enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384)
+            delta_f0_pred = None
             # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2) # e.g. [16, 148, 384]
             # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) #-----------------------------------------changed
         else:
