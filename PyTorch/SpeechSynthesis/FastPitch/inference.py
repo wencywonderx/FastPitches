@@ -376,9 +376,9 @@ def main():
               'pitch_tgt': None,
               'pitch_transform': build_pitch_transformation(args),
     #----------------------added------------------------
-              'range_f0_tgt': None}     
-    if args.range_f0_tgt:
-        gen_kw['range_f0_tgt'] = fields['range_f0']
+              'range_f0_tgt': fields['range_f0']}     
+    # if args.range_f0_tgt:
+    #     gen_kw['range_f0_tgt'] = fields['range_f0']
     #----------------------------------------------------
 
     if args.torchscript:

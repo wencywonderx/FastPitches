@@ -618,7 +618,7 @@ class FastPitch(nn.Module):
                 # print(f'this is range f0 embedding: {slope_f0_emb.shape}') [16, 2, 384]
             else:
                 print(f"this is range f0 tgt {range_f0_tgt}")
-                range_f0_emb = self.range_f0_emb(range_f0_tgt)
+                range_f0_emb = self.range_f0_emb(range_f0_tgt.to(inputs.device))
             enc_out = enc_out + range_f0_emb.view(range_f0_emb.size(0), 1, 384)   
         else:
             range_f0_pred = None
@@ -638,7 +638,7 @@ class FastPitch(nn.Module):
             if pitch_tgt is None:
                 pitch_emb = self.pitch_emb(pitch_pred).transpose(1, 2)
             else:
-                pitch_emb = self.pitch_emb(pitch_tgt.to(inputs.device)).transpose(1, 2)
+                pitch_emb = self.pitch_emb(pitch_tgt).transpose(1, 2)
             enc_out = enc_out + pitch_emb
         else:
             pitch_pred = None
