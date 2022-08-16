@@ -309,7 +309,7 @@ def plot_mels(pred_tgt_lists):
         #-------------------changed by me----------------------
         # if len(local_prep_tgts[i]) == 4:
         #     mel, energy, pitch, slope_f0 = local_prep_tgts[i]
-        if len(local_prep_tgts[i]) == 3:
+        if len(local_prep_tgts[i]) == 4:
             mel, energy, pitch, mean_f0 = local_prep_tgts[i]
         #------------------------------------------------------
         # pitch = pitch * pitch_std + pitch_mean
@@ -411,8 +411,9 @@ def plot_batch_mels(pred_tgt_lists, rank):
             print("-------for mean and delta")
             new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
             # new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+            new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
             new_mean_f0 = mel_pitch_energy[3]
-            regulated_features.append([mels, new_energy.squeeze(axis=2), new_mean_f0])
+            regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_mean_f0])
         # if len(mel_pitch_energy) == 5:
         #     print("------for slope and pitch")
         #     new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
