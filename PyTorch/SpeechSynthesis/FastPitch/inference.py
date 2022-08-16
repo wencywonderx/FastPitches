@@ -231,7 +231,7 @@ def prepare_input_sequence(fields, device, symbol_set, text_cleaners, # encode t
     
     #-------------------added-------------------------
     if 'range_f0' in fields:
-        fields['range_f0'] = torch.FloatTensor([[float(x) for x in list(fields['range_f0'])]])
+        fields['range_f0'] = torch.from_numpy(np.array([[float(fields['mean_f0'][i])] for i in order])).float()
         # print(fields['range_f0'])
     #-------------------------------------------------
 
