@@ -97,7 +97,7 @@ def parse_args(parser):
     parser.add_argument('--speaker', type=int, default=0,
                         help='Speaker ID for a multi-speaker model')
     #-----------------------------------------added-------------------------------------------
-    parser.add_argument('--mean-f0-tgt', action='store_true', default=None)
+    parser.add_argument('--range-f0-tgt', action='store_true', default=None)
     #-----------------------------------------------------------------------------------------
 
     parser.add_argument('--p-arpabet', type=float, default=0.0, help='')

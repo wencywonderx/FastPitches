@@ -23,7 +23,7 @@
 : ${MEAN_DELTA:=false}
 : ${NORMAL:=false}
 : ${SLOPE:=false}
-: ${MEAN_F0_TGT:=false}
+: ${RANGE_F0_TGT:=false}
 #------------------------------
 
 echo -e "\nAMP=$AMP, batch_size=$BATCH_SIZE\n"
@@ -53,7 +53,7 @@ ARGS+=" --n-speakers $NUM_SPEAKERS"
 [ "$MEAN_DELTA" = true ]    && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]        && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]         && ARGS+=" --slope-f0"
-[ "$MEAN_F0_TGT" = true ]   && ARGS+=" --mean-f0-tgt"
+[ "$MEAN_F0_TGT" = true ]   && ARGS+=" --range-f0-tgt"
 #--------------------------------------------------------
 
 mkdir -p "$OUTPUT_DIR"
