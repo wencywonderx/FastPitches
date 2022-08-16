@@ -407,11 +407,11 @@ def plot_batch_mels(pred_tgt_lists, rank):
         mel_lens = mel_pitch_energy[-1]
         # reverse regulation for plotting: for every mel frame get pitch+energy
         #--------------------------------------changed by me------------------------------------------
-        if len(mel_pitch_energy) == 4:
+        if len(mel_pitch_energy) == 5:
             print("-------for mean and delta")
-            new_energy = regulate_len(mel_lens, mel_pitch_energy[1].unsqueeze(dim=-1))[0]
+            new_energy = regulate_len(mel_lens, mel_pitch_energy[2].unsqueeze(dim=-1))[0]
             # new_delta_f0 = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
-            new_pitch = regulate_len(mel_lens, mel_pitch_energy[2].permute(0, 2, 1))[0]
+            new_pitch = regulate_len(mel_lens, mel_pitch_energy[1].permute(0, 2, 1))[0]
             new_mean_f0 = mel_pitch_energy[3]
             regulated_features.append([mels, new_energy.squeeze(axis=2), new_pitch.squeeze(axis=2), new_mean_f0])
         # if len(mel_pitch_energy) == 5:
@@ -460,8 +460,8 @@ def log_validation_batch(x, y_pred, rank):
     if y_pred[12] is None and y_pred[14] is not None:
         if y_pred[16] is None and y_pred[4] is not None:
             print("--------preparing delta mean plot data")
-            pred_specs_keys = ['mel_out', 'energy_pred', 'mean_f0_pred', 'attn_hard_dur']
-            tgt_specs_keys = ['mel_padded', 'energy_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
+            pred_specs_keys = ['mel_out', 'pitch_pred', 'energy_pred', 'mean_f0_pred', 'attn_hard_dur']
+            tgt_specs_keys = ['mel_padded', 'pitch_tgt', 'energy_tgt', 'mean_f0_tgt', 'attn_hard_dur']  
     # if y_pred[12] is None and y_pred[14] is None:
     #     if y_pred[16] is not None and y_pred[4] is not None:
     #         print("--------preparing normal f0 plot data")
