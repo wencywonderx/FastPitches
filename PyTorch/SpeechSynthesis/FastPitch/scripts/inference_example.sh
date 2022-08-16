@@ -23,6 +23,7 @@
 : ${MEAN_DELTA:=false}
 : ${NORMAL:=false}
 : ${SLOPE:=false}
+: ${RANGE:=false}
 : ${RANGE_F0_TGT:=false}
 #------------------------------
 
@@ -53,6 +54,7 @@ ARGS+=" --n-speakers $NUM_SPEAKERS"
 [ "$MEAN_DELTA" = true ]    && ARGS+=" --mean-and-delta-f0"
 [ "$NORMAL" = true ]        && ARGS+=" --raw-f0"
 [ "$SLOPE" = true ]         && ARGS+=" --slope-f0"
+[ "$RANGE" = true ]         && ARGS+=" --range-f0"
 [ "$MEAN_F0_TGT" = true ]   && ARGS+=" --range-f0-tgt"
 #--------------------------------------------------------
 

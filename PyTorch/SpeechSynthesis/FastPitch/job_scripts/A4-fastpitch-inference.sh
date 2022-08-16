@@ -55,9 +55,10 @@ export CPU=false  # false => run on GPU
 export AMP=false
 
 #------added be me------
-export MEAN_DELTA=true
-export NORMAL=false
+export MEAN_DELTA=false
+export NORMAL=true
 export SLOPE=false
+export RANGE=true
 export RANGE_F0_TGT=true
 #-----------------------
 
