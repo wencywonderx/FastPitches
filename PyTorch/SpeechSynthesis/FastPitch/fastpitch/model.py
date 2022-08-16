@@ -591,6 +591,7 @@ class FastPitch(nn.Module):
             # print(f'slope_delta_pred: {slope_delta_pred}')
             input = enc_out * enc_mask
             slope_f0_pred = self.slope_f0_predictor(input) # [16, 2]
+            print(f'slope_f0_pred: {slope_f0_pred}')
             #------------------------------------------------------------------
             def add_line_with_points(slope_f0_pred, slope_delta_pred):
                 x = torch.tensor([i for i in range(slope_delta_pred.size(2))])
