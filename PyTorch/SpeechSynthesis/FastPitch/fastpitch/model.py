@@ -504,8 +504,8 @@ class FastPitch(nn.Module):
 
         # predict mean and delta f0:
         if self.mean_and_delta_f0:
-            print("inferencing delta and mean f0")
-            delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
+            # print("inferencing delta and mean f0")
+            # delta_f0_pred = self.delta_f0_predictor(enc_out, enc_mask).permute(0, 2, 1)
             input = enc_out * enc_mask
             mean_f0_pred = self.mean_f0_predictor(input)
             print(f'this is predicted mean f0 {mean_f0_pred}')
@@ -518,11 +518,12 @@ class FastPitch(nn.Module):
                 # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_pred) #---------------------------------changed
             if mean_f0_tgt is not None and delta_f0_tgt is None:
                 print("-----------------using target !!!!!!!!!")
-                delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
+                # delta_f0_emb = self.delta_f0_emb(delta_f0_pred)
                 print(f'mean f0 given {mean_f0_tgt}, {mean_f0_tgt.shape}')
                 mean_f0_emb = self.mean_f0_emb(mean_f0_tgt[0].view(20, 1).to(inputs.device))
                 # delta_and_mean_f0_emb = self.delta_f0_emb(mean_and_delta_f0_tgt) #-----------------------------------changed
-            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
+            # enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384) + delta_f0_emb.transpose(1, 2)
+            enc_out = enc_out + mean_f0_emb.view(mean_f0_emb.size(0), 1, 384)
             # enc_out = enc_out + delta_and_mean_f0_emb.transpose(1, 2) #---------------------------------------------------changed
         else:
             delta_f0_pred = None
