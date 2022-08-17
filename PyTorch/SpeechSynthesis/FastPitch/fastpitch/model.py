@@ -332,6 +332,7 @@ class FastPitch(nn.Module):
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
         # print("slope_f0_tgt", slope_f0_tgt) # e.g. [16, 2]
         # print("slope_delta_tgt", slope_delta_tgt)
+        # attn_prior [16, 787, 148]
 
 
         mel_max_len = mel_tgt.size(2) 
@@ -361,13 +362,14 @@ class FastPitch(nn.Module):
         attn_soft, attn_logprob = self.attention( #----------------------------------------------------------------Q: log prob?
             mel_tgt, text_emb.permute(0, 2, 1), mel_lens, attn_mask,
             key_lens=input_lens, keys_encoded=enc_out, attn_prior=attn_prior)
+        # hard & soft: [16, 1, 787, 148]
 
         attn_hard = self.binarize_attention_parallel(
             attn_soft, input_lens, mel_lens)
 
         # Viterbi --> durations
         attn_hard_dur = attn_hard.sum(2)[:, 0, :]
-        dur_tgt = attn_hard_dur
+        dur_tgt = attn_hard_dur # [16, 148]
 
         assert torch.all(torch.eq(dur_tgt.sum(dim=1), mel_lens)) # duration alignment is equal to input length
 
