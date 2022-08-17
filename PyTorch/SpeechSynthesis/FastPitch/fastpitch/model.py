@@ -322,11 +322,11 @@ class FastPitch(nn.Module):
         #  pitch_padded, energy_padded, speaker, attn_prior, audiopaths, mean, delta_f0, f0_slope]
         # y = [mel_padded, input_lengths, output_lengths]
         print("--------------------------new batch--------------------------")
-        # print("\n inputs: ", inputs.shape) # (batch_size, max_input_length) e.g.[16, 148]
+        print("\n inputs: ", inputs.shape) # (batch_size, max_input_length) e.g.[16, 148]
         # print("\n input_lens: ", input_lens) # (batch_size) e.g. tensor([148, 139...])
         # print("\n mel_lens: ", mel_lens) # (batch_size) e.g. tensor([787, 684...])
         # print("\n energy_dense: ", energy_dense.shape) # e.g. [16, 787]
-        # print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
+        print("\n mel_tgt: ", mel_tgt.shape) # e.g. [16, 80, 787]
         # print("pitch_dense: ", pitch_dense) # e.g. [16, 1, 787]
         # print("delta_f0_tgt: ", delta_f0_tgt) # e.g. [16, 1, 787]
         # print("mean_f0_tgt", mean_f0_tgt) # e.g. [16, 1]
@@ -663,7 +663,8 @@ class FastPitch(nn.Module):
         len_regulated, dec_lens = regulate_len(
             dur_pred if dur_tgt is None else dur_tgt,
             enc_out, pace, mel_max_len=None)
-
+        print(len_regulated.shape)
+        print(dec_lens.shape)
         dec_out, dec_mask = self.decoder(len_regulated, dec_lens)
         mel_out = self.proj(dec_out)
         # mel_lens = dec_mask.squeeze(2).sum(axis=1).long()
