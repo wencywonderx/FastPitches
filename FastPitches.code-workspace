@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "..\\VoiceLab"
+		},
+		{
+			"path": "..\\qualtreats-main"
 		}
 	],
 	"settings": {}

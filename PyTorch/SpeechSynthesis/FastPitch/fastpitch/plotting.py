@@ -47,7 +47,7 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/slope_add_0_-0.2_0.1'
+add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/slope/slope_add_0.45_-5_3'
 for dirpath, dirnames, filenames in os.walk(add_path):
     f0s = []
     times = []
@@ -77,26 +77,26 @@ for dirpath, dirnames, filenames in os.walk(add_path):
         times.append(time)
 
 expected = []
-for i in range(61):
-    e_slope = -0.2 + i*0.005
+for i in range(81):
+    e_slope = -0.5 + i*0.01
     expected.append(e_slope)
 print(expected)
 print(len(slopes))
 
 fig, ax = plt.subplots()
-ax.set(title='f0 slope controlling')
-ax.set_ylabel('f0 slope got')
-ax.set_xlabel('f0 slope asked for')
-ax.set_xlim(-1, 0.5)
-ax.set_ylim(-1, 0.5)
+ax.set(title='f0 slope controlling with 0.45 as intercept')
+ax.set_ylabel('slope got')
+ax.set_xlabel('slope asked for')
+ax.set_xlim(-0.5, 0.3)
+ax.set_ylim(-1, 3)
 ax.plot(expected, slopes, color='blue', label='add-first')
 # ax.plot(expected, slope, color='green', label='emb-first higher-controlled')
-ax.plot(expected, expected, color='grey', label='expected  f0')
+ax.plot(expected, expected, color='grey', label='expected slope')
 # ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
 ax.legend(loc='upper left')
 plt.show()
 
-##################################################################################################
+############################################ mean #####################################################
 
 # emb_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean/mean_controlling_emb/-2.9-5.8'
 # for dirpath, dirnames, filenames in os.walk(emb_path):
