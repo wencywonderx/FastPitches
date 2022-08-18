@@ -47,7 +47,7 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/range'
+add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/mean_pitch_-2.9_5.8'
 for dirpath, dirnames, filenames in os.walk(add_path):
     f0s = []
     times = []
@@ -66,7 +66,7 @@ for dirpath, dirnames, filenames in os.walk(add_path):
         f0 = interpolate(f0)
         f0s.append(f0)
         mean = np.true_divide(f0.sum(0),(f0!=0).sum(0))
-        # print(mean)
+        print(mean)
         means.append(mean)
         # x = range(len(f0))
         # y = f0
@@ -74,34 +74,34 @@ for dirpath, dirnames, filenames in os.walk(add_path):
         # slope, intercept = fit
         # print(slope)
         # slopes.append(slope)
-        min = np.percentile(f0, 5)
-        max = np.percentile(f0, 95)
-        range_f0 = max - min
-        print(range_f0)
-        ranges.append(range_f0)
+        # min = np.percentile(f0, 5)
+        # max = np.percentile(f0, 95)
+        # range_f0 = max - min
+        # print(range_f0)
+        # ranges.append(range_f0)
         time = librosa.times_like(f0)
         times.append(time)
 
 ################################################ range ######################################
-expected = []
-for i in range(60):
-    e = -10 + i*0.5
-    expected.append(e)
-print(expected)
-print(len(ranges))
+# expected = []
+# for i in range(60):
+#     e = -10 + i*0.5
+#     expected.append(e)
+# print(expected)
+# print(len(ranges))
 
-fig, ax = plt.subplots()
-ax.set(title='f0 range controlling')
-ax.set_ylabel('range got')
-ax.set_xlabel('range asked for')
-# ax.set_xlim(-2, 2)
-# ax.set_ylim(-2, 2)
-ax.plot(expected, ranges, color='blue', label='range')
-# ax.plot(expected, slope, color='green', label='emb-first higher-controlled')
-ax.plot(expected, expected, color='grey', label='expected range')
-# ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
-ax.legend(loc='upper left')
-plt.show()
+# fig, ax = plt.subplots()
+# ax.set(title='f0 range controlling')
+# ax.set_ylabel('range got')
+# ax.set_xlabel('range asked for')
+# # ax.set_xlim(-2, 2)
+# # ax.set_ylim(-2, 2)
+# ax.plot(expected, ranges, color='blue', label='range')
+# # ax.plot(expected, slope, color='green', label='emb-first higher-controlled')
+# ax.plot(expected, expected, color='grey', label='expected range')
+# # ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
+# ax.legend(loc='upper left')
+# plt.show()
 
 ############################################### slope #########################################
 # expected = []
@@ -148,25 +148,25 @@ plt.show()
 #         time = librosa.times_like(e_f0)
 #         times.append(time)
 
-# expected = []
-# n_expected=[]
-# for i in range(59):
-#     pitch = 65.72038*i*0.1 + 186.1783
-#     expected.append(pitch)
-# for i in range(30):
-#     pitch = 65.72038*(-i)*0.1 + 186.1783
-#     n_expected.append(pitch)
-# print(expected)
-# print(n_expected)
+expected = []
+n_expected=[]
+for i in range(59):
+    pitch = 65.72038*i*0.1 + 186.1783
+    expected.append(pitch)
+for i in range(30):
+    pitch = 65.72038*(-i)*0.1 + 186.1783
+    n_expected.append(pitch)
+print(expected)
+print(n_expected)
 
-# print(len(means))
+print(len(means))
 # print(len(e_means))
 
-# p_m = means[0:59]
-# print(p_m, len(p_m))
-# n_m = means[59:89]
-# n_m.insert(0, 222.10661373435622)
-# print(n_m, len(n_m))
+p_m = means[0:59]
+print(p_m, len(p_m))
+n_m = means[59:89]
+n_m.insert(0, 223.7597930868579)
+print(n_m, len(n_m))
 
 # e_p_m = e_means[0:59]
 # print(e_p_m, len(e_p_m))
@@ -174,22 +174,22 @@ plt.show()
 # e_n_m.insert(0, 213.78685099479188) # to be changed
 # print(e_n_m, len(e_n_m))
 
-# fig, ax = plt.subplots()
-# ax.set(title='mean f0 controlling')
-# ax.set_ylabel('mean f0 got (Hz)')
-# ax.set_xlabel('mean f0 asked for (Hz)')
-# ax.set_xlim(0, 600)
-# ax.set_ylim(0, 600)
-# ax.plot(expected, p_m, color='blue', label='add-first higher-controlled')
-# ax.plot(n_expected, n_m, color='tomato', label='add-first lower-controlled')
+fig, ax = plt.subplots()
+ax.set(title='mean f0 controlling')
+ax.set_ylabel('mean f0 got (Hz)')
+ax.set_xlabel('mean f0 asked for (Hz)')
+ax.set_xlim(0, 600)
+ax.set_ylim(0, 600)
+ax.plot(expected, p_m, color='blue', label='add-first higher-controlled')
+ax.plot(n_expected, n_m, color='tomato', label='add-first lower-controlled')
 # ax.plot(expected, e_p_m, color='green', label='emb-first higher-controlled')
 # ax.plot(n_expected, e_n_m, color='pink', label='emb-first lower-controlled')
-# ax.plot(expected, expected, color='grey', label='expected mean f0')
-# ax.plot(n_expected, n_expected, color='grey')
-# ax.vlines(214.72203, 20, 600, colors = 'lightgrey', linestyles = "dotted", label='global mean')
-# ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
-# ax.legend(loc='upper left')
-# plt.show()
+ax.plot(expected, expected, color='grey', label='expected mean f0')
+ax.plot(n_expected, n_expected, color='grey')
+ax.vlines(214.72203, 20, 600, colors = 'lightgrey', linestyles = "dotted", label='global mean')
+ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
+ax.legend(loc='upper left')
+plt.show()
 
 ################################## contours ##################################
 
