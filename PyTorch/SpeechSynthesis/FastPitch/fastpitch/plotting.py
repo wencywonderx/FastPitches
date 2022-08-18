@@ -47,12 +47,13 @@ def interpolate(pitch_mel_array):
             last_value = pitch_mel_array[i]
     return pitch_mel
 
-add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/slope/slope_add_0.45_-5_3'
+add_path = 'C:/Users/wx_Ca/OneDrive - University of Edinburgh/Desktop/range'
 for dirpath, dirnames, filenames in os.walk(add_path):
     f0s = []
     times = []
     means = []
     slopes = []
+    ranges = []
     for filename in filenames:
         wav = os.path.join(dirpath, filename)
         print(wav)
@@ -73,28 +74,55 @@ for dirpath, dirnames, filenames in os.walk(add_path):
         slope, intercept = fit
         print(slope)
         slopes.append(slope)
+        min = np.percentile(f0, 5)
+        max = np.percentile(f0, 95)
+        range = max - min
+        print(range)
+        ranges.append(range)
         time = librosa.times_like(f0)
         times.append(time)
 
+################################################ range ######################################
 expected = []
-for i in range(81):
-    e_slope = -0.5 + i*0.01
-    expected.append(e_slope)
+for i in range(60):
+    e = -10 + i*0.5
+    expected.append(e)
 print(expected)
-print(len(slopes))
+print(len(ranges))
 
 fig, ax = plt.subplots()
-ax.set(title='f0 slope controlling with 0.45 as intercept')
-ax.set_ylabel('slope got')
-ax.set_xlabel('slope asked for')
-ax.set_xlim(-0.5, 0.3)
-ax.set_ylim(-1, 3)
-ax.plot(expected, slopes, color='blue', label='add-first')
+ax.set(title='f0 range controlling')
+ax.set_ylabel('range got')
+ax.set_xlabel('range asked for')
+ax.set_xlim(-2, 2)
+ax.set_ylim(-2, 2)
+ax.plot(expected, ranges, color='blue', label='range')
 # ax.plot(expected, slope, color='green', label='emb-first higher-controlled')
-ax.plot(expected, expected, color='grey', label='expected slope')
+ax.plot(expected, expected, color='grey', label='expected range')
 # ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
 ax.legend(loc='upper left')
 plt.show()
+
+############################################### slope #########################################
+# expected = []
+# for i in range(81):
+#     e_slope = -0.5 + i*0.01
+#     expected.append(e_slope)
+# print(expected)
+# print(len(slopes))
+
+# fig, ax = plt.subplots()
+# ax.set(title='f0 slope controlling with 0.45 as intercept')
+# ax.set_ylabel('slope got')
+# ax.set_xlabel('slope asked for')
+# ax.set_xlim(-0.5, 0.3)
+# ax.set_ylim(-1, 3)
+# ax.plot(expected, slopes, color='blue', label='add-first')
+# # ax.plot(expected, slope, color='green', label='emb-first higher-controlled')
+# ax.plot(expected, expected, color='grey', label='expected slope')
+# # ax.plot([214.72203 for i in range(600)], color = 'lightgrey', linestyle = "dotted")
+# ax.legend(loc='upper left')
+# plt.show()
 
 ############################################ mean #####################################################
 
