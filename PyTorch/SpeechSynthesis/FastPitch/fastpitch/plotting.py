@@ -68,17 +68,17 @@ for dirpath, dirnames, filenames in os.walk(add_path):
         mean = np.true_divide(f0.sum(0),(f0!=0).sum(0))
         # print(mean)
         means.append(mean)
-        x = range(len(f0))
-        y = f0
-        fit = np.polyfit(x, y, 1)
-        slope, intercept = fit
-        print(slope)
-        slopes.append(slope)
+        # x = range(len(f0))
+        # y = f0
+        # fit = np.polyfit(x, y, 1)
+        # slope, intercept = fit
+        # print(slope)
+        # slopes.append(slope)
         min = np.percentile(f0, 5)
         max = np.percentile(f0, 95)
-        range = max - min
-        print(range)
-        ranges.append(range)
+        range_f0 = max - min
+        print(range_f0)
+        ranges.append(range_f0)
         time = librosa.times_like(f0)
         times.append(time)
 
@@ -94,8 +94,8 @@ fig, ax = plt.subplots()
 ax.set(title='f0 range controlling')
 ax.set_ylabel('range got')
 ax.set_xlabel('range asked for')
-ax.set_xlim(-2, 2)
-ax.set_ylim(-2, 2)
+# ax.set_xlim(-2, 2)
+# ax.set_ylim(-2, 2)
 ax.plot(expected, ranges, color='blue', label='range')
 # ax.plot(expected, slope, color='green', label='emb-first higher-controlled')
 ax.plot(expected, expected, color='grey', label='expected range')
